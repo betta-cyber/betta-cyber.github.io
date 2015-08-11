@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   
-  <title>关于apache中rewrite的一些小细节 | BETTA</title>
+  <title>关于apache配置的一些小事 | BETTA</title>
   <meta name="author" content="Drizzt Luo">
   
-  <meta name="description" content="今天真是要报警了[title] [] [url] [link text]1code snippet
-content">
+  <meta name="description" content="真是要报警了！！！
+今天把自己写的一套php的代码部署到服务器上去。代码在本地能正常运行。首先我在35互联上把主机地址解析成A类型的域名，大概要等半天好像是。真的是坑爹。我将代码上传到apache定义的根目录（一般是/var/www）。然后就可以配置apache virtual host了。于是我偷">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="关于apache中rewrite的一些小细节"/>
+  <meta property="og:title" content="关于apache配置的一些小事"/>
   <meta property="og:site_name" content="BETTA"/>
 
   
@@ -31,7 +31,7 @@ content">
 <body>
   <header id="header" class="inner"><div class="alignleft">
   <h1><a href="/">BETTA</a></h1>
-  <h2><a href="/"></a></h2>
+  <h2><a href="/">Dancehall</a></h2>
 </div>
 <nav id="main-nav" class="alignright">
   <ul>
@@ -51,30 +51,41 @@ content">
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-08-09T16:00:23.000Z"><a href="/2015/08/10/php/">2015-08-10</a></time>
+        <time datetime="2015-08-09T16:13:23.000Z"><a href="/2015/08/10/php/">2015-08-10</a></time>
       
       
   
-    <h1 class="title">关于apache中rewrite的一些小细节</h1>
+    <h1 class="title">关于apache配置的一些小事</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>今天真是要报警了<br><figure class="highlight"><figcaption><span>[title] [] [url] [link text]</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">code snippet</span><br></pre></td></tr></table></figure></p>
-<blockquote class="pullquote [class]"><p>content</p>
-</blockquote>
+        <h4 id="真是要报警了！！！">真是要报警了！！！</h4><hr>
+<p>今天把自己写的一套php的代码部署到服务器上去。代码在本地能正常运行。<br>首先我在<a href="https://www.35.com/" target="_blank" rel="external">35互联</a>上把主机地址解析成A类型的域名，大概要等半天好像是。真的是坑爹。<br>我将代码上传到apache定义的根目录<strong>（一般是/var/www）</strong>。<br>然后就可以配置apache virtual host了。于是我偷懒拷贝了一份其他的配好了的文件，然后随便一改成现在需要的。重启apache服务器以为完事了。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /etc/init.d/apache2 restart</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo service apache2 restart</span><br></pre></td></tr></table></figure>
+<p>谁知页面竟然报错了</p>
+<p><strong>The server encountered an internal error or misconfiguration and was unable to complete your request.</strong></p>
+<p>一开始我以为是权限问题</p>
+<p>把文件夹给了777权限后发现还是不行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod -R <span class="number">777</span> /www/reg</span><br></pre></td></tr></table></figure>
+<p>然后通过在根目录下index.php文件中写入<code>&lt;?php die(1111)?&gt;</code>发现是可以进入到index.php文件的，于是可以判断是可以进入到目标目录的。 <strong>DocumentRoot</strong>路径是对的。</p>
+<p>但是为什么输出不出东西呢？</p>
+<hr>
+<p>然后我以为是我配置的<em>apache virtual host</em>出了问题。后来我又切换到ubuntu的虚拟机下运行，git clone下源码发现还是不行，还把我虚拟机的apache给玩坏了。启动不了，错误日志什么的也看不懂。就果断放弃了虚拟机。又要重新配。我的<em>ruby</em>啊!真是黑。</p>
+<h5 id="配置文件大概这么写：">配置文件大概这么写：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;VirtualHost *:<span class="number">80</span>&gt;</span><br><span class="line">    ServerAdmin webmaster@localhost</span><br><span class="line">    DocumentRoot /var/www/</span><br><span class="line">    ErrorLog <span class="variable">$&#123;APACHE_LOG_DIR&#125;</span>/error.log</span><br><span class="line">    CustomLog <span class="variable">$&#123;APACHE_LOG_DIR&#125;</span>/access.log combined</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>
+<p>然后我大概发现是rewrite模块的问题。php中好像这个模块不开.htaccess这个文件是无法生效的。然后我就在找怎么样才能把rewrite模块打开。在/etc/apache2/里面找了好久都没有找到http.d文件，我猜想我是用<code>apt-get install xxx</code>安装的，所以和编译出来的文件夹目录不一样 可以用<code>tree</code>命令查看哦。</p>
+<hr>
+<p>后来晚上请教豪哥，豪哥也半天没搞出来。跟我下午时查找bug时的情形差不多。我们对比了可用的配置bbs和我们要配置的reg文件。又发现bbs目录下同样也有.htaccess文件。但是bbs中我们在index.php中写入的<code>phpinfo();</code>同样没有rewrite模块。但是确实是开启了的。可用！通过查看<code>a2ensite</code>和对<code>sites-available</code>  <code>sites-enabled</code> 的link连接判断无误。</p>
+<p>于是我们把目光转向.htaccess这个文件。虽然它是个没有后缀的文件 但是通过<code>file -l</code>命令还是获取到了.htaccess文件的字符串编码。也就是格式问题。我所采用的是<strong>utf8 BOM</strong>格式，它会在文件前面自动加上一些东西，这样就会造成.htaccess的失效。采用utf8 <strong>无BOM格式</strong>的就不会有问题。这真是黑。</p>
+<hr>
+<p>这里写录一下。保证以后不出这种问题。</p>
 
       
     </div>
     <footer>
       
         
-  
-  <div class="categories">
-    <a href="/categories/Diary/">Diary</a>
-  </div>
-
         
   
   <div class="tags">
@@ -120,25 +131,16 @@ content">
     <aside id="sidebar" class="alignright">
   <div class="search">
   <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="搜尋">
+    <input type="search" name="q" results="0" placeholder="搜索">
     <input type="hidden" name="q" value="site:yoursite.com">
   </form>
 </div>
 
   
-<div class="widget tag">
-  <h3 class="title">分類</h3>
-  <ul class="entry">
-  
-    <li><a href="/categories/Diary/">Diary</a><small>1</small></li>
-  
-  </ul>
-</div>
-
 
   
 <div class="widget tag">
-  <h3 class="title">標籤</h3>
+  <h3 class="title">标签</h3>
   <ul class="entry">
   
     <li><a href="/tags/MarkDown/">MarkDown</a><small>1</small></li>
