@@ -49,18 +49,55 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-08-26T09:59:30.000Z"><a href="/2015/08/26/password/">2015-08-26</a></time>
+        <time datetime="2015-09-14T14:11:46.000Z"><a href="/2015/09/14/suanfa/">2015-09-14</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/08/26/password/">password</a></h1>
+    <h1 class="title"><a href="/2015/09/14/suanfa/">按位与、或、异或等运算方法</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <h1 id="又学了一招">又学了一招</h1><h2 id="在很多情况下，你用别人电脑，或者自己把密码给记住了。但是你想不起来是什么了，挺着急的">在很多情况下，你用别人电脑，或者自己把密码给记住了。但是你想不起来是什么了，挺着急的</h2><p>哈哈哈哈哈 在这种情况下就有种简单的技巧可以用了</p>
-<p>比如在V2EX上的登录框是这样的<br><code>&lt;input type=&quot;password&quot; class=&quot;sl&quot; name=&quot;p&quot; value=&quot;&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocapitalize=&quot;off&quot;&gt;</code><br>我就可以这样弄<br><code>&lt;input type=&quot;&quot; class=&quot;sl&quot; name=&quot;p&quot; value=&quot;&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocapitalize=&quot;off&quot;&gt;</code><br>然后你就会发现密码神奇的出来了 就是这么简单</p>
+        <h2 id="我发现有些算法题用位运算可以很快的解决!">我发现有些算法题用位运算可以很快的解决!</h2><p>打个比方：<br>有个数为<code>31</code> 转化为二进制就是<code>11111</code> 另一个数为<code>14</code> 转为二进制就是<code>01110</code></p>
+<p>1.按位与运算符（&amp;）  2.按位或运算符（|）3.异或运算符（^）<br><code>11111</code>—————–<code>11111</code>—————–<code>11111</code><br><code>01110</code>—————–<code>01110</code>—————–<code>01110</code><br><code>-----</code>—————–<code>-----</code>—————–<code>-----</code><br><code>01110</code>—————–<code>11111</code>—————–<code>10001</code></p>
+<p>故可以通过这样的一些运算发现一些规律：<br>比方说数a = <code>10001</code>。若 <code>a &amp; a-1</code>之后 得出来的结果就会在结果少个1把它变为0<br><code>10001</code><br><code>10000</code><br><code>-----</code><br><code>10000</code><br>如果得出的结果再做运算的话：<br><code>10000</code><br><code>01111</code><br><code>-----</code><br><code>00000</code><br>得出的结果将会是零！</p>
+<p>比方说：O(1)检测2的幂次这个 因为时间复杂度要求为o(1) 就可以这样：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> Solution &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">     * @param n: An integer</span><br><span class="line">     * @return: True or false</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">checkPowerOf2</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// write your code here</span></span><br><span class="line">        <span class="keyword">return</span> n &gt; <span class="number">0</span> &amp;&amp; (n &amp; (n - <span class="number">1</span>)) == <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>再比方说：如果要将整数A转换为B，需要改变多少个bit位？ 就可以这样：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> Solution &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     *@param a, b: Two integer</span><br><span class="line">     *return: An integer</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">bitSwapRequired</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> cnt = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> c = a ^ b; c != <span class="number">0</span>; c &amp;= c - <span class="number">1</span>) &#123;</span><br><span class="line">            ++cnt;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//直到异或之后不同的数通过num &amp; num-1变为0</span></span><br><span class="line">        <span class="keyword">return</span> cnt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>额 写的稀烂 将就看 只为一个记录</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-26T09:59:30.000Z"><a href="/2015/08/26/password/">2015-08-26</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/26/password/">巧看密码</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="又学了一招！">又学了一招！</h2><p>在很多情况下，你用别人电脑，或者自己把密码给记住了。但是你想不起来是什么了，挺着急的<br>哈哈哈哈哈 在这种情况下就有种简单的技巧可以用了<br>比如在V2EX上的登录框是这样的<br><code>&lt;input type=&quot;password&quot; class=&quot;sl&quot; name=&quot;p&quot; value=&quot;&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocapitalize=&quot;off&quot;&gt;</code><br>我就可以这样弄<br><code>&lt;input type=&quot;&quot; class=&quot;sl&quot; name=&quot;p&quot; value=&quot;&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocapitalize=&quot;off&quot;&gt;</code><br>然后你就会发现密码神奇的出来了 就是这么简单</p>
 
       
     </div>
@@ -257,11 +294,11 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-08-05T19:25:43.000Z"><a href="/2015/08/06/hello-world/">2015-08-06</a></time>
+        <time datetime="2015-08-07T16:12:55.470Z"><a href="/2015/08/08/hello-world/">2015-08-08</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/08/06/hello-world/">Hello World</a></h1>
+    <h1 class="title"><a href="/2015/08/08/hello-world/">Hello World</a></h1>
   
 
     </header>
@@ -313,13 +350,21 @@
   <h3 class="title">Tags</h3>
   <ul class="entry">
   
+    <li><a href="/tags/C/">C++</a><small>1</small></li>
+  
     <li><a href="/tags/apache/">apache</a><small>1</small></li>
+  
+    <li><a href="/tags/hack/">hack</a><small>1</small></li>
   
     <li><a href="/tags/markdown/">markdown</a><small>1</small></li>
   
     <li><a href="/tags/php/">php</a><small>1</small></li>
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/web/">web</a><small>1</small></li>
+  
+    <li><a href="/tags/算法/">算法</a><small>1</small></li>
   
   </ul>
 </div>
