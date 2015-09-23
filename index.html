@@ -49,6 +49,43 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2015-09-23T00:46:09.000Z"><a href="/2015/09/23/Never/">2015-09-23</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/09/23/Never/">Never开发日志1</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="就我而言，Never是我现阶段最想开发的一款游戏，不成熟的心智，夹杂着我愧疚的情感，我一定要把它做好，争取上STEAM。">就我而言，Never是我现阶段最想开发的一款游戏，不成熟的心智，夹杂着我愧疚的情感，我一定要把它做好，争取上STEAM。</h2><p>大概是这样：一些开发相关的事情就在这里记录一下<br>对于<code>2d platform game</code>以前我一直想要<code>braid</code>的一种跳跃时无阻隔 到达平台的高度时就可以停住的效果 这里可以用<code>Edge collider2D</code>来实现<br>使用这种地形<code>unity</code>会有一种特殊的算法来处理 我猜想是这样吧 以后研究下</p>
+<p>再就是我写的两种空间穿梭结点算法：一种是结点需要你重新拾起才能重新定位到新的位置 再进行穿梭 一种是 你下到新的位置时 最开始的那个结点就会消失了，然后新的结点就会取代之 然后空间穿梭吧。<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#9;void Update () &#123;&#10;&#9;    scankey();&#10;        if (Input.GetKeyDown(KeyCode.J)&#38;&#38;count&#60;2)&#10;        &#123;&#10;            if (count == 0)&#10;            &#123;&#10;                TimeMiki.gameObject.SetActive(true);&#10;                //GameObject t0 = Instantiate(TimeMiki, transform.position, transform.rotation) as GameObject;&#10;                TimeMiki.position = transform.position;&#10;                pos1 = transform.position;&#10;                //Debug.Log(pos1);&#10;            &#125;&#10;            if (count == 1)&#10;            &#123;&#10;                TimeMiki1.gameObject.SetActive(true);&#10;                TimeMiki1.position = transform.position;&#10;                //Destroy(transform.Find(&#34;t1&#34;).gameObject);&#10;                //GameObject t1 = Instantiate(TimeMiki1, transform.position, transform.rotation) as GameObject;&#10;                pos2 = transform.position;&#10;            &#125;&#10;            count++;&#10;            if (count == 2)&#10;            &#123;&#10;                count = 0;&#10;            &#125;&#10;        &#125;&#10;&#10;        if (Input.GetKeyDown(KeyCode.K)&#38;&#38; enter)&#10;        &#123;&#10;            transform.position = pos2;&#10;            enter = false;&#10;        &#125;&#10;        if (Input.GetKeyDown(KeyCode.K) &#38;&#38; enter1)&#10;        &#123;&#10;            transform.position = pos1;&#10;            enter1 = false;&#10;        &#125;&#10;&#9;&#125;&#10;&#10;    void scankey() &#123;...&#125;&#10;    void OnTriggerStay2D(Collider2D col) &#123;...&#125;&#10;    void OnTriggerExit2D(Collider2D col) &#123;...&#125;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void Update()&#10;&#123;&#10;    scankey();&#10;    if (Input.GetKeyDown(KeyCode.J) &#38;&#38; status &#60; 3)&#10;    &#123;&#10;        if (status == 0)&#10;        &#123;&#10;            TimeMiki.gameObject.SetActive(true);&#10;            TimeMiki.position = transform.position;&#10;            pos1 = transform.position;&#10;            status = 2;&#10;            return;&#10;        &#125;&#10;        if (status == 1)&#10;        &#123;&#10;            TimeMiki.gameObject.SetActive(true);&#10;            TimeMiki.position = transform.position;&#10;            pos1 = transform.position;&#10;            status = 3;&#10;        &#125;&#10;        if (status == 2)&#10;        &#123;&#10;            Debug.Log(&#34;111&#34;);&#10;            TimeMiki1.gameObject.SetActive(true);&#10;            TimeMiki1.position = transform.position;&#10;            pos2 = transform.position;&#10;            status = 3;&#10;        &#125;&#10;        if (status == 3)&#10;        &#123;&#10;            return;&#10;        &#125;&#10;        Debug.Log(status);&#10;    &#125;&#10;&#10;    if (Input.GetKeyDown(KeyCode.J) &#38;&#38; enter)&#10;    &#123;&#10;        TimeMiki.gameObject.SetActive(false);&#10;        enter = false;&#10;        status = 1;&#10;    &#125;&#10;    if (Input.GetKeyDown(KeyCode.J) &#38;&#38; enter1)&#10;    &#123;&#10;        TimeMiki1.gameObject.SetActive(false);&#10;        enter1 = false;&#10;        status = 2;&#10;    &#125;&#10;&#10;    if (Input.GetKeyDown(KeyCode.K) &#38;&#38; enter)&#10;    &#123;&#10;        transform.position = pos2;&#10;        enter = false;&#10;    &#125;&#10;    if (Input.GetKeyDown(KeyCode.K) &#38;&#38; enter1)&#10;    &#123;&#10;        transform.position = pos1;&#10;        enter1 = false;&#10;    &#125;&#10;&#125;&#10;void scankey() &#123;...&#125;&#10;void OnTriggerStay2D(Collider2D col) &#123;...&#125;&#10;void OnTriggerExit2D(Collider2D col) &#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>我只贴了些核心代码，然后其实我觉得写的也不怎么样 先能用再说吧 后续会改进的</p>
+<p>本回就写点技术上的东西吧，下回再谈游戏本体内容。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2015-09-14T14:11:46.000Z"><a href="/2015/09/14/suanfa/">2015-09-14</a></time>
       
       
@@ -352,6 +389,8 @@
   
     <li><a href="/tags/C/">C++</a><small>1</small></li>
   
+    <li><a href="/tags/GameDesign/">GameDesign</a><small>1</small></li>
+  
     <li><a href="/tags/apache/">apache</a><small>1</small></li>
   
     <li><a href="/tags/hack/">hack</a><small>1</small></li>
@@ -359,6 +398,8 @@
     <li><a href="/tags/markdown/">markdown</a><small>1</small></li>
   
     <li><a href="/tags/php/">php</a><small>1</small></li>
+  
+    <li><a href="/tags/unity3d/">unity3d</a><small>1</small></li>
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
   
