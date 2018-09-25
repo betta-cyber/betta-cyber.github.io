@@ -1,0 +1,746 @@
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<title>PhpSpy Ver 1.5</title>
+<style type="text/css">
+.maintable {
+	background-color: "#FFFFFF";
+	border: "1px solid #115173";
+}
+body,td {
+	font-family: "sans-serif";
+	font-size: "12px";
+	line-height: "150%";
+}
+.INPUT {
+	FONT-SIZE: "12px";
+	COLOR: "#000000";
+	BACKGROUND-COLOR: "#FFFFFF";
+	height: "18px";
+	border: "1px solid #666666";
+}
+a:link,
+a:visited,
+a:active{
+	color: "#000000";
+	text-decoration: underline;
+}
+a:hover{
+	color: "#465584";
+	text-decoration: none;
+}
+.firstalt	{BACKGROUND-COLOR: "#EFEFEF"}
+.secondalt	{BACKGROUND-COLOR: "#F5F5F5"}
+</style>
+</head>
+
+<body style="table-layout:fixed; word-break:break-all">
+<center>
+<p><strong><a href="?action=logout">注销会话</a> | <a href="?action=dir">返回根目录</a> | <a href="?action=phpenv">PHP环境变量</a> | <a href="?action=phpinfo">PHPINFO</a> | <a href="?action=shell">WebShell模式</a> | <a href="?action=sql">SQL查询</a> | <a href="http://www.4ngel.net" target="_blank" title="下载此程序">Version 1.5</a></strong></p>
+<table width="760" border="0" cellpadding="0">
+ <form action="" method="GET">
+  <tr>  	
+  	<td><p>程序路径:C:/xampp/htdocs/py/webshell<br>当前目录(可写,0777):C:/xampp/htdocs/py/webshell        <br>跳转目录:
+        <input name="dir" type="text" class="INPUT">
+        <input type="submit" class="INPUT" value="确定"> 〖支持绝对路径和相对路径〗
+    </p></td>
+  </tr>
+ </form>
+ <form action="?dir=." method="POST" enctype="multipart/form-data">
+  <tr>
+    <td colspan="2">上传文件到当前目录:
+      <input name="uploadmyfile" type="file" class="INPUT">	<input type="submit" class="INPUT" value="确定">
+      <input name="action" type="hidden" value="uploadfile"><input type="hidden" name="uploaddir" value="."></td>
+  </tr>
+  </form>
+  <form action="?action=editfile&dir=." method="POST">
+  <tr>
+    <td colspan="2">新建文件在当前目录:
+        <input name="newfile" type="text" class="INPUT" value="">
+        <input type="submit" class="INPUT" value="确定">
+        <input name="action" type="hidden" value="createfile"></td>
+  </tr>
+  </form>
+  <form action="" method="POST">
+  <tr>
+    <td colspan="2">新建目录在当前目录:
+        <input name="newdirectory" type="text" class="INPUT" value="">
+        <input type="submit" class="INPUT" value="确定">
+        <input name="action" type="hidden" value="createdirectory"></td>
+  </tr>
+  </form>
+</table>
+<hr width="760" noshade>
+<p><b>
+本程序由 Security Angel 安全组织 angel[BST] 独立开发,可在 <a href="http://www.4ngel.net" target="_blank">http://www.4ngel.net</a> 下载最新版本.</b></p>
+<table width="760" border="0" cellpadding="3" cellspacing="1" bgcolor="#ffffff">
+  <tr bgcolor="#cccccc">
+    <td align="center" nowrap width="40%"><b>文件</b></td>
+    <td align="center" nowrap width="20%"><b>修改日期</b></td>
+    <td align="center" nowrap width="12%"><b>大小</b></td>
+    <td align="center" nowrap width="8%"><b>属性</b></td>
+    <td align="center" nowrap width="20%"><b>操作</b></td>
+  </tr>
+<tr class=firstalt>
+  <td nowrap colspan="5" style="padding-left: 5px;"><a href="?dir=./..">返回上级目录</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./a"><font color="#006699">a</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-4-17 09:53:51</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=a">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=a">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./aaa"><font color="#006699">aaa</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-6-21 09:04:44</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=aaa">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=aaa">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./b374k"><font color="#006699">b374k</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-6-04 08:19:09</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=b374k">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=b374k">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./bb"><font color="#006699">bb</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-6-20 11:34:47</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=bb">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=bb">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./bbb"><font color="#006699">bbb</font></a>]</td>
+  <td align="center" nowrap valign="top">2017-12-18 07:20:26</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=bbb">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=bbb">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./ddd"><font color="#006699">ddd</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-4-19 11:30:04</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=ddd">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=ddd">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./fuzz"><font color="#006699">fuzz</font></a>]</td>
+  <td align="center" nowrap valign="top">2017-12-18 07:20:26</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=fuzz">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=fuzz">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./quasibot-master"><font color="#006699">quasibot-master</font></a>]</td>
+  <td align="center" nowrap valign="top">2017-12-18 07:20:26</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=quasibot-master">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=quasibot-master">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./rrr"><font color="#006699">rrr</font></a>]</td>
+  <td align="center" nowrap valign="top">2018-6-21 12:31:16</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=rrr">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=rrr">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;">[<a href="?dir=./wafpass"><font color="#006699">wafpass</font></a>]</td>
+  <td align="center" nowrap valign="top">2017-12-18 07:20:24</td>
+  <td align="center" nowrap valign="top">&lt;dir&gt;</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wafpass">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?action=deldir&dir=.&deldir=wafpass">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./12309.php" target="_blank">12309.php</a></td>
+  <td align="center" nowrap valign="top">2018-5-07 04:57:50</td>
+  <td align="center" nowrap valign="top">100.234 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=12309.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./12309.php">下载</a> | <a href="?action=editfile&dir=.&editfile=12309.php">编辑</a> | <a href="?dir=.&delfile=./12309.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./12345" target="_blank">12345</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.000 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=12345">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./12345">下载</a> | <a href="?action=editfile&dir=.&editfile=12345">编辑</a> | <a href="?dir=.&delfile=./12345">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./2008.php" target="_blank">2008.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">65.413 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=2008.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./2008.php">下载</a> | <a href="?action=editfile&dir=.&editfile=2008.php">编辑</a> | <a href="?dir=.&delfile=./2008.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./2009lite.php" target="_blank">2009lite.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">36.938 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=2009lite.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./2009lite.php">下载</a> | <a href="?action=editfile&dir=.&editfile=2009lite.php">编辑</a> | <a href="?dir=.&delfile=./2009lite.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./2009mssql.php" target="_blank">2009mssql.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">91.965 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=2009mssql.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./2009mssql.php">下载</a> | <a href="?action=editfile&dir=.&editfile=2009mssql.php">编辑</a> | <a href="?dir=.&delfile=./2009mssql.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./2014phpspy.php" target="_blank">2014phpspy.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">23.192 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=2014phpspy.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./2014phpspy.php">下载</a> | <a href="?action=editfile&dir=.&editfile=2014phpspy.php">编辑</a> | <a href="?dir=.&delfile=./2014phpspy.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./222" target="_blank">222</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.003 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=222">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./222">下载</a> | <a href="?action=editfile&dir=.&editfile=222">编辑</a> | <a href="?dir=.&delfile=./222">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./2222" target="_blank">2222</a></td>
+  <td align="center" nowrap valign="top">2018-6-21 08:50:00</td>
+  <td align="center" nowrap valign="top">0.006 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=2222">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./2222">下载</a> | <a href="?action=editfile&dir=.&editfile=2222">编辑</a> | <a href="?dir=.&delfile=./2222">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./404super.php" target="_blank">404super.php</a></td>
+  <td align="center" nowrap valign="top">2018-5-04 12:52:40</td>
+  <td align="center" nowrap valign="top">1.024 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=404super.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./404super.php">下载</a> | <a href="?action=editfile&dir=.&editfile=404super.php">编辑</a> | <a href="?dir=.&delfile=./404super.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./512.php" target="_blank">512.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.026 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=512.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./512.php">下载</a> | <a href="?action=editfile&dir=.&editfile=512.php">编辑</a> | <a href="?dir=.&delfile=./512.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./aa" target="_blank">aa</a></td>
+  <td align="center" nowrap valign="top">2018-5-07 10:17:47</td>
+  <td align="center" nowrap valign="top">2,487.680 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=aa">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./aa">下载</a> | <a href="?action=editfile&dir=.&editfile=aa">编辑</a> | <a href="?dir=.&delfile=./aa">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./Ajax_PHP Command Shell.php" target="_blank">Ajax_PHP Command Shell.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 09:42:21</td>
+  <td align="center" nowrap valign="top">17.125 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=Ajax_PHP+Command+Shell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./Ajax_PHP+Command+Shell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=Ajax_PHP+Command+Shell.php">编辑</a> | <a href="?dir=.&delfile=./Ajax_PHP+Command+Shell.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./Ajax_PHP Command Shell.php.zip" target="_blank">Ajax_PHP Command Shell.php.zip</a></td>
+  <td align="center" nowrap valign="top">2018-5-04 09:51:28</td>
+  <td align="center" nowrap valign="top">5.537 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=Ajax_PHP+Command+Shell.php.zip">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./Ajax_PHP+Command+Shell.php.zip">下载</a> | <a href="?action=editfile&dir=.&editfile=Ajax_PHP+Command+Shell.php.zip">编辑</a> | <a href="?dir=.&delfile=./Ajax_PHP+Command+Shell.php.zip">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./Ani-Shell.php" target="_blank">Ani-Shell.php</a></td>
+  <td align="center" nowrap valign="top">2018-5-04 09:32:21</td>
+  <td align="center" nowrap valign="top">84.977 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=Ani-Shell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./Ani-Shell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=Ani-Shell.php">编辑</a> | <a href="?dir=.&delfile=./Ani-Shell.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./b374k-2.2.min.php" target="_blank">b374k-2.2.min.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">30.486 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=b374k-2.2.min.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./b374k-2.2.min.php">下载</a> | <a href="?action=editfile&dir=.&editfile=b374k-2.2.min.php">编辑</a> | <a href="?dir=.&delfile=./b374k-2.2.min.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./b374k-3.2.3.php" target="_blank">b374k-3.2.3.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 05:01:31</td>
+  <td align="center" nowrap valign="top">218.729 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=b374k-3.2.3.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./b374k-3.2.3.php">下载</a> | <a href="?action=editfile&dir=.&editfile=b374k-3.2.3.php">编辑</a> | <a href="?dir=.&delfile=./b374k-3.2.3.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./c99.php" target="_blank">c99.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">147.026 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99.php">编辑</a> | <a href="?dir=.&delfile=./c99.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./c99shell.php" target="_blank">c99shell.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 10:19:44</td>
+  <td align="center" nowrap valign="top">137.953 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99shell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99shell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99shell.php">编辑</a> | <a href="?dir=.&delfile=./c99shell.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./c99v2.php" target="_blank">c99v2.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">147.026 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99v2.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99v2.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99v2.php">编辑</a> | <a href="?dir=.&delfile=./c99v2.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./c99_locus7s.php" target="_blank">c99_locus7s.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 10:26:09</td>
+  <td align="center" nowrap valign="top">223.733 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99_locus7s.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99_locus7s.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99_locus7s.php">编辑</a> | <a href="?dir=.&delfile=./c99_locus7s.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./c99_new.php" target="_blank">c99_new.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 10:25:30</td>
+  <td align="center" nowrap valign="top">156.911 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99_new.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99_new.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99_new.php">编辑</a> | <a href="?dir=.&delfile=./c99_new.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./c99_PSych0.php" target="_blank">c99_PSych0.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 10:26:17</td>
+  <td align="center" nowrap valign="top">160.268 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99_PSych0.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99_PSych0.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99_PSych0.php">编辑</a> | <a href="?dir=.&delfile=./c99_PSych0.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./c99_w4cking.php" target="_blank">c99_w4cking.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 10:26:26</td>
+  <td align="center" nowrap valign="top">139.709 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=c99_w4cking.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./c99_w4cking.php">下载</a> | <a href="?action=editfile&dir=.&editfile=c99_w4cking.php">编辑</a> | <a href="?dir=.&delfile=./c99_w4cking.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./caidao.php" target="_blank">caidao.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-28 09:13:03</td>
+  <td align="center" nowrap valign="top">0.031 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=caidao.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./caidao.php">下载</a> | <a href="?action=editfile&dir=.&editfile=caidao.php">编辑</a> | <a href="?dir=.&delfile=./caidao.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./EgY_SpIdEr ShElL V2.php" target="_blank">EgY_SpIdEr ShElL V2.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 12:18:29</td>
+  <td align="center" nowrap valign="top">304.307 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=EgY_SpIdEr+ShElL+V2.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./EgY_SpIdEr+ShElL+V2.php">下载</a> | <a href="?action=editfile&dir=.&editfile=EgY_SpIdEr+ShElL+V2.php">编辑</a> | <a href="?dir=.&delfile=./EgY_SpIdEr+ShElL+V2.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./EVCapture.exe" target="_blank">EVCapture.exe</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 11:32:11</td>
+  <td align="center" nowrap valign="top">91.930 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=EVCapture.exe">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./EVCapture.exe">下载</a> | <a href="?action=editfile&dir=.&editfile=EVCapture.exe">编辑</a> | <a href="?dir=.&delfile=./EVCapture.exe">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./faks.php" target="_blank">faks.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">92.467 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=faks.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./faks.php">下载</a> | <a href="?action=editfile&dir=.&editfile=faks.php">编辑</a> | <a href="?dir=.&delfile=./faks.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./fraps.exe" target="_blank">fraps.exe</a></td>
+  <td align="center" nowrap valign="top">2018-6-20 11:27:57</td>
+  <td align="center" nowrap valign="top">2,487.680 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=fraps.exe">0777</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./fraps.exe">下载</a> | <a href="?action=editfile&dir=.&editfile=fraps.exe">编辑</a> | <a href="?dir=.&delfile=./fraps.exe">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./gg.txt" target="_blank">gg.txt</a></td>
+  <td align="center" nowrap valign="top">2018-6-05 16:21:20</td>
+  <td align="center" nowrap valign="top">0.000 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=gg.txt">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./gg.txt">下载</a> | <a href="?action=editfile&dir=.&editfile=gg.txt">编辑</a> | <a href="?dir=.&delfile=./gg.txt">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./help.html" target="_blank">help.html</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.496 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=help.html">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./help.html">下载</a> | <a href="?action=editfile&dir=.&editfile=help.html">编辑</a> | <a href="?dir=.&delfile=./help.html">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./hnuszzx.txt" target="_blank">hnuszzx.txt</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.062 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=hnuszzx.txt">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./hnuszzx.txt">下载</a> | <a href="?action=editfile&dir=.&editfile=hnuszzx.txt">编辑</a> | <a href="?dir=.&delfile=./hnuszzx.txt">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./iMHaPFtp.php" target="_blank">iMHaPFtp.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 13:48:36</td>
+  <td align="center" nowrap valign="top">52.480 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=iMHaPFtp.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./iMHaPFtp.php">下载</a> | <a href="?action=editfile&dir=.&editfile=iMHaPFtp.php">编辑</a> | <a href="?dir=.&delfile=./iMHaPFtp.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./ironshell.php" target="_blank">ironshell.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 13:38:08</td>
+  <td align="center" nowrap valign="top">17.939 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=ironshell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./ironshell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=ironshell.php">编辑</a> | <a href="?dir=.&delfile=./ironshell.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./jquery.min2u6.php" target="_blank">jquery.min2u6.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">86.103 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=jquery.min2u6.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./jquery.min2u6.php">下载</a> | <a href="?action=editfile&dir=.&editfile=jquery.min2u6.php">编辑</a> | <a href="?dir=.&delfile=./jquery.min2u6.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./Mysql interface v1.0.php" target="_blank">Mysql interface v1.0.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 13:49:54</td>
+  <td align="center" nowrap valign="top">33.004 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=Mysql+interface+v1.0.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./Mysql+interface+v1.0.php">下载</a> | <a href="?action=editfile&dir=.&editfile=Mysql+interface+v1.0.php">编辑</a> | <a href="?dir=.&delfile=./Mysql+interface+v1.0.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./NetworkFileManagerPHP.php" target="_blank">NetworkFileManagerPHP.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 13:58:25</td>
+  <td align="center" nowrap valign="top">119.385 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=NetworkFileManagerPHP.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./NetworkFileManagerPHP.php">下载</a> | <a href="?action=editfile&dir=.&editfile=NetworkFileManagerPHP.php">编辑</a> | <a href="?dir=.&delfile=./NetworkFileManagerPHP.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./NIX REMOTE WEB-SHELL.php" target="_blank">NIX REMOTE WEB-SHELL.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 13:59:31</td>
+  <td align="center" nowrap valign="top">52.026 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=NIX+REMOTE+WEB-SHELL.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./NIX+REMOTE+WEB-SHELL.php">下载</a> | <a href="?action=editfile&dir=.&editfile=NIX+REMOTE+WEB-SHELL.php">编辑</a> | <a href="?dir=.&delfile=./NIX+REMOTE+WEB-SHELL.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./noname.php" target="_blank">noname.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">25.480 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=noname.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./noname.php">下载</a> | <a href="?action=editfile&dir=.&editfile=noname.php">编辑</a> | <a href="?dir=.&delfile=./noname.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./nstview.php" target="_blank">nstview.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-11 14:49:49</td>
+  <td align="center" nowrap valign="top">79.257 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=nstview.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./nstview.php">下载</a> | <a href="?action=editfile&dir=.&editfile=nstview.php">编辑</a> | <a href="?dir=.&delfile=./nstview.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./pas.php" target="_blank">pas.php</a></td>
+  <td align="center" nowrap valign="top">2018-5-04 13:04:14</td>
+  <td align="center" nowrap valign="top">20.516 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=pas.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./pas.php">下载</a> | <a href="?action=editfile&dir=.&editfile=pas.php">编辑</a> | <a href="?dir=.&delfile=./pas.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./phpspy2008.php" target="_blank">phpspy2008.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">67.094 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy2008.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy2008.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy2008.php">编辑</a> | <a href="?dir=.&delfile=./phpspy2008.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./phpspy2010.php" target="_blank">phpspy2010.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">33.901 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy2010.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy2010.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy2010.php">编辑</a> | <a href="?dir=.&delfile=./phpspy2010.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./phpspy2013.php" target="_blank">phpspy2013.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">56.739 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy2013.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy2013.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy2013.php">编辑</a> | <a href="?dir=.&delfile=./phpspy2013.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./phpspy2013_1.php" target="_blank">phpspy2013_1.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">22.780 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy2013_1.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy2013_1.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy2013_1.php">编辑</a> | <a href="?dir=.&delfile=./phpspy2013_1.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./phpspy2013_2.php" target="_blank">phpspy2013_2.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">55.373 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy2013_2.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy2013_2.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy2013_2.php">编辑</a> | <a href="?dir=.&delfile=./phpspy2013_2.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./phpspy_2005_full.php" target="_blank">phpspy_2005_full.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">37.971 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy_2005_full.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy_2005_full.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy_2005_full.php">编辑</a> | <a href="?dir=.&delfile=./phpspy_2005_full.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./phpspy_2005_lite.php" target="_blank">phpspy_2005_lite.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">20.069 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy_2005_lite.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy_2005_lite.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy_2005_lite.php">编辑</a> | <a href="?dir=.&delfile=./phpspy_2005_lite.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./phpspy_2006.php" target="_blank">phpspy_2006.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:23:08</td>
+  <td align="center" nowrap valign="top">45.756 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=phpspy_2006.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./phpspy_2006.php">下载</a> | <a href="?action=editfile&dir=.&editfile=phpspy_2006.php">编辑</a> | <a href="?dir=.&delfile=./phpspy_2006.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./PHPSPY_v1.5.php" target="_blank">PHPSPY_v1.5.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-20 11:14:48</td>
+  <td align="center" nowrap valign="top">27.370 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=PHPSPY_v1.5.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./PHPSPY_v1.5.php">下载</a> | <a href="?action=editfile&dir=.&editfile=PHPSPY_v1.5.php">编辑</a> | <a href="?dir=.&delfile=./PHPSPY_v1.5.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./r00t.pl" target="_blank">r00t.pl</a></td>
+  <td align="center" nowrap valign="top">2018-5-04 10:08:37</td>
+  <td align="center" nowrap valign="top">15.125 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r00t.pl">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r00t.pl">下载</a> | <a href="?action=editfile&dir=.&editfile=r00t.pl">编辑</a> | <a href="?dir=.&delfile=./r00t.pl">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./r00ts php.php" target="_blank">r00ts php.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-12 04:43:37</td>
+  <td align="center" nowrap valign="top">147.926 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r00ts+php.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r00ts+php.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r00ts+php.php">编辑</a> | <a href="?dir=.&delfile=./r00ts+php.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./r57.php" target="_blank">r57.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:43:18</td>
+  <td align="center" nowrap valign="top">105.779 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57.php">编辑</a> | <a href="?dir=.&delfile=./r57.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./r57shell.php" target="_blank">r57shell.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:43:37</td>
+  <td align="center" nowrap valign="top">99.091 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57shell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57shell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57shell.php">编辑</a> | <a href="?dir=.&delfile=./r57shell.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./r57shell127.php" target="_blank">r57shell127.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:43:44</td>
+  <td align="center" nowrap valign="top">105.592 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57shell127.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57shell127.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57shell127.php">编辑</a> | <a href="?dir=.&delfile=./r57shell127.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./r57shell_v1.40.php" target="_blank">r57shell_v1.40.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">155.833 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57shell_v1.40.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57shell_v1.40.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57shell_v1.40.php">编辑</a> | <a href="?dir=.&delfile=./r57shell_v1.40.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./r57_iFX.php" target="_blank">r57_iFX.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:43:53</td>
+  <td align="center" nowrap valign="top">85.685 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57_iFX.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57_iFX.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57_iFX.php">编辑</a> | <a href="?dir=.&delfile=./r57_iFX.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./r57_kartal.php" target="_blank">r57_kartal.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:44:00</td>
+  <td align="center" nowrap valign="top">96.224 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57_kartal.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57_kartal.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57_kartal.php">编辑</a> | <a href="?dir=.&delfile=./r57_kartal.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./r57_Mohajer22.php" target="_blank">r57_Mohajer22.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:44:06</td>
+  <td align="center" nowrap valign="top">111.639 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=r57_Mohajer22.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./r57_Mohajer22.php">下载</a> | <a href="?action=editfile&dir=.&editfile=r57_Mohajer22.php">编辑</a> | <a href="?dir=.&delfile=./r57_Mohajer22.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./s.php" target="_blank">s.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">15.229 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=s.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./s.php">下载</a> | <a href="?action=editfile&dir=.&editfile=s.php">编辑</a> | <a href="?dir=.&delfile=./s.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./SaiProbe_v1.0.php" target="_blank">SaiProbe_v1.0.php</a></td>
+  <td align="center" nowrap valign="top">2018-6-08 09:04:17</td>
+  <td align="center" nowrap valign="top">11.283 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=SaiProbe_v1.0.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./SaiProbe_v1.0.php">下载</a> | <a href="?action=editfile&dir=.&editfile=SaiProbe_v1.0.php">编辑</a> | <a href="?dir=.&delfile=./SaiProbe_v1.0.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./server(1).crt" target="_blank">server(1).crt</a></td>
+  <td align="center" nowrap valign="top">2018-6-21 08:53:52</td>
+  <td align="center" nowrap valign="top">2.182 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=server%281%29.crt">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./server%281%29.crt">下载</a> | <a href="?action=editfile&dir=.&editfile=server%281%29.crt">编辑</a> | <a href="?dir=.&delfile=./server%281%29.crt">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./shell.php" target="_blank">shell.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.033 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=shell.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./shell.php">下载</a> | <a href="?action=editfile&dir=.&editfile=shell.php">编辑</a> | <a href="?dir=.&delfile=./shell.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./shuaka.docx" target="_blank">shuaka.docx</a></td>
+  <td align="center" nowrap valign="top">2018-6-21 08:54:12</td>
+  <td align="center" nowrap valign="top">205.033 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=shuaka.docx">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./shuaka.docx">下载</a> | <a href="?action=editfile&dir=.&editfile=shuaka.docx">编辑</a> | <a href="?dir=.&delfile=./shuaka.docx">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./smowu.php" target="_blank">smowu.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-17 11:30:40</td>
+  <td align="center" nowrap valign="top">58.901 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=smowu.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./smowu.php">下载</a> | <a href="?action=editfile&dir=.&editfile=smowu.php">编辑</a> | <a href="?dir=.&delfile=./smowu.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./spy.php" target="_blank">spy.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 10:01:32</td>
+  <td align="center" nowrap valign="top">72.920 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=spy.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./spy.php">下载</a> | <a href="?action=editfile&dir=.&editfile=spy.php">编辑</a> | <a href="?dir=.&delfile=./spy.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./t.php" target="_blank">t.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">0.026 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=t.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./t.php">下载</a> | <a href="?action=editfile&dir=.&editfile=t.php">编辑</a> | <a href="?dir=.&delfile=./t.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wafpass.rar" target="_blank">wafpass.rar</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">170.302 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wafpass.rar">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wafpass.rar">下载</a> | <a href="?action=editfile&dir=.&editfile=wafpass.rar">编辑</a> | <a href="?dir=.&delfile=./wafpass.rar">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.1.3.php" target="_blank">wso-4.1.3.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">75.758 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.1.3.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.1.3.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.1.3.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.1.3.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.2.0.php" target="_blank">wso-4.2.0.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">86.534 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.2.0.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.2.0.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.2.0.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.2.0.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.2.1.php" target="_blank">wso-4.2.1.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">75.718 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.2.1.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.2.1.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.2.1.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.2.1.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.2.2.php" target="_blank">wso-4.2.2.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">75.707 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.2.2.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.2.2.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.2.2.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.2.2.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.2.3.php" target="_blank">wso-4.2.3.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">76.265 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.2.3.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.2.3.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.2.3.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.2.3.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso-4.2.5.php" target="_blank">wso-4.2.5.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">77.884 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso-4.2.5.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso-4.2.5.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso-4.2.5.php">编辑</a> | <a href="?dir=.&delfile=./wso-4.2.5.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso.php" target="_blank">wso.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-19 05:41:12</td>
+  <td align="center" nowrap valign="top">61.579 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso.php">编辑</a> | <a href="?dir=.&delfile=./wso.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso1.php" target="_blank">wso1.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">64.592 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso1.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso1.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso1.php">编辑</a> | <a href="?dir=.&delfile=./wso1.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso2.php" target="_blank">wso2.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">64.564 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso2.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso2.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso2.php">编辑</a> | <a href="?dir=.&delfile=./wso2.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso2_new.php" target="_blank">wso2_new.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">64.559 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso2_new.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso2_new.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso2_new.php">编辑</a> | <a href="?dir=.&delfile=./wso2_new.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso2_pack.php" target="_blank">wso2_pack.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">24.173 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso2_pack.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso2_pack.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso2_pack.php">编辑</a> | <a href="?dir=.&delfile=./wso2_pack.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./wso_404.php" target="_blank">wso_404.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">105.045 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso_404.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso_404.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso_404.php">编辑</a> | <a href="?dir=.&delfile=./wso_404.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./WSO_4_0_5.php" target="_blank">WSO_4_0_5.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">67.725 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=WSO_4_0_5.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./WSO_4_0_5.php">下载</a> | <a href="?action=editfile&dir=.&editfile=WSO_4_0_5.php">编辑</a> | <a href="?dir=.&delfile=./WSO_4_0_5.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td style="padding-left: 5px;"><a href="./WSO_base64.php" target="_blank">WSO_base64.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-18 11:05:58</td>
+  <td align="center" nowrap valign="top">82.156 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=WSO_base64.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./WSO_base64.php">下载</a> | <a href="?action=editfile&dir=.&editfile=WSO_base64.php">编辑</a> | <a href="?dir=.&delfile=./WSO_base64.php">删除</a></td>
+</tr>
+<tr class=firstalt>
+  <td style="padding-left: 5px;"><a href="./wso_tmp.php" target="_blank">wso_tmp.php</a></td>
+  <td align="center" nowrap valign="top">2018-4-11 08:20:19</td>
+  <td align="center" nowrap valign="top">86.103 KB</td>
+  <td align="center" nowrap valign="top"><a href="?action=fileperm&dir=.&file=wso_tmp.php">0666</a></td>
+  <td align="center" nowrap valign="top"><a href="?downfile=./wso_tmp.php">下载</a> | <a href="?action=editfile&dir=.&editfile=wso_tmp.php">编辑</a> | <a href="?dir=.&delfile=./wso_tmp.php">删除</a></td>
+</tr>
+<tr class=secondalt>
+  <td nowrap colspan="5" align="right">12 个目录<br>82 个文件</td>
+</tr>
+</table>
+
+<hr width="760" noshade>
+<table width="760" border="0" cellpadding="0">
+  <tr>
+    <td>Copyright (C) 2004 Security Angel Team [S4T] All Rights Reserved.</td>
+    <td align="right">Processed in 0.000000 second(s)</td>
+  </tr>
+</table>
+</center>
+</body>
+</html>
