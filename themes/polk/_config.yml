@@ -1,0 +1,22 @@
+# Favicon
+favicon: /favicon.ico
+
+# SEO
+keywords: blog, game, betta
+
+# Site title separator
+separator: '-'
+
+# RSS
+rss: /atom.xml
+
+# SNS config
+sns:
+  Blog: /archives
+  GitHub: https://github.com/betta-cyber
+  Zhihu: https://www.zhihu.com/people/ShoKill
+
+# Nav menu
+menu:
+  Home: /
+  Archives: /archives
