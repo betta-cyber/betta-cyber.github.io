@@ -1,5 +1,6 @@
 ---
-title: shell programing and scripting
+title: Shell programing and scripting
+date: 2020-01-19 10:34:14
 ---
 something about shell trap
 
@@ -31,3 +32,5 @@ the command `kill -l` can list all the signal list. the signal list depends on y
 ```
 
 Just choose the number or name of singal you need trapped. 20 is for `ctrl+z`!!
+
+`trap "echo 'can not exit'" 1 2 3 4 5 6 7 8 9 20` can trap the 'control+z' key in shell.
