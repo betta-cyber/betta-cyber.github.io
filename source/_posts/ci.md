@@ -7,10 +7,10 @@ something about ci/cd
 ## 问题由来
 
 由于涉及到rust交叉编译的问题，本人不太想折腾。主要是在不想在windows上安装rust相关。手头现在有一台macOS设备和一台linux服务器，想交叉编译到win上，于是做了一点尝试。MinGW应该是比较靠谱的方案。本人在mac上通过
-`
+```
 brew install FiloSottile/musl-cross/musl-cross
 brew install mingw-w64
-`
+```
 进行安装，但是网速慢，编译慢，等待时间较长，于是在安装的过程中开始探寻其他途径。ci/cd是一个方案。docker看起来也不错。在一番尝试之后，看起来github action对于rust windows的文档不是很全。于是选择travis进行测试。docker鉴于国内网络环境相关除非万不得已不然不太想尝试。
 
 ## travis相关
@@ -79,7 +79,7 @@ jobs:
 
 这个例子就是一个action的ci例子。
 
-## Rust Windows-GNU 版本与MSYS2-MINGW-W64 整合集成 
+## Rust Windows-GNU 与 MinGW
 
 2月5号更新，鉴于travis生成的exe文件在win10上面不能成功运行，且trace看不出什么究竟，故而选择在macOS上面交叉编译，macOS上面由于rust官方toolchains的lib中crt2.o较老，会出现一些`undefined reference to '__imp___acrt_iob_func'`类似的报错，需要手动进行替换。
 在`~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/x86_64-pc-windows-gnu/lib`目录下，也就是你的rust版本的lib下，进行备份，然后将通过brew安装的mingw-w64下的lib crt2进行替换。
@@ -113,3 +113,5 @@ ar = "C:\\mingw64\\bin\\ar.exe"
 3.和macOS上面替换是一样的原理。
 
 现在就可以编译成功了。
+
+ps. windows上还是自己安装一个MinGW，配置好然后应用到cargo上，省事。
