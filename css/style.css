@@ -1,5 +1,10 @@
 body {
   margin: 0;
+  background-image: url("../img/bg.jpg");
+  background-size: cover;
+  min-height: 269px;
+  background-position: 50% 100%;
+  background-repeat: no-repeat no-repeat;
 }
 html,
 body,
@@ -39,7 +44,7 @@ a {
 }
 .home .info .sns a {
   width: 55px;
-  color: #999;
+  color: unset;
   display: inline-block;
 }
 .home .info .sns a:hover {
