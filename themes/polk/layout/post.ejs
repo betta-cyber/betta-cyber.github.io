@@ -22,6 +22,7 @@
 </article>
 <%- partial('_partial/footer') %>
 
+<script>
 const gitment = new Gitment({
   owner: 'betta-cyber',
   repo: 'betta-cyber.github.io',
@@ -32,3 +33,4 @@ const gitment = new Gitment({
 })
 
 gitment.render('comments')
+</script>
