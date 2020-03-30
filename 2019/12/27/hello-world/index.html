@@ -82,6 +82,17 @@
   </span>
 </footer>
 
+const gitment = new Gitment({
+  owner: 'betta-cyber',
+  repo: 'betta-cyber.github.io',
+  oauth: {
+    client_id: 'e32a2371d055a4a6872f',
+    client_secret: '8b5c050a8fffd9ed254c421080cf55d7ae55f266',
+  },
+})
+
+gitment.render('comments')
+
     </div>
   </body>
 </html>
