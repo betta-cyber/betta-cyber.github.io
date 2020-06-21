@@ -1,5 +1,5 @@
 ---
-title: DDIA读后感
+title: think different
 date: 2020-06-22 04:48:00
 ---
 
