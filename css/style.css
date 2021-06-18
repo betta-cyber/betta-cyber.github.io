@@ -226,6 +226,7 @@ a {
 }
 .post p {
   line-height: 1.5em;
+  text-indent: 2em;
 }
 .post .post-footer {
   line-height: 1;
