@@ -52,9 +52,6 @@
   <div class="post-title">
     <h1 class="article-title">OpenResty Note</h1>
   </div>
-   <div class="post-meta">
-    <span class="post-time">2020-12-12</span>
-  </div>
   <div class="post-content">
     <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><h2 id="lua-resty-core"><a href="#lua-resty-core" class="headerlink" title="lua-resty-core"></a>lua-resty-core</h2><p>在核心的 lua-nginx-module 中，调用 C 函数的 API，都是使用 Lua C API 来完成的；<br>而在 lua-resty-core 中，则是把 lua-nginx-module 已有的部分 API，使用 FFI 的模式重新实现了一遍。</p>
 <p>LuaJIT 只负责由自己分配的资源；而 ffi.C 是 C 库的命名空间，<br>所以，使用 ffi.C 分配的空间不由 LuaJIT 负责，需要你自己手动释放。`</p>

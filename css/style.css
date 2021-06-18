@@ -154,6 +154,9 @@ a {
   padding: 0 20px;
   margin-bottom: 1.5em;
 }
+.post .article-title {
+  padding-bottom: 10px;
+}
 .post img {
   max-width: 100%;
 }
@@ -186,6 +189,11 @@ a {
 .post .post-content ol li {
   padding: 5px;
   line-height: 1.5em;
+}
+.post .post-content p {
+  text-indent: 2em;
+  line-height: calc(1ex / 0.32);
+  font-family: "Times New Roman", Times, serif;
 }
 .post figure {
   margin: 0;
@@ -226,7 +234,6 @@ a {
 }
 .post p {
   line-height: 1.5em;
-  text-indent: 2em;
 }
 .post .post-footer {
   line-height: 1;
