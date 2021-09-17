@@ -19,7 +19,7 @@ a {
 .home {
   display: table;
   width: 100%;
-  height: 100%;
+  height: 500px;
 }
 .home .info {
   display: table-cell;
@@ -313,10 +313,11 @@ a {
 }
 footer {
   margin: 0.5em 20px 0 20px;
-  border-top: 3px double #ccc;
+  border-top: 1px double #ccc;
   padding: 1em 0 1em 0;
   font-size: 80%;
   color: #888;
+  text-align: end;
 }
 footer .author {
   color: #000;
