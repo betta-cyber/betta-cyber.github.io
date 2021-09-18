@@ -2,7 +2,6 @@
 title: 快速傅里叶变换
 date: 2020-01-28 23:34:14
 ---
-something about shell trap
 
 ## 音频频谱分析
 

@@ -1,5 +1,5 @@
 ---
-title: rust交叉编译及ci/cd相关
+title: Rust 交叉编译及 CI/CD 相关
 date: 2020-02-04 01:13:14
 ---
 something about ci/cd
