@@ -57,7 +57,7 @@
     <h1 class="article-title">Nginx 模块开发相关</h1>
   </div>
   <div class="post-content">
-    <h2 id="问题由来"><a href="#问题由来" class="headerlink" title="问题由来"></a>问题由来</h2><p>第一次碰上 Nginx 模块相关问题的时候，我还是挺难受的。之前一般只写一些基于 Nginx 上面的 Lua 代码开发。没有涉及到相关的 Nginx C层面的比较深的经验，但是问题已经抛出来了，就不得不解决。这段时间我在 XIAOMI 做安全开发。其中负责的一个项目是邮件安全网关。简而言之就是对邮件相关的流量进行解析，并赋予相关的安全能力。</p>
+    <h2 id="问题由来"><a href="#问题由来" class="headerlink" title="问题由来"></a>问题由来</h2><p>第一次碰上 Nginx 模块相关问题的时候，我还是挺难受的。之前一般只写一些基于 Nginx 上面的 Lua 代码开发。没有涉及到相关的 Nginx C层面的比较深的经验，但是问题已经抛出来了，就不得不解决。这段时间我在 TENCENT 做安全开发。其中负责的一个项目是邮件安全网关。简而言之就是对邮件相关的流量进行解析，并赋予相关的安全能力。</p>
 <p>这个问题的根本来源是微软爆出的关于 exchange 邮件服务器的安全漏洞，利用已知的 Payload 可以获取到公司内部的员工信息。我们第一时间对问题进行关注，并成功提取出规则，编写 Lua 插件代码，对攻击请求进行过滤，与之同时我们发现了另外一个问题，那就是之前同事修改编译的让 Nginx 支持解析 ntlm 协议的模块存在串 session 问题。为了从根本上解决这个问题。我们有两个方案，一个是在 Lua 层面做 ntlm 协议的解析，另一个就是修复原来存在问题的代码。但是 Nginx 的代码比较复杂，Lua 层面的解密性能又不太高，还要能解决我们之前一直存在 keepalive 问题，我还是决定从 Nginx开始下手。</p>
 <p>这其中其实现有的 Nginx 当中其实已经支持了 ntlm 协议，具体可以见<a href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#ntlm" target="_blank" rel="noopener">官方文档</a>，不过不幸的是，该模块是闭源的。只有使用 Nginx plus 版才享有此功能。</p>
 <p>然后还有一个基于 Lua 的<a href="https://github.com/gosp/lua-resty-ntlm" target="_blank" rel="noopener">实现</a>，我没有仔细看他的代码。也看到了我原来同事使用的<a href="http://www.hackdig.com/06/hack-376193.htm" target="_blank" rel="noopener">实现原理</a>。最后我的同事给我看了一个github上面的开源仓库<a href="https://github.com/gabihodoroaga/nginx-ntlm-module" target="_blank" rel="noopener">nginx-ntlm-module</a>。让我用这个试试，当时他感觉应该是这个是作者最近开源出来的。比较靠谱，让我试一下。</p>
