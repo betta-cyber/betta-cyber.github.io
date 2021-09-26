@@ -135,7 +135,8 @@ a {
 .header .menu {
   margin: 0;
   padding: 0;
-  border-top: 1px solid #ccc;
+  height: 1px;
+/* border-top: 1px solid #ccc; */
   margin-top: 0px;
 }
 .header .menu .menu-item {
@@ -148,6 +149,9 @@ a {
   color: #999;
 }
 .header .menu .menu-item-link:hover {
+  color: #191970;
+}
+.header .menu .active {
   color: #000;
 }
 .post {
