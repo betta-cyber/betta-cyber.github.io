@@ -1,7 +1,11 @@
 .album {
   padding: 0 20px;
   margin-bottom: 1.5em;
-  height: 100%;
+  display: flex;
+
+  .photo-box {
+    height: 100%;
+  }
 
   .article-title {
     padding-bottom: 10px;
@@ -13,7 +17,7 @@
   }
 
   img {
-    height: 200px;
+    height: 250px;
   }
 
   span {
@@ -23,13 +27,13 @@
   }
 
   figure {
-	height: 200px;
+	/* height: 250px; */
 	margin: 0;
 	padding: 0;
 	background: #fff;
 	overflow: hidden;
     }
-    figure:hover+span {
+  figure:hover+span {
 	bottom: -36px;
 	opacity: 1;
     }
