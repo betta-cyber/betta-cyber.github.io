@@ -1,0 +1,18 @@
+<%- partial('_partial/header') %>
+
+<div class="album">
+        <% if (site.data && site.data.photos) { %>
+        <% var photos = site.data.photos; %>
+        <div class="photo-box hover">
+            <% for (var i = 0, len = photos.length; i < len; i++) { %>
+            <% var photo = photos[i]; %>
+            <div class="photo">
+                <figure><img src=<%- photo.src %> ></figure>
+                <span><%- photo.name %></span>
+            </div>
+            <% } %>
+        </div>
+        <% } %>
+</div>
+
+<%- partial('_partial/footer') %>
