@@ -329,6 +329,9 @@ footer .author {
 .album {
   padding: 0 20px;
   margin-bottom: 1.5em;
+  display: flex;
+}
+.album .photo-box {
   height: 100%;
 }
 .album .article-title {
@@ -339,7 +342,7 @@ footer .author {
   margin: 4px;
 }
 .album img {
-  height: 200px;
+  height: 250px;
 }
 .album span {
   margin-left: 1em;
@@ -347,7 +350,7 @@ footer .author {
   font-size: 85%;
 }
 .album figure {
-  height: 200px;
+/* height: 250px; */
   margin: 0;
   padding: 0;
   background: #fff;
