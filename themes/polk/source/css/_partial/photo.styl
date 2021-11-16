@@ -1,7 +1,13 @@
+.photo-section {
+    width: 800px;
+    padding: 0 20px;
+    margin-bottom: 1em;
+}
+
 .album {
-  padding: 0 20px;
-  margin-bottom: 1.5em;
+  /* margin: 0 20px; */
   display: flex;
+  width: 800px;
 
   .photo-box {
     height: 100%;
@@ -13,7 +19,7 @@
 
   .photo {
     float: left;
-    margin: 4px;
+    margin: 5px;
   }
 
   img {
@@ -26,44 +32,66 @@
 	font-size: 85%;
   }
 
-  figure {
-	/* height: 250px; */
-	margin: 0;
-	padding: 0;
-	background: #fff;
-	overflow: hidden;
-    }
-  figure:hover+span {
-	bottom: -36px;
-	opacity: 1;
-    }
 }
 
-.hover figure img {
-	-webkit-filter: blur(3px);
-	filter: blur(2px);
-	-webkit-transition: .3s ease-in-out;
-	transition: .3s ease-in-out;
+a:hover .overlay {
+  opacity: 1;
 }
 
-.hover figure:hover img {
-    -webkit-filter: blur(0);
-	filter: blur(0);
+.overlay-outer {
+  position: relative;
+  width: 90%;
+  max-width: 250px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.overlay {
+  background: rgba(4,125,67,0.7);
+  position: absolute;
+  height: 99%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  transition: all 0.4s ease-in-out 0s;
 }
 
 
-
-.album span {
-	z-index: -1;
-	display: block;
-	margin: 0;
-	padding: 0;
-	color: #444;
-	font-size: 18px;
-	text-decoration: none;
-	text-align: center;
-	-webkit-transition: .3s ease-in-out;
-	transition: .3s ease-in-out;
-	opacity: 0;
+.content-details {
+  position: absolute;
+  text-align: center;
+  padding-left: 1em;
+  padding-right: 1em;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease-in-out 0s;
 }
 
+.overlay-outer:hover .content-details {
+  top: 50%;
+  left: 50%;
+  opacity: 1;
+}
+
+.content-details h3 {
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5em;
+  text-transform: uppercase;
+}
+
+.content-details p {
+  color: #fff;
+  font-size: 0.8em;
+}
+
+.fadeIn_bottom {
+  top: 80%;
+}
