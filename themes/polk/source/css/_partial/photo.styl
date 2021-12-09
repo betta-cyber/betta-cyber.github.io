@@ -31,7 +31,14 @@
 	color: #aaa;
 	font-size: 85%;
   }
+}
 
+@media screen and (max-width: 800px) {
+  .album {width: 400px}
+}
+
+@media screen and (max-width: 800px) {
+  .album img {height: 120px}
 }
 
 a:hover .overlay {
@@ -44,6 +51,9 @@ a:hover .overlay {
   max-width: 250px;
   margin: auto;
   overflow: hidden;
+}
+@media screen and (max-width: 800px) {
+  .overlay-outer {max-width: 100px}
 }
 
 .overlay {
