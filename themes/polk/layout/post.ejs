@@ -6,7 +6,6 @@
   <div class="post-content">
     <%- page.content %>
   </div>
-  <div id="comments"></div>
   <div class="post-footer">
     <% if (page.tags && page.tags.length){ %>
       <%- list_tags(page.tags, {
@@ -19,19 +18,3 @@
   </div>
 </article>
 <%- partial('_partial/footer') %>
-
-<link rel="stylesheet" href="https://billts.site/extra_css/gitment.css">
-<script src="https://billts.site/js/gitment.js"></script>
-<script>
-const gitment = new Gitment({
-  id: '<%= page.date %>',
-  owner: 'betta-cyber',
-  repo: 'betta-cyber.github.io',
-  oauth: {
-    client_id: 'e32a2371d055a4a6872f',
-    client_secret: '8b5c050a8fffd9ed254c421080cf55d7ae55f266',
-  },
-})
-
-gitment.render('comments')
-</script>
