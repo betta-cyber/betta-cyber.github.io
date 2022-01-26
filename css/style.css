@@ -5,7 +5,7 @@ html,
 body,
 .container {
   height: 100%;
-  font-family: Hiragino Sans GB, Microsoft YaHei, WenQuanYi, Airal, sans-serif;
+  font-family: LXGWWenKai, Hiragino Sans GB, Microsoft YaHei, WenQuanYi, Airal, sans-serif;
   color: #444;
 }
 .container {
@@ -196,7 +196,7 @@ a {
 }
 .post .post-content p {
   line-height: calc(1ex / 0.32);
-  font-family: "Times New Roman", Times, serif;
+  font-family: LXGWWenKai, Hiragino Sans GB, Microsoft YaHei, WenQuanYi, Airal, sans-serif;
 }
 .post figure {
   margin: 0;
@@ -421,4 +421,10 @@ a:hover .overlay {
 }
 .fadeIn_bottom {
   top: 80%;
+}
+@font-face {
+  font-family: "LXGWWenKai";
+  src: url("../fonts/LXGWWenKai-Regular.ttf");
+  font-style: normal;
+  font-weight: normal;
 }
