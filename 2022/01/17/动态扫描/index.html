@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="/css/style.css">
 
   <link rel="stylesheet" href="//unpkg.com/heti/umd/heti.min.css">
-<meta name="generator" content="Hexo 4.2.1"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -83,10 +83,10 @@
 <p>基于C的inline hook工具，ptrace和非ptrace2种，都不如frida强大；</p>
 <p>inline hook 工具</p>
 <ul>
-<li><a href="https://github.com/GToad/Android_Inline_Hook" target="_blank" rel="noopener">https://github.com/GToad/Android_Inline_Hook</a></li>
-<li><a href="https://github.com/GToad/Android_Inline_Hook_ARM64" target="_blank" rel="noopener">https://github.com/GToad/Android_Inline_Hook_ARM64</a></li>
-<li><a href="https://github.com/ele7enxxh/Android-Inline-Hook" target="_blank" rel="noopener">https://github.com/ele7enxxh/Android-Inline-Hook</a></li>
-<li><a href="https://github.com/Rprop/And64InlineHook" target="_blank" rel="noopener">https://github.com/Rprop/And64InlineHook</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/GToad/Android_Inline_Hook">https://github.com/GToad/Android_Inline_Hook</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/GToad/Android_Inline_Hook_ARM64">https://github.com/GToad/Android_Inline_Hook_ARM64</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ele7enxxh/Android-Inline-Hook">https://github.com/ele7enxxh/Android-Inline-Hook</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Rprop/And64InlineHook">https://github.com/Rprop/And64InlineHook</a></li>
 </ul>
 <h2 id="实现原理与demo文档"><a href="#实现原理与demo文档" class="headerlink" title="实现原理与demo文档"></a>实现原理与demo文档</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在Magisk下的Riru，通过劫持zygote对应用、服务的fork进程的过程，来实现inline hook的注入。</p>
 <p>Riru劫持了nativeForkAndSpecialize、nativeSpecializeAppProcess、forkSystemServer这3个函数，在这3个函数里调用frida-gum提供C API进行frida hook，完美实现在目标代码执行之前将hook代码注入进去。</p>
