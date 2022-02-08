@@ -1,5 +1,6 @@
 ---
 title: Think different
+abbrlink: 9211fae8
 date: 2020-06-22 04:48:00
 ---
 

@@ -1,5 +1,6 @@
 ---
 title: Rust 交叉编译及 CI/CD 相关
+abbrlink: d2381dbd
 date: 2020-02-04 01:13:14
 ---
 

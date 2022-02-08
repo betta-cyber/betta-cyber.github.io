@@ -1,5 +1,6 @@
 ---
 title: Shell programing and scripting
+abbrlink: '21656774'
 date: 2020-01-19 10:34:14
 ---
 

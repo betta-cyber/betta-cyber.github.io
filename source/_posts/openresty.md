@@ -1,5 +1,6 @@
 ---
 title: OpenResty Note
+abbrlink: fcfbe98c
 date: 2020-12-12 12:48:00
 ---
 

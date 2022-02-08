@@ -1,5 +1,6 @@
 ---
 title: Rust 和 OpenResty 的性能问题
+abbrlink: 5ab43bf2
 date: 2020-03-27 15:34:00
 ---
 关于 rust 和 openresty 的一些问题
