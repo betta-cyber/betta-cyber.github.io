@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Shell programing and scripting - Skywalker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Skywalker" type="application/atom+xml">
+  
+
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <!-- <link rel="stylesheet" href="//unpkg.com/heti/umd/heti.min.css"> -->
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">Skywalker</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/album" class="menu-item-link " >Photo</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Shell programing and scripting</h1>
+  </div>
+  <div class="post-content">
+    <h2 id="how-to-‘trap’-the-‘control-z’-key-in-shell"><a href="#how-to-‘trap’-the-‘control-z’-key-in-shell" class="headerlink" title="how to ‘trap’ the ‘control+z’ key in shell?"></a>how to ‘trap’ the ‘control+z’ key in shell?</h2><p>I want to trap the siginals in my shell script. so i look for some blog try to find out the solution.</p>
+<p>I write <code>trap &#39;&#39; HUP INT QUIT</code> first. By doing this I am able to trap <code>ctrl+c</code>. But when I hit <code>ctrl+z</code>. then my shell is terminating… I want to trap the siginal and make the shell can’t be suspended by <code>ctrl+z</code></p>
+<p>the command <code>kill -l</code> can list all the signal list. the signal list depends on yours OS.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1) SIGHUP    2) SIGINT    3) SIGQUIT    4) SIGILL</span><br><span class="line">5) SIGTRAP    6) SIGABRT    7) SIGBUS    8) SIGFPE</span><br><span class="line">9) SIGKILL    10) SIGUSR1    11) SIGSEGV    12) SIGUSR2</span><br><span class="line">13) SIGPIPE    14) SIGALRM    15) SIGTERM    16) SIGSTKFLT</span><br><span class="line">17) SIGCHLD    18) SIGCONT    19) SIGSTOP    20) SIGTSTP</span><br><span class="line">21) SIGTTIN    22) SIGTTOU    23) SIGURG    24) SIGXCPU</span><br><span class="line">25) SIGXFSZ    26) SIGVTALRM    27) SIGPROF    28) SIGWINCH</span><br><span class="line">29) SIGIO    30) SIGPWR    31) SIGSYS    34) SIGRTMIN</span><br><span class="line">35) SIGRTMIN+1    36) SIGRTMIN+2    37) SIGRTMIN+3    38) SIGRTMIN+4</span><br><span class="line">39) SIGRTMIN+5    40) SIGRTMIN+6    41) SIGRTMIN+7    42) SIGRTMIN+8</span><br><span class="line">43) SIGRTMIN+9    44) SIGRTMIN+10    45) SIGRTMIN+11    46) SIGRTMIN+12</span><br><span class="line">47) SIGRTMIN+13    48) SIGRTMIN+14    49) SIGRTMIN+15    50) SIGRTMAX-14</span><br><span class="line">51) SIGRTMAX-13    52) SIGRTMAX-12    53) SIGRTMAX-11    54) SIGRTMAX-10</span><br><span class="line">55) SIGRTMAX-9    56) SIGRTMAX-8    57) SIGRTMAX-7    58) SIGRTMAX-6</span><br><span class="line">59) SIGRTMAX-5    60) SIGRTMAX-4    61) SIGRTMAX-3    62) SIGRTMAX-2</span><br><span class="line">63) SIGRTMAX-1    64) SIGRTMAX </span><br></pre></td></tr></table></figure>
+
+<p>Just choose the number or name of singal you need trapped. 20 is for <code>ctrl+z</code>! <code>trap &quot;echo &#39;can not exit&#39;&quot; 1 2 3 4 5 6 7 8 9 20</code> can trap the ‘control+z’ key in shell.</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">Back to Top</a>
+  </div>
+</article>
+<footer>
+  &copy; 2022
+  <span class="author">
+    betta-cyber
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>
