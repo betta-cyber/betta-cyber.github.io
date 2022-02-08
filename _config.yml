@@ -103,3 +103,9 @@ theme: polk
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: ''
+
+favicon:
+  small: /favicon.ico
+  medium: /favicon.ico
+  apple_touch_icon: /favicon.ico
+
