@@ -3,9 +3,9 @@ Archives: Archives
 About: About
 
 Paginator:
-  Prev: Prev
-  Next: Next
+  Prev: "<"
+  Next: ">"
 
 Post:
   Tags: Tags
-  Top: Back to Top
+  Top: "↑"
