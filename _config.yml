@@ -16,7 +16,7 @@ timezone: ''
 url: http://betta-cyber.github.io/
 root: /
 #permalink: :year/:month/:day/:title/
-permalink: archives/:abbrlink.html
+permalink: blog/:abbrlink.html
 abbrlink:
   alg: crc32
   rep: hex
@@ -29,7 +29,7 @@ pretty_urls:
 source_dir: source
 public_dir: public
 tag_dir: tags
-archive_dir: archives
+archive_dir: blog
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang

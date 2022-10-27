@@ -12,7 +12,7 @@ rss: /atom.xml
 
 # SNS config
 sns:
-  Blog: /archives
+  Blog: /blog
   GitHub: https://github.com/betta-cyber
   Zhihu: https://www.zhihu.com/people/ShoKill
   Steam: https://steamcommunity.com/id/betta551/
@@ -21,7 +21,8 @@ sns:
 # Nav menu
 menu:
   Home: /
-  Blog: /archives
+  Blog: /blog
   Ebook: /ebook
   Music: /music
+  Flag: /flag
   About: /about
