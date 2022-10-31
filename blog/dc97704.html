@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>动态扫描技术 - Skywalker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Skywalker" type="application/atom+xml">
+  
+
+  
+  <!-- <link rel="stylesheet" href="../css/style.css"> -->
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">Skywalker</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/blog" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/music" class="menu-item-link " >Music</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">动态扫描技术</h1>
+  </div>
+  <div class="post-content">
+    <p>本文主要是对动态扫描技术的一些记录</p>
+<h1 id="技术方案"><a href="#技术方案" class="headerlink" title="技术方案"></a>技术方案</h1><p>众所周知，frida这种hook工具，有2大缺陷：spawn兼容性非常差、对headless apk更是无法spawn。</p>
+<p>导致逆向分析者，如想对这种apk从代码执行的最开始就想切入inline hook，是无法做到的。</p>
+<p>加之对抗的激烈，体现在：</p>
+<ol>
+<li>敏感代码都写在.so里，而对.so的加载就是apk启动的时候；</li>
+<li>对frida这种中途的inline hook的检测对抗越来越激烈；</li>
+<li>对抗对重打包、.so对是谁来加载它的检测越来越激烈；</li>
+</ol>
+<p>诸多种种不便利，使得frida这个强大的hook工具，无论是在逆向分析还是在hook工程化的时候，总有这样那样不如人意的地方。</p>
+<p>尤其在MIUI等系统的逆向分析者而言，其中有大量的系统进程、守护进程、系统服务；</p>
+<p>因此非常有必要研究frida持久化，并在此基础之上开发出一款好用的，便利的工具。</p>
+<p>本文正是基于此，做了一系列的技术调研与实现，接下来在已实现的demo的基础之上，做好这个工具。</p>
+<h2 id="竞品缺陷"><a href="#竞品缺陷" class="headerlink" title="竞品缺陷"></a>竞品缺陷</h2><p>fridaManager也是基于这个原理来做的，但是fridaManager仅对应用生效，对服务并不生效；而且fridaManager缺乏后续的一系列工程化的需求维护；</p>
+<p>基于C的inline hook工具，ptrace和非ptrace2种，都不如frida强大；</p>
+<p>inline hook 工具</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/GToad/Android_Inline_Hook">https://github.com/GToad/Android_Inline_Hook</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/GToad/Android_Inline_Hook_ARM64">https://github.com/GToad/Android_Inline_Hook_ARM64</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/ele7enxxh/Android-Inline-Hook">https://github.com/ele7enxxh/Android-Inline-Hook</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Rprop/And64InlineHook">https://github.com/Rprop/And64InlineHook</a></li>
+</ul>
+<h2 id="实现原理与demo文档"><a href="#实现原理与demo文档" class="headerlink" title="实现原理与demo文档"></a>实现原理与demo文档</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在Magisk下的Riru，通过劫持zygote对应用、服务的fork进程的过程，来实现inline hook的注入。</p>
+<p>Riru劫持了nativeForkAndSpecialize、nativeSpecializeAppProcess、forkSystemServer这3个函数，在这3个函数里调用frida-gum提供C API进行frida hook，完美实现在目标代码执行之前将hook代码注入进去。</p>
+<h3 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h3><h4 id="工程环境"><a href="#工程环境" class="headerlink" title="工程环境"></a>工程环境</h4><p>Android studio 4.2.1<br>java ：16.0.1<br>ndk ：23.0.7599858<br>cmake ：3.18.1<br>frida-gumjs : android armv7、arm64 14.2.18</p>
+<h3 id="需求规划"><a href="#需求规划" class="headerlink" title="需求规划"></a>需求规划</h3><p>1、工具使用环境<br>Magisk v23+<br>Riru v25+</p>
+<p>2、使用说明</p>
+<p>编译一份Magisk模块，推送到手机里，Magisk本地安装后重启手机，将hook脚本配置到目标包名即可；无需frida-server，无需连接PC；</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">↑</a>
+  </div>
+</article>
+<footer>
+  &copy; 2022
+  <span class="author">
+    betta
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>

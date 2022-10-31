@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>桌面客户端及 Webview 相关实践 - Skywalker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Skywalker" type="application/atom+xml">
+  
+
+  
+  <!-- <link rel="stylesheet" href="../css/style.css"> -->
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">Skywalker</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/blog" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/music" class="menu-item-link " >Music</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">桌面客户端及 Webview 相关实践</h1>
+  </div>
+  <div class="post-content">
+    <h2 id="问题由来"><a href="#问题由来" class="headerlink" title="问题由来"></a>问题由来</h2><p>最近在探索GUI开发的新方式，也不能算是新方式吧，只能说是一种新的尝试，去解决一些痛点。传统GUI开发比较成熟：</p>
+<ul>
+<li><p>传统的QT开发可以用C++，python等语言来写，性能也还不错，但是学习QT的样式来做样式的美化需要大量时间。</p>
+</li>
+<li><p>.net的那一套也还不错，就是用的人比较少，而且也不能跨平台。</p>
+</li>
+<li><p>一些新项目用electron类似的技术用html+css+js这种web的形式来构建桌面应用。但是electron这种项目背后承载着整个v8引擎。封装好之后的应用体积较大，性能也很一般。</p>
+</li>
+</ul>
+<p>这次我要实践的是我在学习rust过程当中发现的一个名叫<a target="_blank" rel="noopener" href="https://github.com/Boscop/web-view">web-view</a>的库。当时是准备用来学习wasm和<a target="_blank" rel="noopener" href="https://github.com/yewstack/yew">yew</a>的。</p>
+<p>后面发现在linux&#x2F;macOS上面打包生成出来的二进制文件体积很小，且拥有非常强劲的性能。固一开始尝试配合yew去写一些高性能体积小的客户端。比如斗鱼直播间的客户端应用，但是在实现解码flv文件的时候因为一些事情暂时搁置了。但是在公司项目当中我也发现了这样的一些痛点。所以重新又开始做这方面工作。</p>
+<h2 id="实践部分"><a href="#实践部分" class="headerlink" title="实践部分"></a>实践部分</h2><p>考虑到在新项目使用环境当中主要是windows系统。所以需要在windows下面进行编译及测试。当然了由于个人还是比较熟悉linux下开发。故开发工作还是放到linux下进行。</p>
+<p>web-view是基于<a target="_blank" rel="noopener" href="https://github.com/zserge/webview">webview</a>这个体积小跨平台的GUI库的跨平台实现。他也有python、java、Haskell、C#等实现，但我并没有去测试它们。</p>
+<p>web-view在macOS上面采用Cocoa&#x2F;WebKit，在linux上面采用gtk-webkit2，在windows上面采用MSHTML (IE10&#x2F;11) 作为其底层的渲染技术。</p>
+<h2 id="代码部分"><a href="#代码部分" class="headerlink" title="代码部分"></a>代码部分</h2><h3 id="前端部分"><a href="#前端部分" class="headerlink" title="前端部分"></a>前端部分</h3><p>首先其实你可以把它当中一个web来做，但是是有限制的web，你最好考虑好你的一个应用的长宽和比例，然后一个样式的风格统一。这边我选择了一下。如果采用jquery+bootstrap这种老一套的方式来开发也不是不行，但是已经过时了，而且bootstrap的样式确实不太适合作为桌面应用的UI，这边我后面多方面考虑选择了饿了吗的<a target="_blank" rel="noopener" href="https://element.eleme.cn/#/zh-CN">element</a>作为桌面UI部分的组件。两个原因：</p>
+<ul>
+<li>一个是风格比较统一，也是个桌面应用</li>
+<li>二是基于vue.js编写，适合新人学习</li>
+</ul>
+<h3 id="后端部分"><a href="#后端部分" class="headerlink" title="后端部分"></a>后端部分</h3><p>后端部分其实随便你用什么。他仅仅只是一个server，你可以用go，用python，用java，用rust等等等等都可以，只要你最后能把它打成一个服务。我本来是想用rust实现的，但是考虑到以后在组内做一个推广需要一个简单易学的方式，所以这次选择了python。</p>
+<p>用python实现一个server是再基础不过的事情了，我这里随便选择了一个tornado。然后编写相关代码与前端调试成功。开始打包。</p>
+<p>python的打包方案其实不多，这里面就用我比较熟悉用的最多的<code>pyinstaller</code>，pip安装之后，直接执行<code>pyinstaller  -F app.py</code>即可开始打包，注意！app.py是你的入口文件，也就是你要把服务启动起来的文件。他会自动去寻找相关依赖，然后进行打包，当然打包的过程中也可以做很多优化，这里暂时不讨论了。当然打包需要在windows上面进行，这点有点不是很舒服，之后再研究一下。看能不能直接打包出exe文件</p>
+<h3 id="web-view部分"><a href="#web-view部分" class="headerlink" title="web-view部分"></a>web-view部分</h3><p>web-view部分其实比较简单，说白了就是和electron一样的一个浏览器壳，但是又不是浏览器壳。webview有 C&#x2F;C++&#x2F;Golang的实现。通过引入相关头文件对页面进行渲染。而且也有一些坑。</p>
+<p>主体代码其实并不能，就是通过启一个线程去运行python实现的后端程序</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">    Command::<span class="title function_ invoke__">new</span>(<span class="string">&quot;cmd&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">args</span>(&amp;[<span class="string">&quot;/C&quot;</span>, <span class="string">&quot;cd gcheck &amp;&amp; app.exe&quot;</span>])</span><br><span class="line">        .<span class="title function_ invoke__">output</span>()</span><br><span class="line">        .<span class="title function_ invoke__">expect</span>(<span class="string">&quot;failed to execute process&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>然后通过这边webview去请求该页面去进行交互生成桌面应用</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">run</span>(</span><br><span class="line">    <span class="string">&quot;&quot;</span>,</span><br><span class="line">    Content::<span class="title function_ invoke__">Url</span>(<span class="built_in">format!</span>(<span class="string">&quot;http://127.0.0.1:8000&quot;</span>)),</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(size),</span><br><span class="line">    resizable,</span><br><span class="line">    debug,</span><br><span class="line">    titlebar_transparent,</span><br><span class="line">    <span class="keyword">move</span> |<span class="keyword">mut</span> webview| &#123;</span><br><span class="line">        <span class="comment">// webview.set_background_color(0.11, 0.12, 0.13, 1.0);</span></span><br><span class="line">    &#125;,</span><br><span class="line">    frontend_cb,</span><br><span class="line">    userdata</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>在windows下面有一些坑，下面主要列一下：</p>
+<ol>
+<li><p>ie浏览器的兼容性问题，由于win下面使用的MSHTML作为其底层技术，那么浏览器的一个兼容问题是必须要考虑的。我之前就是因为一些js的写法导致出现了<code>script 1003</code> <code>script 1002</code>这样的一些脚本错误。归根结底的一个问题就是ie对ES6语法的支持不行，需要采用ES5的写法。最好的解决方案就是在vue项目当中<code>npm install --save-dev babel-polyfill</code> 然后在项目中<code>import &#39;babel-polyfill&#39;</code>引入。</p>
+</li>
+<li><p>windows下面会出现dpi模糊的问题，这个问题已经出现了一段时间了，并且在github上面有很多讨论。也有相关朋友在提交一些pr 如<a target="_blank" rel="noopener" href="https://github.com/Boscop/web-view/pull/117">https://github.com/Boscop/web-view/pull/117</a>和<a target="_blank" rel="noopener" href="https://github.com/Boscop/web-view/pull/134">https://github.com/Boscop/web-view/pull/134</a>。但是问题始终还没有解决。同样webview项目也拉了一个分支webview-x来解决这样一些windows上面的问题。需要我后续继续跟进。</p>
+</li>
+<li><p>windows下面还可以使用edge在作为其底层的渲染技术。但是需要安装edge相关开发套件，这个我还没折腾完。我主要想看的是我用edge的features去编译好的exe能否在没有edge的设备上运行。这是一个兼容性的问题。</p>
+</li>
+<li><p>编译问题，我用官方的rust的web-view库在windows上去<code>cargo run</code>没什么问题，但是<code>cargo build --release</code>出来的exe就有问题，运行不了，我在github上面也提了issue，目前还没有人回我。目前的解决方案是使用 <code>web-view = &#123; git = &quot;https://github.com/huytd/web-view&quot; &#125;</code> 作为web-view依赖。</p>
+</li>
+<li><p>待补充</p>
+</li>
+</ol>
+<h3 id="结论部分"><a href="#结论部分" class="headerlink" title="结论部分"></a>结论部分</h3><p>说实话，这套方案其实还不错，但是也就仅仅说是还不错的范畴，如果我可以把开发路线固定好，打包流程自动化，开发者只需要去写相关的web部分然后打包发布。其实还不错，比较体积很小了，性能兼容性也还不错。</p>
+<p>后续准备尝试一下<a target="_blank" rel="noopener" href="https://github.com/tauri-apps/tauri">tauri</a>，这是一套干我前面所说的这一套活的一个工具，这套工具能跑通了，那后面的开发维护就不需要那么大的精力了。</p>
+<p>还需要解决的问题，打包出来的文件，一个更加极限的体积优化问题。设计到rust的编译和python程序的体积优化，两个方面，再一个就是加密问题，需要对程序做一定的加密，设计到一个加密方案的选择问题。</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">↑</a>
+  </div>
+</article>
+<footer>
+  &copy; 2022
+  <span class="author">
+    betta
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>
