@@ -1,3 +1,9 @@
+## [# Top Japanese Music](/music/japanese.html)
+
+## [# 摇滚史上最伟大的几张专辑](/music/rock.html)
+
+## [# Dream Pop](/music/dream_pop.html)
+
 ## charming
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=21970155&auto=1&height=66"></iframe>
