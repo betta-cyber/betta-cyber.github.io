@@ -12,8 +12,8 @@ body,
   max-width: 840px;
   margin: 0 auto;
 }
-a {
-  color: #000;
+.container a {
+  color: #444;
   text-decoration: none;
 }
 .home {
@@ -118,6 +118,20 @@ a {
 }
 .highlight .strong {
   font-weight: bold;
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    filter: invert(90%) hue-rotate(180deg);
+    background: #f0f8ff;
+/* background: azure; */
+  }
+  img,
+  video,
+  svg,
+  iframe {
+    filter: invert(110%) hue-rotate(180deg);
+    opacity: 0.8;
+  }
 }
 .header {
   margin-bottom: 2em;

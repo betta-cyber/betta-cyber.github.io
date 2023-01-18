@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Blog devlog - Skywalker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Skywalker" type="application/atom+xml">
+  
+
+  
+  <!-- <link rel="stylesheet" href="../css/style.css"> -->
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">Skywalker</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/blog" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/music" class="menu-item-link " >Music</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Blog devlog</h1>
+  </div>
+  <div class="post-content">
+    <h1 id="简单记录一下写博客时碰到的一些问题"><a href="#简单记录一下写博客时碰到的一些问题" class="headerlink" title="简单记录一下写博客时碰到的一些问题"></a>简单记录一下写博客时碰到的一些问题</h1><h2 id="1-Dark-mode"><a href="#1-Dark-mode" class="headerlink" title="1. Dark mode"></a>1. Dark mode</h2><p>现在的站点基本上都适配了暗黑模式，我这个小博客也不能凑合着适配一下吧。使用了最简单的 CSS 代码，代码内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@media (prefers-color-scheme: dark) &#123;</span><br><span class="line">    html &#123;</span><br><span class="line">        filter: invert(90%) hue-rotate(180deg);</span><br><span class="line">        background: aliceblue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    img, video, svg, iframe &#123;</span><br><span class="line">        filter: invert(110%) hue-rotate(180deg);</span><br><span class="line">        opacity: .8;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码就是简单的通过 media 进行判断，然后 invert 一下，我自己对背景色做了个处理。</p>
+<p>需要调试暗黑模式的话，控制台下 <code>command + shift + p</code> 输入 dark 或者 light 就可以相关的模拟选项。</p>
+<p>参考:<br><a target="_blank" rel="noopener" href="https://www.izhaoo.com/2020/11/12/adapt-to-dark-mode/">https://www.izhaoo.com/2020/11/12/adapt-to-dark-mode/</a><br><a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2020/11/css-mix-blend-mode-filter-dark-theme/">https://www.zhangxinxu.com/wordpress/2020/11/css-mix-blend-mode-filter-dark-theme/</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/hiumanChung/article/details/120788659">https://blog.csdn.net/hiumanChung/article/details/120788659</a></p>
+<h2 id="2-Font"><a href="#2-Font" class="headerlink" title="2. Font"></a>2. Font</h2><p>本站点采用的中文字体为<a target="_blank" rel="noopener" href="https://github.com/lxgw/LxgwWenKai">霞鹜文楷</a>，但是个人觉得在加载的时候字体有点大，对字体加载方面也不是很了解，又不想妥协采用其他的方案。就写了一点小程序，对原字体进行处理。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">name: github pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">    - dev</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build-deploy:</span><br><span class="line">    runs-on: ubuntu-18.04</span><br><span class="line">    steps:</span><br><span class="line">    - uses: actions/checkout@v1</span><br><span class="line"></span><br><span class="line">    - name: Setup Node</span><br><span class="line">      uses: actions/setup-node@v1</span><br><span class="line">      with:</span><br><span class="line">        node-version: &#x27;12.x&#x27;</span><br><span class="line"></span><br><span class="line">    - name: Cache dependencies</span><br><span class="line">      uses: actions/cache@v1</span><br><span class="line">      with:</span><br><span class="line">        path: ~/.npm</span><br><span class="line">        key: $&#123;&#123; runner.os &#125;&#125;-node-$&#123;&#123; hashFiles(&#x27;**/package-lock.json&#x27;) &#125;&#125;</span><br><span class="line">        restore-keys: |</span><br><span class="line">          $&#123;&#123; runner.os &#125;&#125;-node-</span><br><span class="line"></span><br><span class="line">    - run: npm ci</span><br><span class="line">    - run: npm install</span><br><span class="line">    - run: npm install font-spider -g</span><br><span class="line">    - run: npm run build</span><br><span class="line">    - run: sed -i &#x27;s/\/css\/style.css/..\/css\/style.css/g&#x27; `grep &quot;.html&quot; -rl public`</span><br><span class="line">    - run: font-spider &quot;public/!(page)**/*.html&quot; --debug</span><br><span class="line">    - run: sed -i &#x27;s/..\/css\/style.css/\/css\/style.css/g&#x27; `grep &quot;.html&quot; -rl public`</span><br><span class="line"></span><br><span class="line">    - name: Deploy</span><br><span class="line">      uses: peaceiris/actions-gh-pages@v2</span><br><span class="line">      env:</span><br><span class="line">        ACTIONS_DEPLOY_KEY: $&#123;&#123; secrets.ACTIONS_DEPLOY_KEY &#125;&#125;</span><br><span class="line">        PUBLISH_BRANCH: master</span><br><span class="line">        PUBLISH_DIR: ./public</span><br></pre></td></tr></table></figure>
+
+<p>这段是我的 Github Action 文件，我在这里使用了 <a target="_blank" rel="noopener" href="https://github.com/aui/font-spider">font-spider</a> 做一个字体处理，把我 html 文件中需要用到的文字全部提取出来，然后用 font-spider 进行一个全盘的抽取替换，最后再把之前的内容还原回去。这样字体库中就之后拥有我博客中需要的字了，多余用不到的字就被去掉了，体积大大缩减。本来 15M 的字体现在不到 1M ，满足了我的需求。</p>
+<p>参考:<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904019060588551">https://juejin.cn/post/6844904019060588551</a></p>
+<h2 id="3-Deploy"><a href="#3-Deploy" class="headerlink" title="3. Deploy"></a>3. Deploy</h2><p>其实博客的部署很简单，代码也是参考上面的 Action 文件。平时写作用的是 dev 分支，部署的时候，通过 build 出相关的静态代码。放在 Github Pages 上。官方文档写得已经很清楚了。</p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/docs/github-pages.html">https://hexo.io/zh-cn/docs/github-pages.html</a></p>
+<h2 id="4-Music-share"><a href="#4-Music-share" class="headerlink" title="4. Music share"></a>4. Music share</h2><p>可以看到我的博客有一项专栏，就是音乐，里面收藏了很多我喜欢的音乐专辑。</p>
+<p>因为网易云的各种问题，在此就没有用网易云进行分享。而是使用 Spotify ，也方便了我在工作中随时通过这个点击到相关的专辑页面进行收听。</p>
+<p>在 Spotify 中，打开任意一个歌单或者专辑，点击歌单内的「…」，在展开的菜单，选择「分享 &gt;&gt; 嵌入播放清单」。</p>
+<p><img src="/article_photo/spotify-example.jpeg" alt="example"></p>
+<p>在弹出的面板，勾选右下角的「显示代码」，下方就会显示歌单的前端代码，点击「复制」，将代码粘贴到相关 Markdown 文件，就能在页面中看到了，整个操作过程就是这么简单。</p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://penghh.fun/2022/09/10/2022-9-10-notion_music/">https://penghh.fun/2022/09/10/2022-9-10-notion_music/</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">↑</a>
+  </div>
+</article>
+<footer>
+  &copy; 2023
+  <span class="author">
+    betta
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>
