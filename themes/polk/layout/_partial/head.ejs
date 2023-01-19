@@ -53,6 +53,11 @@
   <% if (is_home()) { %>
     <link rel="stylesheet" href="css/index.css">
   <% } %>
+
+  <% if (url_for(path).substring(0, url_for(path).lastIndexOf('/')) == '/music') { %>
+    <link rel="stylesheet" href="../css/music.css">
+  <% } %>
+
   <!-- <link rel="stylesheet" href="../css/style.css"> -->
   <%- css('css/style.css') %>
 </head>
