@@ -1,5 +1,18 @@
+body {
+    margin: auto;
+    background: linear-gradient(45deg, #1b4dc9, #d7d031, #1983a5);
+    animation: hueRotate 10s infinite alternate;
+    height: max-content !important;
+}
+
 .container {
     max-width: 840px;
     margin: 0 auto;
     text-align: -webkit-right;
+}
+
+@keyframes hueRotate {
+    100% {
+        filter: hue-rotate(360deg);
+    }
 }

@@ -1,12 +1,12 @@
 ## [# Top Japanese Music](/music/japanese.html)
 
-## [# 摇滚史上最伟大的几张专辑](/music/rock.html)
+## [# 摇滚史](/music/rock.html)
 
 ## [# Dream Pop](/music/dream_pop.html)
 
 ## [# Prog Rock](/music/prog_rock.html)
 
-## charming
+## Charming
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=21970155&auto=1&height=66"></iframe>
 
@@ -16,7 +16,7 @@
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1397622517&auto=1&height=66"></iframe>
 
-## ghost
+## Ghost
 
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=4283620&auto=1&height=66"></iframe>
 
