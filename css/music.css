@@ -10,7 +10,20 @@ body {
 .container {
   max-width: 840px;
   margin: 0 auto;
+/* color: aliceblue!important; */
 /* text-align: -webkit-right; */
+}
+.container h2 {
+  color: #f0f8ff;
+}
+.container p {
+  color: #f0f8ff;
+}
+.header .menu .menu-item-link {
+  color: #f0f8ff !important;
+}
+.header .menu .active {
+  color: #000 !important;
 }
 @-moz-keyframes hueRotate {
   100% {
