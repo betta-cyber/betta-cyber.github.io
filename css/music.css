@@ -5,7 +5,7 @@ body {
   margin: auto;
   background: linear-gradient(45deg, #1b4dc9, #d7d031, #1983a5);
 /* animation: hueRotate 10s infinite alternate; */
-  height: -webkit-fill-available !important;
+  height: auto !important;
 }
 .container {
   max-width: 840px;
