@@ -74,10 +74,7 @@
 <p>本人决定用微信接入一个 ChatGPT 的账号，然后把接入的账号，作为机器人拉入到群里面供大家玩耍。后面选择了 Github 上面的一个开源项目 <a target="_blank" rel="noopener" href="https://github.com/fuergaosi233/wechat-chatgpt">wechat-chatgpt</a> 进行接入。这个项目用 Nodejs 编写的，而且有比较详细的文档。文档里面提到用 railway 可以自行部署。</p>
 <p>于是测试了一下 railway 平台，简单来说就是一个 Docker 的部署平台，把 Dockerfile 写好，关联一个 Github 就可以之间触发部署了。</p>
 <p>但是在这个项目中，有很多的坑，有对中国的地区 IP 的限制问题，有微信的接入问题，有 ChatGPT 自身的拥堵问题。后面都踩了一遍，就简单记录一下。</p>
-<ol>
-<li>Wechaty 的问题。</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const bot =  WechatyBuilder.build(&#123;</span><br><span class="line">  name: &quot;wechat-assistant&quot;, // generate xxxx.memory-card.json and save login data for the next login</span><br><span class="line">  puppetOptions: &#123;</span><br><span class="line">    uos: true, // 开启uos协议</span><br><span class="line">  &#125;,</span><br><span class="line">  puppet: &quot;wechaty-puppet-wechat&quot;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h1 id="1-Wechaty-的问题。"><a href="#1-Wechaty-的问题。" class="headerlink" title="1. Wechaty 的问题。"></a>1. Wechaty 的问题。</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const bot =  WechatyBuilder.build(&#123;</span><br><span class="line">  name: &quot;wechat-assistant&quot;, // generate xxxx.memory-card.json and save login data for the next login</span><br><span class="line">  puppetOptions: &#123;</span><br><span class="line">    uos: true, // 开启uos协议</span><br><span class="line">  &#125;,</span><br><span class="line">  puppet: &quot;wechaty-puppet-wechat&quot;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>这段代码在 railway 上面部署的时候，出现 timeout</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">🤖️ Start GPT Bot Success, ready to handle message!</span><br><span class="line">00:37:17 WARN WechatyPuppetMixin start() starting puppet ... timeout</span><br><span class="line">00:37:17 WARN WechatyPuppetMixin start() puppet info: Puppet(wechat-assistant)</span><br><span class="line">00:38:02 ERR PuppetWeChatBridge start() exception: TimeoutError: Navigation timeout of 60000 ms exceeded</span><br><span class="line">00:38:02 ERR PuppetWeChat initBridge() exception: Navigation timeout of 60000 ms exceeded</span><br><span class="line">00:38:02 WARN PuppetWeChatBridge stop() page.close() exception: Error: Protocol error: Connection closed. Most likely the page has been closed.</span><br></pre></td></tr></table></figure>
 <p>后面我把 uos 协议给关了，本地可以，但是 railway 上还是不行。改成了下面的代码：</p>
@@ -97,24 +94,24 @@
 <p>基于对以上这些问题的思考，我们将所有流量转发工作都放在了 puppet 来做，这就是 PadLocal 中 Local 的来源。我们利用了 GRPC 的双向通信机制，让 puppet 成为代理，将所有流量通过 puppet 转发给 WServer。同时由 puppet 来维持和 WServer 之间的长连接。这样的好处显而易见：</p>
 <p>托管账号和 WServer 通信所使用的 IP 都是 puppet 端的 IP，不同账号天然就不存在共享 IP 的风险。<br>下载图片、视频等多媒体资源的流量不需要经过 PadLocal server。而且不经过服务器，效率也更高。<br>账号状态维护在 puppet 端完成，于是 PadLocal server 就可以设计为 stateless 的了，应对扩容等问题天然就会简单很多，simple is beautiful。<br>PadLocal server 不会保存任何业务数据，没有数据安全方面风险。</p>
 <p><img src="/article_photo/padlocal.png" alt="padlocal"></p>
-<ol start="2">
-<li>Chrome 问题</li>
-</ol>
-<p>有时候会存在 CloudFlare 人机验证, 如果出现了CloudFlare的人机验证, 则可能导致 Headless 浏览器无法成功模拟登录。</p>
-<p>该版本使用 Puppeteer 来尽可能的实现全自动化, 包括验证码 Cloudflare CAPTCHAs是默认处理的, 但如果你想自动处理 邮箱+密码 的Recaptchas, 则需要使用付费的打码平台, 如 nopecha 或者 2captcha, 需要设定一些环境变量。</p>
+<h1 id="2-Chrome-问题"><a href="#2-Chrome-问题" class="headerlink" title="2. Chrome 问题"></a>2. Chrome 问题</h1><p>有时候会存在 CloudFlare 人机验证, 如果出现了 CloudFlare 的人机验证, 则可能导致 Headless 浏览器无法成功模拟登录。这个在本地 <code>npm run dev</code> 运行确实是没有什么限制。因为可以手动调试 Chrome。但是部署就有点麻烦了。</p>
+<p>该版本使用 Puppeteer 来尽可能的实现全自动化, 包括验证码 Cloudflare CAPTCHAs 是默认处理的, 但如果你想自动处理 邮箱+密码 的 Recaptchas, 则需要使用付费的打码平台, 如 nopecha 或者 2captcha, 需要设定一些环境变量。</p>
 <p>后面考虑到这个项目是实时拉取网页版的答案，不太稳定，至少是对于某些没有稳定梯子的人来说，所以，我后面参考 <a target="_blank" rel="noopener" href="https://github.com/fuergaosi233/wechat-chatgpt/pull/574">这个PR</a>，将代码改成了 API 的形式调用，部署在白嫖的 railway 上面。api-key的方式是接入的OpenAI的API模型，而网页版的还没有公开 API，只能通过网页登陆。OpenAI 已经公开的 API 模型最新的是 GPT-3，对话能力不如网页版的。只能说凑合着先用一下。</p>
-<ol start="3">
-<li>账号问题</li>
-</ol>
-<ul>
+<h1 id="3-账号问题"><a href="#3-账号问题" class="headerlink" title="3. 账号问题"></a>3. 账号问题</h1><ul>
 <li>科学上网</li>
-<li>外国邮箱？</li>
+<li>外国邮箱（无所谓）</li>
 <li>接码平台 <a target="_blank" rel="noopener" href="https://sms-activate.org/">https://sms-activate.org/</a></li>
 </ul>
-<ol start="4">
-<li>使用问题</li>
+<h1 id="4-使用问题"><a href="#4-使用问题" class="headerlink" title="4. 使用问题"></a>4. 使用问题</h1><p>参考：<a target="_blank" rel="noopener" href="https://github.com/PlexPt/awesome-chatgpt-prompts-zh">ChatGPT 中文调教指南</a></p>
+<h1 id="5-引申问题"><a href="#5-引申问题" class="headerlink" title="5. 引申问题"></a>5. 引申问题</h1><p>说句不好听的话，ChatGPT 只适合干那些文科，凑字数&amp;浮夸辞藻&amp;言之无物&amp;前后文逻辑不通&amp;胡扯一通很漂亮很漂亮的无意义车骨轱辘话，这就是文科工作者糊弄老师糊弄老板糊弄世界的工具。最主要的问题是，<b>还真的不是那么好分辨</b>。</p>
+<p>ChatGPT 最大的作用是可以在保有原有逻辑的情况下，对内容进行润色规范，规范化一些内容。如果这个模型能够接入互联网搜索，对搜索结果进行润色，会有一定的作用。</p>
+<p>其实，所谓的“文本创作”实际上是对提问的扩写，或者对已知内容的摘抄。chatGPT 对于专业性强的论文，可以很好的解释一些无法翻译的缩略词，但是无法理解文章的具体内容。</p>
+<p>不过他还是有一些作用可以畅想的：</p>
+<ol>
+<li>以我们经常上去抄作业的 Stack Overflow 为例，我需要先在搜索引擎查找，还不一定能直接复制并且使用，但是在 ChatGPT，几秒钟就可以把代码放在我面前，还可以按照我的要求进行变化，之所以不说修改，是因为它没有这个能力，它只能找新的代码片段进行拼接，然后直接复制。显而易见，反正都是抄作业，那我肯定会选 ChatGPT。</li>
+<li>商业行为还是要从过去的商业行为来分析。蒋凡之所以在阿里身居要职，是因为他把推送算法和淘宝狠狠地绑在一起，简单来说就是你搜索过，浏览过，点击过的都会以更高频率出现在你的面前，将淘宝变成对于淘宝用户而言的个性化垂直购物网站。这种改变让很多垂直的销售网站直接销声匿迹，比如母婴，电子元器件，化妆品，现在还在活跃的销售网站，贩卖的品类是海淘，二手，奥莱款和古着。简单来说就是原单，二手和尾货，品类上无差别，不同的网站上流通商品的不同之处仅在于时间。反过来观察 ChatGPT 是不是有点回过味了？它可以越过搜索引擎和垂直咨询网站直接爬取内容再加工反馈给用户，为用户节约了搜索成本，OpenAI 赚到了流量。</li>
 </ol>
-<p><a target="_blank" rel="noopener" href="https://github.com/PlexPt/awesome-chatgpt-prompts-zh">ChatGPT 中文调教指南</a></p>
+<p>不过不管是抄作业，还是做推荐，ChatGPT 都还有很长的路要走。且行且看吧。</p>
 
   </div>
   <div class="post-footer">
