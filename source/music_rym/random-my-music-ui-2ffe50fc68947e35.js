@@ -828,7 +828,7 @@ function initSync(module) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('random-my-music-ui-2ea208fab780016f_bg.wasm', import.meta.url);
+        input = new URL('random-my-music-ui-2ffe50fc68947e35_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 
