@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>lua-resty-mlcache 分析 - Skywalker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="Skywalker" type="application/atom+xml">
+  
+
+  
+
+  
+
+  <!-- <link rel="stylesheet" href="../css/style.css"> -->
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">Skywalker</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/blog" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/music" class="menu-item-link " >Music</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">lua-resty-mlcache 分析</h1>
+  </div>
+  <div class="post-content">
+    <p>lua-resty-mlcache 用 shared dict 和 lua-resty-lrucache ，实现了多层缓存机制。</p>
+<p>mlcache 的架构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│ Nginx                                           │</span><br><span class="line">│       ┌───────────┐ ┌───────────┐ ┌───────────┐ │</span><br><span class="line">│       │worker     │ │worker     │ │worker     │ │</span><br><span class="line">│ L1    │           │ │           │ │           │ │</span><br><span class="line">│       │ Lua cache │ │ Lua cache │ │ Lua cache │ │</span><br><span class="line">│       └───────────┘ └───────────┘ └───────────┘ │</span><br><span class="line">│             │             │             │       │</span><br><span class="line">│             ▼             ▼             ▼       │</span><br><span class="line">│       ┌───────────────────────────────────────┐ │</span><br><span class="line">│       │                                       │ │</span><br><span class="line">│ L2    │           lua_shared_dict             │ │</span><br><span class="line">│       │                                       │ │</span><br><span class="line">│       └───────────────────────────────────────┘ │</span><br><span class="line">│                           │ mutex               │</span><br><span class="line">│                           ▼                     │</span><br><span class="line">│                  ┌──────────────────┐           │</span><br><span class="line">│                  │     callback     │           │</span><br><span class="line">│                  └────────┬─────────┘           │</span><br><span class="line">└───────────────────────────┼─────────────────────┘</span><br><span class="line">                            │</span><br><span class="line">  L3                        │   I/O fetch</span><br><span class="line">                            ▼</span><br><span class="line"></span><br><span class="line">                   Database, API, DNS, Disk, any I/O...</span><br></pre></td></tr></table></figure>
+
+<p>分为三层：</p>
+<p>L1 层是使用 lua-resty-lrucache 的虚拟缓存。提供最快的查找。</p>
+<p>L2 层是用的 Nginx 的 lua_shared_dict 内存共享。当 L1 层的 key miss 掉时，从这里获取。</p>
+<p>L3 层提供一个自定义函数，有一个 Worker 执行，通过 lua-resty-lock 避免对后端的多次访问。L3 获取的值会被放到 L2 缓存当中。</p>
+<p>用来做缓存的组件，shared dict 缓存和 lru 缓存。前者只能缓存字符串对象，缓存的数据有且只有一份，每一个 worker 都可以进行访问，所以常用于 worker 之间的数据通信。后者则可以缓存所有的 Lua 对象，但只能在单个 worker 进程内访问，有多少个 worker，就会有多少份缓存数据。</p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">↑</a>
+  </div>
+</article>
+<footer>
+  &copy; 2023
+  <span class="author">
+    betta
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>
