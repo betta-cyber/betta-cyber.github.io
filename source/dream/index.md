@@ -7,7 +7,7 @@ date: 2022-05-20 09:54:56
 
 *[楔子](/dream/0.html)*
 
-*[01 - 惊恐之梦](/dream/1.html)*
+*[01 - 叛逆高中](/dream/1.html)*
 
 *[02 - 雪国骑士](/dream/2.html)*
 
@@ -22,7 +22,5 @@ date: 2022-05-20 09:54:56
 *[07 - 盖之女装](/dream/7.html)*
 
 *[08 - 记忆针织厂](/dream/8.html)*
-
-*[09 - 叛逆高中](/dream/9.html)*
 
 *[世界观](/dream/world.html)*
