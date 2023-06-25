@@ -14,3 +14,5 @@ date: 2022-06-07 19:24:38
 *[04 - 空房间](/blackhole/4.html)*
 
 *[05 - x](/blackhole/5.html)*
+
+*[06 - y](/blackhole/6.html)*
