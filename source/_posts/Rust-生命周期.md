@@ -200,3 +200,161 @@ let s: &'static str = "s is a static lifetime.";'
 ```
 let s: &str = "s is a static lifetime.";
 ```
+
+### 与编译器做斗争
+
+
+假设我们有一个整数数组，我们想遍历偶数。我们可以使用Iterator::filter()方法，让我们尝试手动实现它，因为这样做将使我们对Rust的生命周期规则有更深入的了解。
+
+代码如下：
+```
+struct Numbers<'a> {
+    data: &'a Vec<i32>,
+    even_idx: usize,
+}
+
+impl<'a> Numbers<'a> {
+    pub fn new(data: &'a Vec<i32>) -> Self {
+        Self{ data, even_idx: 0 }
+    }
+
+    pub fn next_even(&mut self) -> Option<&i32> {
+        while let Some(x) = self.get(self.even_idx) {
+            self.even_idx += 1;
+            if *x % 2 == 0 { return Some(x); }
+        }
+        None
+    }
+
+    fn get(&self, idx: usize) -> Option<&i32> {
+        if idx < self.data.len() { 
+            Some(&self.data[idx])
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let xs = vec![1,2,3,4,5,6,7,8,9];
+    let mut numbers = Numbers::new(&xs);
+    while let Some(x) = numbers.next_even() {
+        println!("{}", x);
+    }
+}
+```
+首先，注意struct Number<'a>的生命周期说明符'a。这是必需的，因为Number结构体有一个对vector的引用，即data: &'a Vec<i32>。换句话说，如果原始数据Vector超出作用域，结构体Number就不能存在。这在new(data: &'a Vec<i32>)方法签名中也很明显。
+
+这里的生命周期'a并不表示Number对象本身的生命周期。它是原始Vector实例的生命周期！
+
+让我们看看编译器对上面的代码是怎么说的：
+
+```
+error[E0506]: cannot assign to `self.even_idx` because it is borrowed
+  --> src/main.rs:13:13
+   |
+11 |     pub fn next_even(&mut self) -> Option<&i32> {
+   |                      - let's call the lifetime of this reference `'1`
+12 |         while let Some(x) = self.get(self.even_idx) {
+   |                             ----------------------- `self.even_idx` is borrowed here
+13 |             self.even_idx += 1;
+   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed
+14 |             if *x % 2 == 0 { return Some(x); }
+   |                                     ------- returning this value requires that `*self` is borrowed for `'1`
+```
+让我们尝试从编译器错误消息中理解每个语句。首先，编译器告诉我们应该假设&mut self的生命周期为'1 ，这是Number对象实例本身。如前所述，Number实例生命周期不是'a，这就是编译器给它'1的原因。实际上，用生命周期的名称会让代码更清晰一些，我们将使用与main()函数中的变量名相同的生命周期名称。
+
+```
+let xs = vec![1,2,3,4,5,6,7,8,9];
+let mut numbers = Numbers::new(&xs);
+```
+
+也就是说，对于xs对象，生命周期名称为'xs '，对于numbers对象，生命周期名称为'numbers，这将真正帮助我们理解编译器消息。
+
+代码修改如下：
+```
+struct Numbers<'xs> {
+    data: &'xs Vec<i32>,
+    even_idx: usize,
+}
+
+impl<'xs> Numbers<'xs> {
+    pub fn new(data: &'xs Vec<i32>) -> Self {
+        Self{ data, even_idx: 0 }
+    }
+
+    pub fn next_even<'numbers>(&'numbers mut self) -> Option<&i32> {
+        while let Some(x) = self.get(self.even_idx) {
+            self.even_idx += 1;
+            if *x % 2 == 0 { return Some(x); }
+        }
+        None
+    }
+
+    fn get<'numbers>(&'numbers self, idx: usize) -> Option<&i32> {
+        if idx < self.data.len() { 
+            Some(&self.data[idx])
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let xs = vec![1,2,3,4,5,6,7,8,9];
+    let mut numbers = Numbers::new(&xs);
+    while let Some(x) = numbers.next_even() {
+        println!("{}", x);
+    }
+}
+```
+
+现在，让我们再次查看编译器消息。
+
+```
+error[E0506]: cannot assign to `self.even_idx` because it is borrowed
+  --> src/main.rs:40:13
+   |
+38 |     pub fn next_even<'numbers>(&'numbers mut self) -> Option<&i32> {
+   |                      -------- lifetime `'numbers` defined here
+39 |         while let Some(x) = self.get(self.even_idx) {
+   |                             ----------------------- `self.even_idx` is borrowed here
+40 |             self.even_idx += 1;
+   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed
+41 |             if *x % 2 == 0 { return Some(x); }
+   |                                     ------- returning this value requires that `*self` is borrowed for `'numbers`
+```
+
+现在，信息："'self.even_idx' is borrowed here"是有意义的，因为我们的Numbers::get()方法确实借用了Numbers对象本身。由于我们data的生命周期为'xs，因此我们期望返回值的生命周期为'xs，而不是'numbers。
+
+
+
+不知何故，Some(x)具有'numbers而不是'xs的生命周期。为什么会这样？跟踪x的来源，我们看到它来自我们的方法Numbers::get()。这是否意味着该方法返回Option<&'numbers i32>而不是Option<&'xs i32>？让我们显式地指定方法next_even()和get()返回的生命周期：
+
+```
+pub fn next_even<'numbers>(&'numbers mut self) -> Option<&'xs i32> {
+    while let Some(x) = self.get(self.even_idx) {
+        self.even_idx += 1;
+        if *x % 2 == 0 { return Some(x); }
+    }
+    None
+}
+
+fn get<'numbers>(&'numbers self, idx: usize) -> Option<&'xs i32> {
+    if idx < self.data.len() { 
+        Some(&self.data[idx])
+    } else {
+        None
+    }
+}
+```
+
+惊喜！有了这个最后的更改，编译就成功了，我们得到了预期的结果。那么，根本原因是什么？这是因为省略生命周期导致的，基本上，如果Rust可以推断出合理的生命周期，那么生命周期规范可以被省略。不幸的是，这并不总是有效的。在我们的get()方法中，只有一个输入参数&self有生命周期，所以它的输出Option<&i32>被假定为与输入具有相同的生命周期，即'numbers而不是'xs，这就是问题的根源。
+
+**当然，直接去掉 numbers 的生命周期写法也是完全可以运行的。省略的话，应该是默认的生命周期**
+
+
+总结:
+1，结构体的生命周期参数与它的实例存在多长时间无关。
+2，省略生命周期有时会引入歧义或意外错误。
+
