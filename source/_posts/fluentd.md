@@ -1,5 +1,5 @@
 ---
-title: Fluentd 基础使用方式
+title: 使用 Fluentd 收集日志
 abbrlink: 916b8ba4
 date: 2022-02-24 18:13:14
 ---
