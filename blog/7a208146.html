@@ -84,6 +84,9 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/源字符串/目的字符串/g</span><br></pre></td></tr></table></figure>
 
 <p>[addr] 表示检索范围，省略时表示当前行。<br>“1,20”: 表示从第1行到20行；<br>“%”: 表示整个文件，同“1,$”；<br>“.,$”: 从当前行到文件尾；</p>
+<h1 id="在每行行首或行尾添加-x2F-删除内容"><a href="#在每行行首或行尾添加-x2F-删除内容" class="headerlink" title="在每行行首或行尾添加&#x2F;删除内容"></a>在每行行首或行尾添加&#x2F;删除内容</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/^/要添加的内容</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/$/要添加的内容</span><br></pre></td></tr></table></figure>
 
   </div>
   <div class="post-footer">

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Rust Tokio - B</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=betta-cyber, game, betta, shokill>
+  
+    <meta name="description" content="betta">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="B" type="application/atom+xml">
+  
+
+  
+
+  
+
+  <!-- <link rel="stylesheet" href="../css/style.css"> -->
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
+<meta name="generator" content="Hexo 5.4.1"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <!-- <div class="blog-title">
+    <a href="/" class="logo">B</a>
+    <div class="subtitle"></div>
+  </div> -->
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/" class="menu-item-link " >Home</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/blog" class="menu-item-link active" >Blog</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/ebook" class="menu-item-link " >Ebook</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/music" class="menu-item-link " >Music</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link " >About</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Rust Tokio</h1>
+  </div>
+  <div class="post-content">
+    <h2 id="tokio-select"><a href="#tokio-select" class="headerlink" title="tokio::select!"></a>tokio::select!</h2><p>tokio::select! 宏允许在多个异步计算中等待，并在单个计算完成后返回。</p>
+<p>注意，select 是在单线程中执行</p>
+<p>目前来说，select! 最多可以支持 64 个分支，每个分支形式如下：</p>
+<p>&lt;模式&gt; &#x3D; &lt;async 表达式&gt; &#x3D;&gt; &lt;结果处理&gt;,</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">use tokio::sync::oneshot;</span><br><span class="line"></span><br><span class="line">#[tokio::main]</span><br><span class="line">async fn main() &#123;</span><br><span class="line">    let (tx1, rx1) = oneshot::channel();</span><br><span class="line">    let (tx2, rx2) = oneshot::channel();</span><br><span class="line"></span><br><span class="line">    tokio::spawn(async &#123;</span><br><span class="line">        let _ = tx1.send(&quot;one&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    tokio::spawn(async &#123;</span><br><span class="line">        let _ = tx2.send(&quot;two&quot;);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    tokio::select! &#123;</span><br><span class="line">        val = rx1 =&gt; &#123;</span><br><span class="line">            println!(&quot;rx1 completed first with &#123;:?&#125;&quot;, val);</span><br><span class="line">        &#125;</span><br><span class="line">        val = rx2 =&gt; &#123;</span><br><span class="line">            println!(&quot;rx2 completed first with &#123;:?&#125;&quot;, val);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="tokio-spawn"><a href="#tokio-spawn" class="headerlink" title="tokio::spawn"></a>tokio::spawn</h2><p>创建一个异步任务,不仅可以单独的走异步任务，异步任务还可以返回结果，使用 await 接收</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">use tokio;</span><br><span class="line"></span><br><span class="line">#[tokio::main]</span><br><span class="line">async fn main() &#123;</span><br><span class="line">    tokio::spawn(async &#123;</span><br><span class="line">        println(&quot;OX&quot;)</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    let handle = tokio::spawn(async &#123;</span><br><span class="line">        10086</span><br><span class="line">    &#125;);</span><br><span class="line">    let out = handle.await.unwrap();</span><br><span class="line">    println!(&quot;GOT &#123;&#125;&quot;, out);</span><br><span class="line"></span><br><span class="line">    async fn more_async_work() -&gt; &amp;&#x27;static str &#123;</span><br><span class="line">        tokio::spawn(async &#123;</span><br><span class="line">            &quot;two&quot;</span><br><span class="line">        &#125;).await.unwrap_or(&quot;error&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    async fn do_stuff_async() -&gt; &amp;&#x27;static str &#123;</span><br><span class="line">        tokio::spawn(async &#123;</span><br><span class="line">            &quot;two&quot;</span><br><span class="line">        &#125;).await.unwrap_or(&quot;error&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    println(&quot;&#123;&#125;&quot;, do_stuff_async().await)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="tokio-join"><a href="#tokio-join" class="headerlink" title="tokio::join!"></a>tokio::join!</h2><p>使用 tokio::join! 宏同时执行多个异步任务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">async fn do_stuff_async() -&gt; &amp;&#x27;static str &#123;</span><br><span class="line">    let s = tokio::spawn(async &#123;</span><br><span class="line">        &quot;one&quot;</span><br><span class="line">    &#125;).await.unwrap();</span><br><span class="line">    s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">async fn more_async_work() -&gt; &amp;&#x27;static str &#123;</span><br><span class="line">    tokio::spawn(async &#123;</span><br><span class="line">        &quot;two&quot;</span><br><span class="line">    &#125;).await.unwrap_or(&quot;error&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#[tokio::main]</span><br><span class="line">async fn main() &#123;</span><br><span class="line">    let (first, second) = tokio::join!(</span><br><span class="line">        do_stuff_async(),</span><br><span class="line">        more_async_work()</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">    println!(&quot;&#123;&#125;, &#123;&#125;, &#123;&#125;&quot;, first, second, more_async_work().await)</span><br><span class="line">    // one, two, two</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>tokio提供了两种工作模式的runtime：</p>
+<p>1.单一线程的runtime(single thread runtime，也称为current thread runtime)<br>2.多线程(线程池)的runtime(multi thread runtime)</p>
+<p>创建单一线程的runtime</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#![allow(unused)]</span><br><span class="line">fn main() &#123;</span><br><span class="line">    // 创建单一线程的runtime</span><br><span class="line">    let rt = tokio::runtime::Builder::new_current_thread().build().unwrap();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建多线程的runtime，查看其线程数:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">use tokio;</span><br><span class="line"></span><br><span class="line">fn main()&#123;</span><br><span class="line">    let rt = tokio::runtime::Runtime::new().unwrap();</span><br><span class="line">    std::thread::sleep(std::time::Duration::from_secs(10));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>[tokio::main]创建的是多线程runtime，还有以下几种方式创建多线程runtime：<br>[tokio::main(flavor &#x3D; “multi_thread”] &#x2F;&#x2F; 等价于#[tokio::main]<br>[tokio::main(flavor &#x3D; “multi_thread”, worker_threads &#x3D; 10))]<br>[tokio::main(worker_threads &#x3D; 10))]</p>
+<p><a target="_blank" rel="noopener" href="https://liangyuetian.cn/posts/61015457/">https://liangyuetian.cn/posts/61015457/</a><br><a target="_blank" rel="noopener" href="https://rust-book.junmajinlong.com/ch100/01_understand_tokio_runtime.html">https://rust-book.junmajinlong.com/ch100/01_understand_tokio_runtime.html</a><br><a target="_blank" rel="noopener" href="https://skyao.io/learning-tokio/docs/tutorial/select.html#tokioselect">https://skyao.io/learning-tokio/docs/tutorial/select.html#tokioselect</a></p>
+
+  </div>
+  <div class="post-footer">
+    
+
+    <a href="#top" class="top">↑</a>
+  </div>
+</article>
+<footer>
+  &copy; 2023
+  <span class="author">
+    betta
+  </span>
+</footer>
+
+    </div>
+  </body>
+</html>
