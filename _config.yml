@@ -50,10 +50,10 @@ relative_link: false
 future: true
 highlight:
   enable: true
-  line_number: true
+  line_number: false
   auto_detect: false
   tab_replace: ''
-  wrap: true
+  wrap: false
   hljs: false
 
 # Home page setting
@@ -109,3 +109,6 @@ favicon:
   medium: /favicon.ico
   apple_touch_icon: /favicon.ico
 
+highlight_theme: night bright
+code_copy:
+    enable: true
