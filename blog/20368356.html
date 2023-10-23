@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">Rust 生命周期</h1>
@@ -73,70 +80,264 @@
     <p>学习生命周期参数的意义是，避免出现悬垂指针。</p>
 <p>在全球70%的安全漏洞里面，悬垂指针可能占50%，所以避免出现悬垂指针是一个很重要的安全保障。</p>
 <h3 id="悬垂指针的成因"><a href="#悬垂指针的成因" class="headerlink" title="悬垂指针的成因"></a>悬垂指针的成因</h3><p>在许多编程语言中（比如C），显示地从内存中删除一个对象或者返回时通过销毁栈帧，并不会改变相关的指针的值。该指针仍旧指向内存中相同的位置，即使引用已经被删除，现在可能已经挪作他用。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   char *dp = NULL;</span><br><span class="line">   /* ... */</span><br><span class="line">   &#123;</span><br><span class="line">       char c;</span><br><span class="line">       dp = &amp;c;</span><br><span class="line">   &#125; /* c falls out of scope */</span><br><span class="line">   /* dp is now a dangling pointer */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">&#123;
+   char *dp = NULL;
+   /* ... */
+   &#123;
+       char c;
+       dp = &amp;c;
+   &#125; /* c falls out of scope */
+   /* dp is now a dangling pointer */
+&#125;</code></pre>
 
 <p>如果操作系统能够侦测运行时的指向空指针的引用，一个方案是在内部快消失之前给dp赋为0（NULL）。另一个方案是保证dp在没有被初始化之前不再被使用。</p>
 <p>另一个常见原因是混用 malloc() 和 free()：当一个指针指向的内存被释放后就会变成悬垂指针。正如上个例子，可以避免这个问题的一种方法是在释放它的引用后把指针重置为NULL。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">void func()</span><br><span class="line">&#123;</span><br><span class="line">    char *dp = malloc(A_CONST);</span><br><span class="line">    /* ... */</span><br><span class="line">    free(dp);         /* dp now becomes a dangling pointer */</span><br><span class="line">    dp = NULL;        /* dp is no longer dangling */</span><br><span class="line">    /* ... */</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">#include &lt;stdlib.h&gt;
+void func()
+&#123;
+    char *dp = malloc(A_CONST);
+    /* ... */
+    free(dp);         /* dp now becomes a dangling pointer */
+    dp = NULL;        /* dp is no longer dangling */
+    /* ... */
+&#125;</code></pre>
 
 <p>一个很常见的失误是返回一个栈分配的局部变量：一旦调用的函数返回了，分配给这些变量的空间被回收，此时它们拥有的是“垃圾值”。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int *func(void)</span><br><span class="line">&#123;</span><br><span class="line">    int num = 1234;</span><br><span class="line">    /* ... */</span><br><span class="line">    return &amp;num;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">int *func(void)
+&#123;
+    int num = 1234;
+    /* ... */
+    return &amp;num;
+&#125;</code></pre>
 
 <p>调用 func 后，尝试从该指针暂时能读取到正确的值（1234），但是再次调用函数后将会重写栈为 num 分配的的值，再从该指针读取的值就不正确了。如果必须要返回一个指向 num 的指针，num 的作用域必须大于这个函数——它也许被声明为 static。</p>
-<h3 id="什么是生命周期"><a href="#什么是生命周期" class="headerlink" title="什么是生命周期"></a>什么是生命周期</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">fn main() &#123;</span><br><span class="line">  let a;                // -------------+-- a start</span><br><span class="line">  &#123;                     //              |</span><br><span class="line">    let b = 5;          // -+-- b start |</span><br><span class="line">    a = &amp;b;             //  |           |</span><br><span class="line">  &#125;                     // -+-- b over  |</span><br><span class="line">  println!(&quot;a: &#123;&#125;&quot;, a); //              |</span><br><span class="line">&#125;                       // -------------+-- a over</span><br></pre></td></tr></table></figure>
+<h3 id="什么是生命周期"><a href="#什么是生命周期" class="headerlink" title="什么是生命周期"></a>什么是生命周期</h3><pre><code class="highlight plaintext">fn main() &#123;
+  let a;                // -------------+-- a start
+  &#123;                     //              |
+    let b = 5;          // -+-- b start |
+    a = &amp;b;             //  |           |
+  &#125;                     // -+-- b over  |
+  println!(&quot;a: &#123;&#125;&quot;, a); //              |
+&#125;                       // -------------+-- a over</code></pre>
 
 <p>上面第 5 行代码把变量b 借给了变量a，所以 a 是借用方，b 是出借方。可以发现变量a（借用方）的生命周期比变量b（出借方）的生命周期长，于是这样做违背了 rust 的借用规则（借用方的生命周期不能比出借方的生命周期还要长）。因为当 b 在生命周期结束时，a 还是保持了对 b 的借用，就会导致 a 所指向的那块内存空间已经被释放了，那么变量 a 就会是一个悬垂引用。</p>
 <p>对于一个参数和返回值都包含引用的函数而言，该函数的参数是出借方，函数返回值所绑定到的那个变量就是借用方。所以这种函数也需要满足借用规则（借用方的生命周期不能比出借方的生命周期还要长）。那么就需要对函数返回值的生命周期进行标注，告知编译器函数返回值的生命周期信息。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">fn max_num(x: &amp;i32, y: &amp;i32) -&gt; &amp;i32 &#123;</span><br><span class="line">  if x &gt; y &#123;</span><br><span class="line">    &amp;x</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &amp;y</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn main() &#123;</span><br><span class="line">  let x = 1;                // -------------+-- x start</span><br><span class="line">  let max;                  // -------------+-- max start</span><br><span class="line">  &#123;                         //              |</span><br><span class="line">    let y = 8;              // -------------+-- y start</span><br><span class="line">    max = max_num(&amp;x, &amp;y);  //              |</span><br><span class="line">  &#125;                         // -------------+-- y over</span><br><span class="line">  println!(&quot;max: &#123;&#125;&quot;, max); //              |</span><br><span class="line">&#125;                           // -------------+-- max, x over</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">fn max_num(x: &amp;i32, y: &amp;i32) -&gt; &amp;i32 &#123;
+  if x &gt; y &#123;
+    &amp;x
+  &#125; else &#123;
+    &amp;y
+  &#125;
+&#125;
+
+fn main() &#123;
+  let x = 1;                // -------------+-- x start
+  let max;                  // -------------+-- max start
+  &#123;                         //              |
+    let y = 8;              // -------------+-- y start
+    max = max_num(&amp;x, &amp;y);  //              |
+  &#125;                         // -------------+-- y over
+  println!(&quot;max: &#123;&#125;&quot;, max); //              |
+&#125;                           // -------------+-- max, x over</code></pre>
 
 <p>由于缺少生命周期参数，编译器不知道 max_num 函数返回的引用生命周期是什么，所以运行报错：</p>
 <p>函数的生命周期参数声明在函数名后的尖括号 &lt;&gt; 里，然后每个参数名跟在一个单引号’ 后面，多个参数用逗号隔开。如果在参数和返回值的地方需要使用生命周期进行标注时，只需要在 &amp; 符号后面加上一个单引号’ 和之前声明的参数名即可。生命周期参数名可以是任意合法的名称。例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">fn max_num&lt;&#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;a i32) -&gt; &amp;&#x27;a i32 &#123;</span><br><span class="line">  if x &gt; y &#123;</span><br><span class="line">    &amp;x</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &amp;y</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">fn main() &#123;</span><br><span class="line">  let x = 1;                // -------------+-- x start</span><br><span class="line">  let max;                  // -------------+-- max start</span><br><span class="line">  &#123;                         //              |</span><br><span class="line">    let y = 8;              // -------------+-- y start</span><br><span class="line">    max = max_num(&amp;x, &amp;y);  //              |</span><br><span class="line">  &#125;                         // -------------+-- y over</span><br><span class="line">  println!(&quot;max: &#123;&#125;&quot;, max); //              |</span><br><span class="line">&#125;                           // -------------+-- max, x over</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">fn max_num&lt;&#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;a i32) -&gt; &amp;&#x27;a i32 &#123;
+  if x &gt; y &#123;
+    &amp;x
+  &#125; else &#123;
+    &amp;y
+  &#125;
+&#125;
+fn main() &#123;
+  let x = 1;                // -------------+-- x start
+  let max;                  // -------------+-- max start
+  &#123;                         //              |
+    let y = 8;              // -------------+-- y start
+    max = max_num(&amp;x, &amp;y);  //              |
+  &#125;                         // -------------+-- y over
+  println!(&quot;max: &#123;&#125;&quot;, max); //              |
+&#125;                           // -------------+-- max, x over</code></pre>
 
 <p>上面代码对函数 max_num 的参数和返回值的生命周期进行了标注，用于告诉编译器函数参数和函数返回值的生命周期一样长。在第 13 行代码对 max_num 进行调用时，编译器会把变量 x 的生命周期和变量 y 的生命周期与 max_num 函数的生命周期参数’a 建立关联。这里值得注意的是，变量 x 和变量 y 的生命周期长短其实是不一样的，那么关联到 max_num 函数的生命周期参数’a 的长度是多少呢？实际上编译器会取变量 x 的生命周期和变量 y 的生命周期重叠的部分，也就是取最短的那个变量的生命周期与’a 建立关联。这里最短的生命周期是变量 y，所以’a 关联的生命周期就是变量 y 的生命周期。</p>
 <p>运行上面代码，会有报错信息：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">error[E0597]: `y` does not live long enough</span><br><span class="line">  --&gt; src/main.rs:13:27</span><br><span class="line">   |</span><br><span class="line">13 |         max = max_num(&amp;x, &amp;y);</span><br><span class="line">   |                           ^^ borrowed value does not live long enough</span><br><span class="line">14 |     &#125;</span><br><span class="line">   |     - `y` dropped here while still borrowed</span><br><span class="line">15 |     println!(&quot;max: &#123;&#125;&quot;, max);</span><br><span class="line">   |                         --- borrow later used here</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">error[E0597]: `y` does not live long enough
+  --&gt; src/main.rs:13:27
+   |
+13 |         max = max_num(&amp;x, &amp;y);
+   |                           ^^ borrowed value does not live long enough
+14 |     &#125;
+   |     - `y` dropped here while still borrowed
+15 |     println!(&quot;max: &#123;&#125;&quot;, max);
+   |                         --- borrow later used here</code></pre>
 
 <p>报错信息说变量 y 的生命周期不够长，当 y 的生命周期结束后，仍然被借用。</p>
 <p>我们仔细观察发现 max_num 函数返回值所绑定到的那个变量 max（借用方）的生命周期是从第 10 行代码到第 16 行代码，而 max_num 函数的返回值（出借方）的生命周期是’a，’a 的生命周期又是变量 x 的生命周期和变量 y 的生命周期中最短的那个，也就是变量 y 的生命周期。变量 y 的生命周期是代码的第 12 行到第 14 行。所以这里不满足借用规则（借用方的生命周期不能比出借方的生命周期还要长）。也就是为什么编译器会说变量 y 的生命周期不够长的原因了。函数的生命周期参数并不会改变生命周期的长短，只是用于编译来判断是否满足借用规则。</p>
 <p>将代码做如下调整，使其变量 max 的生命周期小于变量 y 的生命周期，编译器就可以正常通过：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">fn max_num&lt;&#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;a i32) -&gt; &amp;&#x27;a i32 &#123;</span><br><span class="line">  if x &gt; y &#123;</span><br><span class="line">    &amp;x</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &amp;y</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">fn main() &#123;</span><br><span class="line">  let x = 1;                  // -------------+-- x start</span><br><span class="line">  let y = 8;                  // -------------+-- y start</span><br><span class="line">  let max = max_num(&amp;x, &amp;y);  // -------------+-- max start</span><br><span class="line">  println!(&quot;max: &#123;&#125;&quot;, max);   //              |</span><br><span class="line">&#125;                             // -------------+-- max, y, x over</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">fn max_num&lt;&#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;a i32) -&gt; &amp;&#x27;a i32 &#123;
+  if x &gt; y &#123;
+    &amp;x
+  &#125; else &#123;
+    &amp;y
+  &#125;
+&#125;
+fn main() &#123;
+  let x = 1;                  // -------------+-- x start
+  let y = 8;                  // -------------+-- y start
+  let max = max_num(&amp;x, &amp;y);  // -------------+-- max start
+  println!(&quot;max: &#123;&#125;&quot;, max);   //              |
+&#125;                             // -------------+-- max, y, x over</code></pre>
 
 <p>函数存在多个生命周期参数时，需要标注各个参数之间的关系。例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">fn max_num&lt;&#x27;a, &#x27;b: &#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;b i32) -&gt; &amp;&#x27;a i32 &#123;</span><br><span class="line">  if x &gt; y &#123;</span><br><span class="line">    &amp;x</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    &amp;y</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">fn main() &#123;</span><br><span class="line">  let x = 1;                  // -------------+-- x start</span><br><span class="line">  let y = 8;                  // -------------+-- y start</span><br><span class="line">  let max = max_num(&amp;x, &amp;y);  // -------------+-- max start</span><br><span class="line">  println!(&quot;max: &#123;&#125;&quot;, max);   //              |</span><br><span class="line">&#125;                             // -------------+-- max, y, x over</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">fn max_num&lt;&#x27;a, &#x27;b: &#x27;a&gt;(x: &amp;&#x27;a i32, y: &amp;&#x27;b i32) -&gt; &amp;&#x27;a i32 &#123;
+  if x &gt; y &#123;
+    &amp;x
+  &#125; else &#123;
+    &amp;y
+  &#125;
+&#125;
+fn main() &#123;
+  let x = 1;                  // -------------+-- x start
+  let y = 8;                  // -------------+-- y start
+  let max = max_num(&amp;x, &amp;y);  // -------------+-- max start
+  println!(&quot;max: &#123;&#125;&quot;, max);   //              |
+&#125;                             // -------------+-- max, y, x over</code></pre>
 
 <p>上面代码使用’b: ‘a 来标注’a 与’b 之间的生命周期关系，它表示’a 的生命周期不能超过’b，即函数返回值的生命周期’a（借用方）不能超过’b&#96;&#96;（出借方），‘a 也不会超过‘a&#96;（出借方）。</p>
 <h3 id="结构体中的生命周期参数"><a href="#结构体中的生命周期参数" class="headerlink" title="结构体中的生命周期参数"></a>结构体中的生命周期参数</h3><p>一个包含引用成员的结构体，必须保证结构体本身的生命周期不能超过任何一个引用成员的生命周期。否则就会出现成员已经被销毁之后，结构体还保持对那个成员的引用就会产生悬垂引用。所以这依旧是 rust 的借用规则即借用方（结构体本身）的生命周期不能比出借方（结构体中的引用成员）的生命周期还要长。因此就需要在声明结构体的同时也声明生命周期参数，同时对结构体的引用成员进行生命周期参数标注。</p>
 <p>结构体生命周期参数声明在结构体名称后的尖括号 &lt;&gt; 里，每个参数名跟在一个单引号’ 后面，多个参数用逗号隔开。在进行标注时，只需要在引用成员的 &amp; 符号后面加上一个单引号’ 和之前声明的参数名即可。生命周期参数名可以是任意合法的名称。例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct Foo&lt;&#x27;a&gt; &#123;</span><br><span class="line">    v: &amp;&#x27;a i32</span><br><span class="line">&#125;&#x27;&gt;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">struct Foo&lt;&#x27;a&gt; &#123;
+    v: &amp;&#x27;a i32
+&#125;&#x27;&gt;</code></pre>
 
 <h3 id="静态生命周期参数"><a href="#静态生命周期参数" class="headerlink" title="静态生命周期参数"></a>静态生命周期参数</h3><p>有一个特殊的生命周期参数叫 static，它的生命周期是整个应用程序。跟其他生命周期参数不同的是，它是表示一个具体的生命周期长度，而不是泛指。static 生命周期的变量存储在静态段中。</p>
 <p>所有的字符串字面值都是 ‘static 生命周期，例如：’</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let s: &amp;&#x27;static str = &quot;s is a static lifetime.&quot;;&#x27;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">let s: &amp;&#x27;static str = &quot;s is a static lifetime.&quot;;&#x27;</code></pre>
 
 <p>上面代码中的生命周期参数可以省略，就变成如下形式：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let s: &amp;str = &quot;s is a static lifetime.&quot;;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">let s: &amp;str = &quot;s is a static lifetime.&quot;;</code></pre>
 
 <h3 id="与编译器做斗争"><a href="#与编译器做斗争" class="headerlink" title="与编译器做斗争"></a>与编译器做斗争</h3><p>假设我们有一个整数数组，我们想遍历偶数。我们可以使用Iterator::filter()方法，让我们尝试手动实现它，因为这样做将使我们对Rust的生命周期规则有更深入的了解。</p>
 <p>代码如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">struct Numbers&lt;&#x27;a&gt; &#123;</span><br><span class="line">    data: &amp;&#x27;a Vec&lt;i32&gt;,</span><br><span class="line">    even_idx: usize,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">impl&lt;&#x27;a&gt; Numbers&lt;&#x27;a&gt; &#123;</span><br><span class="line">    pub fn new(data: &amp;&#x27;a Vec&lt;i32&gt;) -&gt; Self &#123;</span><br><span class="line">        Self&#123; data, even_idx: 0 &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pub fn next_even(&amp;mut self) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">        while let Some(x) = self.get(self.even_idx) &#123;</span><br><span class="line">            self.even_idx += 1;</span><br><span class="line">            if *x % 2 == 0 &#123; return Some(x); &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        None</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fn get(&amp;self, idx: usize) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">        if idx &lt; self.data.len() &#123; </span><br><span class="line">            Some(&amp;self.data[idx])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            None</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn main() &#123;</span><br><span class="line">    let xs = vec![1,2,3,4,5,6,7,8,9];</span><br><span class="line">    let mut numbers = Numbers::new(&amp;xs);</span><br><span class="line">    while let Some(x) = numbers.next_even() &#123;</span><br><span class="line">        println!(&quot;&#123;&#125;&quot;, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">struct Numbers&lt;&#x27;a&gt; &#123;
+    data: &amp;&#x27;a Vec&lt;i32&gt;,
+    even_idx: usize,
+&#125;
+
+impl&lt;&#x27;a&gt; Numbers&lt;&#x27;a&gt; &#123;
+    pub fn new(data: &amp;&#x27;a Vec&lt;i32&gt;) -&gt; Self &#123;
+        Self&#123; data, even_idx: 0 &#125;
+    &#125;
+
+    pub fn next_even(&amp;mut self) -&gt; Option&lt;&amp;i32&gt; &#123;
+        while let Some(x) = self.get(self.even_idx) &#123;
+            self.even_idx += 1;
+            if *x % 2 == 0 &#123; return Some(x); &#125;
+        &#125;
+        None
+    &#125;
+
+    fn get(&amp;self, idx: usize) -&gt; Option&lt;&amp;i32&gt; &#123;
+        if idx &lt; self.data.len() &#123; 
+            Some(&amp;self.data[idx])
+        &#125; else &#123;
+            None
+        &#125;
+    &#125;
+&#125;
+
+fn main() &#123;
+    let xs = vec![1,2,3,4,5,6,7,8,9];
+    let mut numbers = Numbers::new(&amp;xs);
+    while let Some(x) = numbers.next_even() &#123;
+        println!(&quot;&#123;&#125;&quot;, x);
+    &#125;
+&#125;</code></pre>
 <p>首先，注意struct Number&lt;’a&gt;的生命周期说明符’a。这是必需的，因为Number结构体有一个对vector的引用，即data: &amp;’a Vec<i32>。换句话说，如果原始数据Vector超出作用域，结构体Number就不能存在。这在new(data: &amp;’a Vec<i32>)方法签名中也很明显。</p>
 <p>这里的生命周期’a并不表示Number对象本身的生命周期。它是原始Vector实例的生命周期！</p>
 <p>让我们看看编译器对上面的代码是怎么说的：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">error[E0506]: cannot assign to `self.even_idx` because it is borrowed</span><br><span class="line">  --&gt; src/main.rs:13:13</span><br><span class="line">   |</span><br><span class="line">11 |     pub fn next_even(&amp;mut self) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">   |                      - let&#x27;s call the lifetime of this reference `&#x27;1`</span><br><span class="line">12 |         while let Some(x) = self.get(self.even_idx) &#123;</span><br><span class="line">   |                             ----------------------- `self.even_idx` is borrowed here</span><br><span class="line">13 |             self.even_idx += 1;</span><br><span class="line">   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed</span><br><span class="line">14 |             if *x % 2 == 0 &#123; return Some(x); &#125;</span><br><span class="line">   |                                     ------- returning this value requires that `*self` is borrowed for `&#x27;1`</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">error[E0506]: cannot assign to `self.even_idx` because it is borrowed
+  --&gt; src/main.rs:13:13
+   |
+11 |     pub fn next_even(&amp;mut self) -&gt; Option&lt;&amp;i32&gt; &#123;
+   |                      - let&#x27;s call the lifetime of this reference `&#x27;1`
+12 |         while let Some(x) = self.get(self.even_idx) &#123;
+   |                             ----------------------- `self.even_idx` is borrowed here
+13 |             self.even_idx += 1;
+   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed
+14 |             if *x % 2 == 0 &#123; return Some(x); &#125;
+   |                                     ------- returning this value requires that `*self` is borrowed for `&#x27;1`</code></pre>
 <p>让我们尝试从编译器错误消息中理解每个语句。首先，编译器告诉我们应该假设&amp;mut self的生命周期为’1 ，这是Number对象实例本身。如前所述，Number实例生命周期不是’a，这就是编译器给它’1的原因。实际上，用生命周期的名称会让代码更清晰一些，我们将使用与main()函数中的变量名相同的生命周期名称。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let xs = vec![1,2,3,4,5,6,7,8,9];</span><br><span class="line">let mut numbers = Numbers::new(&amp;xs);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">let xs = vec![1,2,3,4,5,6,7,8,9];
+let mut numbers = Numbers::new(&amp;xs);</code></pre>
 
 <p>也就是说，对于xs对象，生命周期名称为’xs ‘，对于numbers对象，生命周期名称为’numbers，这将真正帮助我们理解编译器消息。</p>
 <p>代码修改如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">struct Numbers&lt;&#x27;xs&gt; &#123;</span><br><span class="line">    data: &amp;&#x27;xs Vec&lt;i32&gt;,</span><br><span class="line">    even_idx: usize,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">impl&lt;&#x27;xs&gt; Numbers&lt;&#x27;xs&gt; &#123;</span><br><span class="line">    pub fn new(data: &amp;&#x27;xs Vec&lt;i32&gt;) -&gt; Self &#123;</span><br><span class="line">        Self&#123; data, even_idx: 0 &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">        while let Some(x) = self.get(self.even_idx) &#123;</span><br><span class="line">            self.even_idx += 1;</span><br><span class="line">            if *x % 2 == 0 &#123; return Some(x); &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        None</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fn get&lt;&#x27;numbers&gt;(&amp;&#x27;numbers self, idx: usize) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">        if idx &lt; self.data.len() &#123; </span><br><span class="line">            Some(&amp;self.data[idx])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            None</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn main() &#123;</span><br><span class="line">    let xs = vec![1,2,3,4,5,6,7,8,9];</span><br><span class="line">    let mut numbers = Numbers::new(&amp;xs);</span><br><span class="line">    while let Some(x) = numbers.next_even() &#123;</span><br><span class="line">        println!(&quot;&#123;&#125;&quot;, x);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">struct Numbers&lt;&#x27;xs&gt; &#123;
+    data: &amp;&#x27;xs Vec&lt;i32&gt;,
+    even_idx: usize,
+&#125;
+
+impl&lt;&#x27;xs&gt; Numbers&lt;&#x27;xs&gt; &#123;
+    pub fn new(data: &amp;&#x27;xs Vec&lt;i32&gt;) -&gt; Self &#123;
+        Self&#123; data, even_idx: 0 &#125;
+    &#125;
+
+    pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;i32&gt; &#123;
+        while let Some(x) = self.get(self.even_idx) &#123;
+            self.even_idx += 1;
+            if *x % 2 == 0 &#123; return Some(x); &#125;
+        &#125;
+        None
+    &#125;
+
+    fn get&lt;&#x27;numbers&gt;(&amp;&#x27;numbers self, idx: usize) -&gt; Option&lt;&amp;i32&gt; &#123;
+        if idx &lt; self.data.len() &#123; 
+            Some(&amp;self.data[idx])
+        &#125; else &#123;
+            None
+        &#125;
+    &#125;
+&#125;
+
+fn main() &#123;
+    let xs = vec![1,2,3,4,5,6,7,8,9];
+    let mut numbers = Numbers::new(&amp;xs);
+    while let Some(x) = numbers.next_even() &#123;
+        println!(&quot;&#123;&#125;&quot;, x);
+    &#125;
+&#125;</code></pre>
 
 <p>现在，让我们再次查看编译器消息。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">error[E0506]: cannot assign to `self.even_idx` because it is borrowed</span><br><span class="line">  --&gt; src/main.rs:40:13</span><br><span class="line">   |</span><br><span class="line">38 |     pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;i32&gt; &#123;</span><br><span class="line">   |                      -------- lifetime `&#x27;numbers` defined here</span><br><span class="line">39 |         while let Some(x) = self.get(self.even_idx) &#123;</span><br><span class="line">   |                             ----------------------- `self.even_idx` is borrowed here</span><br><span class="line">40 |             self.even_idx += 1;</span><br><span class="line">   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed</span><br><span class="line">41 |             if *x % 2 == 0 &#123; return Some(x); &#125;</span><br><span class="line">   |                                     ------- returning this value requires that `*self` is borrowed for `&#x27;numbers`</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">error[E0506]: cannot assign to `self.even_idx` because it is borrowed
+  --&gt; src/main.rs:40:13
+   |
+38 |     pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;i32&gt; &#123;
+   |                      -------- lifetime `&#x27;numbers` defined here
+39 |         while let Some(x) = self.get(self.even_idx) &#123;
+   |                             ----------------------- `self.even_idx` is borrowed here
+40 |             self.even_idx += 1;
+   |             ^^^^^^^^^^^^^^^^^^ `self.even_idx` is assigned to here but it was already borrowed
+41 |             if *x % 2 == 0 &#123; return Some(x); &#125;
+   |                                     ------- returning this value requires that `*self` is borrowed for `&#x27;numbers`</code></pre>
 
 <p>现在，信息：”‘self.even_idx’ is borrowed here”是有意义的，因为我们的Numbers::get()方法确实借用了Numbers对象本身。由于我们data的生命周期为’xs，因此我们期望返回值的生命周期为’xs，而不是’numbers。</p>
 <p>不知何故，Some(x)具有’numbers而不是’xs的生命周期。为什么会这样？跟踪x的来源，我们看到它来自我们的方法Numbers::get()。这是否意味着该方法返回Option&lt;&amp;’numbers i32&gt;而不是Option&lt;&amp;’xs i32&gt;？让我们显式地指定方法next_even()和get()返回的生命周期：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;&#x27;xs i32&gt; &#123;</span><br><span class="line">    while let Some(x) = self.get(self.even_idx) &#123;</span><br><span class="line">        self.even_idx += 1;</span><br><span class="line">        if *x % 2 == 0 &#123; return Some(x); &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    None</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fn get&lt;&#x27;numbers&gt;(&amp;&#x27;numbers self, idx: usize) -&gt; Option&lt;&amp;&#x27;xs i32&gt; &#123;</span><br><span class="line">    if idx &lt; self.data.len() &#123; </span><br><span class="line">        Some(&amp;self.data[idx])</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        None</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">pub fn next_even&lt;&#x27;numbers&gt;(&amp;&#x27;numbers mut self) -&gt; Option&lt;&amp;&#x27;xs i32&gt; &#123;
+    while let Some(x) = self.get(self.even_idx) &#123;
+        self.even_idx += 1;
+        if *x % 2 == 0 &#123; return Some(x); &#125;
+    &#125;
+    None
+&#125;
+
+fn get&lt;&#x27;numbers&gt;(&amp;&#x27;numbers self, idx: usize) -&gt; Option&lt;&amp;&#x27;xs i32&gt; &#123;
+    if idx &lt; self.data.len() &#123; 
+        Some(&amp;self.data[idx])
+    &#125; else &#123;
+        None
+    &#125;
+&#125;</code></pre>
 
 <p>惊喜！有了这个最后的更改，编译就成功了，我们得到了预期的结果。那么，根本原因是什么？这是因为省略生命周期导致的，基本上，如果Rust可以推断出合理的生命周期，那么生命周期规范可以被省略。不幸的是，这并不总是有效的。在我们的get()方法中，只有一个输入参数&amp;self有生命周期，所以它的输出Option&lt;&amp;i32&gt;被假定为与输入具有相同的生命周期，即’numbers而不是’xs，这就是问题的根源。</p>
 <p><strong>当然，直接去掉 numbers 的生命周期写法也是完全可以运行的。省略的话，应该是默认的生命周期</strong></p>

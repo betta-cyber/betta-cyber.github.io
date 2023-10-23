@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">Rust 静态编译可执行文件</h1>
@@ -73,15 +80,29 @@
     <h2 id="Rust默认运行时环境"><a href="#Rust默认运行时环境" class="headerlink" title="Rust默认运行时环境"></a>Rust默认运行时环境</h2><p>Linux 下 Rust 默认使用 gcc 作为链接器，编译后的文件在运行时需要 glibc 运行库和其他的一些库。</p>
 <p>这就导致在某个 Linux 版本下编译的执行文件，无法在另一个 Linux 版本上顺利运行。而且，如果你的程序还使用了 OpenSSL 动态库，那这样的问题会更加突出。</p>
 <p>我用 Cargo 创建一个可执行项目。这个项目是一个 grpc 项目，编译这个项目，用 ldd 命令查看编译出来的执行文件依赖了哪些动态链接库：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  dagent git:(master) ✗ ldd target/release/dagent</span><br><span class="line">        linux-vdso.so.1 (0x00007ffdbfbf6000)</span><br><span class="line">        libssl.so.1.1 =&gt; /usr/lib/x86_64-linux-gnu/libssl.so.1.1 (0x00007fbac355f000)</span><br><span class="line">        libcrypto.so.1.1 =&gt; /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 (0x00007fbac3094000)</span><br><span class="line">        libgcc_s.so.1 =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fbac2e7c000)</span><br><span class="line">        librt.so.1 =&gt; /lib/x86_64-linux-gnu/librt.so.1 (0x00007fbac2c74000)</span><br><span class="line">        libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fbac2a55000)</span><br><span class="line">        libm.so.6 =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007fbac26b7000)</span><br><span class="line">        libdl.so.2 =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fbac24b3000)</span><br><span class="line">        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbac20c2000)</span><br><span class="line">        /lib64/ld-linux-x86-64.so.2 (0x00007fbac3f59000)</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">➜  dagent git:(master) ✗ ldd target/release/dagent
+        linux-vdso.so.1 (0x00007ffdbfbf6000)
+        libssl.so.1.1 =&gt; /usr/lib/x86_64-linux-gnu/libssl.so.1.1 (0x00007fbac355f000)
+        libcrypto.so.1.1 =&gt; /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 (0x00007fbac3094000)
+        libgcc_s.so.1 =&gt; /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fbac2e7c000)
+        librt.so.1 =&gt; /lib/x86_64-linux-gnu/librt.so.1 (0x00007fbac2c74000)
+        libpthread.so.0 =&gt; /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fbac2a55000)
+        libm.so.6 =&gt; /lib/x86_64-linux-gnu/libm.so.6 (0x00007fbac26b7000)
+        libdl.so.2 =&gt; /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fbac24b3000)
+        libc.so.6 =&gt; /lib/x86_64-linux-gnu/libc.so.6 (0x00007fbac20c2000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fbac3f59000)</code></pre>
 
 <p>可以看到这个执行文件依赖了多个 .so 的动态链接库。而且这种依赖是基于绝对路径的。一旦运行时环境下没有这些动态库文件，那程序执行的结果就只有一个：报错！</p>
 <p>那么，Rust 能否像 Golang 那样编译成独立的静态可执行文件呢？答案是可以的，这需要使用 MUSL 静态库。</p>
 <h2 id="使用-MUSL-进行静态编译"><a href="#使用-MUSL-进行静态编译" class="headerlink" title="使用 MUSL 进行静态编译"></a>使用 MUSL 进行静态编译</h2><p>使用 MUSL 编译，首先需要安装 musl 环境。命令如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ rustup target add x86_64-unknown-linux-musl</span><br><span class="line">$ rustup target add x86_64-unknown-linux-musl --toolchain=nightly</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">$ rustup target add x86_64-unknown-linux-musl
+$ rustup target add x86_64-unknown-linux-musl --toolchain=nightly</code></pre>
 
 <p>然后，我们编译前面创建的 hello 工程。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cd hello</span><br><span class="line">$ cargo build --release --target=x86_64-unknown-linux-musl</span><br><span class="line">$ ldd target/x86_64-unknown-linux-musl/release/hello</span><br><span class="line">        not a dynamic executable</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">$ cd hello
+$ cargo build --release --target=x86_64-unknown-linux-musl
+$ ldd target/x86_64-unknown-linux-musl/release/hello
+        not a dynamic executable</code></pre>
 
 <p>可以看到新的可执行文件已经不再依赖任何动态链接库。我们可以将这个文件放到任何一个 Linux 操作系统里运行了。</p>
 <p>当然，这只是一个最简单的例子。实际工作中，我们可能会遇到更复杂的场景。如：依赖了 OpenSSL 库。在这样的场景里，我们还需要做很多配置才能获得我们想要的静态编译文件。这里就不再详细介绍了。</p>
@@ -89,7 +110,16 @@
 <h2 id="使用预置好的-Docker-容器进行-MUSL-编译"><a href="#使用预置好的-Docker-容器进行-MUSL-编译" class="headerlink" title="使用预置好的 Docker 容器进行 MUSL 编译"></a>使用预置好的 Docker 容器进行 MUSL 编译</h2><p>为解决使用 MUSL 编译配置繁琐的问题，国外的开发者贡献了一个预置好的容器。用这个容器来进行 MUSL 编译会非常方便快捷。</p>
 <p>项目地址是：<a target="_blank" rel="noopener" href="https://gitlab.com/rust_musl_docker/image">https://gitlab.com/rust_musl_docker/image</a></p>
 <p>我们直接用这个容器来编译我们前面创建的 grpc 工程。然后依然用 ldd 来查看编译好的可执行文件。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd dagent</span><br><span class="line">$ docker run -it --rm \</span><br><span class="line">-v $PWD:/workdir \</span><br><span class="line">-v ~/.cargo/git:/root/.cargo/git \</span><br><span class="line">-v ~/.cargo/registry:/root/.cargo/registry \</span><br><span class="line">registry.gitlab.com/rust_musl_docker/image:stable-latest \</span><br><span class="line">cargo build --release -vv --target=x86_64-unknown-linux-musl</span><br><span class="line"></span><br><span class="line">$ ldd target/x86_64-unknown-linux-musl/release/dagent</span><br><span class="line">        statically linked</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">$ cd dagent
+$ docker run -it --rm \
+-v $PWD:/workdir \
+-v ~/.cargo/git:/root/.cargo/git \
+-v ~/.cargo/registry:/root/.cargo/registry \
+registry.gitlab.com/rust_musl_docker/image:stable-latest \
+cargo build --release -vv --target=x86_64-unknown-linux-musl
+
+$ ldd target/x86_64-unknown-linux-musl/release/dagent
+        statically linked</code></pre>
 
 <p>这个容器镜像里已经配置了对 OpenSSL 库的静态编译。亲测可用。更详细的内容，可以去看项目里的注释，已经非常详尽了。</p>
 <h2 id="PS"><a href="#PS" class="headerlink" title="PS."></a>PS.</h2><p><a target="_blank" rel="noopener" href="https://github.com/sfackler/rust-openssl/issues/766">https://github.com/sfackler/rust-openssl/issues/766</a></p>

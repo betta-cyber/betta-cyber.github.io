@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">Frida hook 应用商店 Sign</h1>
@@ -73,32 +80,105 @@
     <p>直接用 frida 进行 hook 抓包，bp 中发现原始包中包含 sign。对 sign 生成流程进行分析。<br><img src="/article_photo/oppo1.png"></p>
 <p><img src="/article_photo/oppo2.png"></p>
 <p>利用 frida 遍历类和方法找到想要 hook 的函数：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">jscode = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Java.perform(function()&#123;</span></span><br><span class="line"><span class="string">    var classz = Java.enumerateLoadedClassesSync();</span></span><br><span class="line"><span class="string">    for(var i=0;i&lt;classz.length;i++)&#123;</span></span><br><span class="line"><span class="string">        if (classz[i].indexOf(&quot;com.heytap.cdo.client.OcsTool&quot;) != -1)&#123;</span></span><br><span class="line"><span class="string">            console.log(classz[i])</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            var MainActivity = Java.use(classz[i]);</span></span><br><span class="line"><span class="string">            var methods = MainActivity.class.getDeclaredMethods();</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            for(var j=0;j&lt;methods.length;j++)&#123;</span></span><br><span class="line"><span class="string">                console.log(methods[j].getName())</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight python">jscode = <span class="string">&quot;&quot;&quot;</span>
+<span class="string">Java.perform(function()&#123;</span>
+<span class="string">    var classz = Java.enumerateLoadedClassesSync();</span>
+<span class="string">    for(var i=0;i&lt;classz.length;i++)&#123;</span>
+<span class="string">        if (classz[i].indexOf(&quot;com.heytap.cdo.client.OcsTool&quot;) != -1)&#123;</span>
+<span class="string">            console.log(classz[i])</span>
+<span class="string"></span>
+<span class="string">            var MainActivity = Java.use(classz[i]);</span>
+<span class="string">            var methods = MainActivity.class.getDeclaredMethods();</span>
+<span class="string"></span>
+<span class="string">            for(var j=0;j&lt;methods.length;j++)&#123;</span>
+<span class="string">                console.log(methods[j].getName())</span>
+<span class="string">            &#125;</span>
+<span class="string">        &#125;</span>
+<span class="string">    &#125;</span>
+<span class="string">&#125;)</span>
+<span class="string">&quot;&quot;&quot;</span></code></pre>
 
 <p>对 addSign 方法进行 hook：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">jscode = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Java.perform(function()&#123;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    var temp = Java.use(&#x27;com.heytap.cdo.client.domain.network.interceptor.HeaderInitInterceptor&#x27;);</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    temp.addSign.implementation = function(arg1, arg2, arg3, arg4) &#123;</span></span><br><span class="line"><span class="string">        send(&quot;Hook start....&quot;);</span></span><br><span class="line"><span class="string">        var result = this.addSign(arg1, arg2, arg3, arg4);</span></span><br><span class="line"><span class="string">        send(&quot;***arg1***:&quot; + arg1);</span></span><br><span class="line"><span class="string">        send(&quot;***arg2***:&quot; + arg2);</span></span><br><span class="line"><span class="string">        send(&quot;***arg3***:&quot; + arg3);</span></span><br><span class="line"><span class="string">        send(&quot;***arg4***:&quot; + arg4);</span></span><br><span class="line"><span class="string">        send(&quot;***result***&quot; + result);</span></span><br><span class="line"><span class="string">        return result;</span></span><br><span class="line"><span class="string">    &#125;;</span></span><br><span class="line"><span class="string">&#125;);</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight python">jscode = <span class="string">&quot;&quot;&quot;</span>
+<span class="string">Java.perform(function()&#123;</span>
+<span class="string"></span>
+<span class="string">    var temp = Java.use(&#x27;com.heytap.cdo.client.domain.network.interceptor.HeaderInitInterceptor&#x27;);</span>
+<span class="string"></span>
+<span class="string">    temp.addSign.implementation = function(arg1, arg2, arg3, arg4) &#123;</span>
+<span class="string">        send(&quot;Hook start....&quot;);</span>
+<span class="string">        var result = this.addSign(arg1, arg2, arg3, arg4);</span>
+<span class="string">        send(&quot;***arg1***:&quot; + arg1);</span>
+<span class="string">        send(&quot;***arg2***:&quot; + arg2);</span>
+<span class="string">        send(&quot;***arg3***:&quot; + arg3);</span>
+<span class="string">        send(&quot;***arg4***:&quot; + arg4);</span>
+<span class="string">        send(&quot;***result***&quot; + result);</span>
+<span class="string">        return result;</span>
+<span class="string">    &#125;;</span>
+<span class="string">&#125;);</span>
+<span class="string">&quot;&quot;&quot;</span></code></pre>
 
 <p>hook到了参数和结果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[*] Hook start....</span><br><span class="line">[*] ***arg1***:Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941420183////tracker/v1/infopkg=&amp;start=0&amp;<span class="built_in">type</span>=0</span><br><span class="line">[*] ***arg2***:128</span><br><span class="line">[*] ***result***7f0ad3db84508c082a9e732a4d1ee520</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">[*] Hook start....
+[*] ***arg1***:Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941420183////tracker/v1/infopkg=&amp;start=0&amp;<span class="built_in">type</span>=0
+[*] ***arg2***:128
+[*] ***result***7f0ad3db84508c082a9e732a4d1ee520</code></pre>
 <p>发现 addSign 中内部调用了一个 so 的 native 方法：</p>
 <p><img src="/article_photo/oppo3.png"></p>
 <p>public static native String c(String p0,int p1);</p>
 <p>于是想着先对 so 进行 hook：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># jscode = &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># function hook_native() &#123;</span></span><br><span class="line">    <span class="comment"># var addr = Module.getExportByName(&quot;libocstool.so&quot;, &quot;Java_com_heytap_cdo_client_OcsTool_c&quot;)</span></span><br><span class="line">    <span class="comment"># Interceptor.attach(addr, &#123;</span></span><br><span class="line">        <span class="comment"># onEnter: function (args) &#123;</span></span><br><span class="line">            <span class="comment"># console.log(&quot;args 1 &quot;, args[0])</span></span><br><span class="line">            <span class="comment"># console.log(&quot;str 1 &quot;, Memory.readCString(args[0]))</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># console.log(&quot;args 2 &quot;, args[1])</span></span><br><span class="line">            <span class="comment"># console.log(&quot;str 2 &quot;, Java.vm.getEnv().getStringUtfChars(args[1], null).readCString())</span></span><br><span class="line">            <span class="comment"># console.log(&quot;str 3 &quot;, Number(args[2]))</span></span><br><span class="line">        <span class="comment"># &#125;, onLeave: function (retval) &#123;</span></span><br><span class="line">            <span class="comment"># console.log(&quot;retval is &quot;,  retval)</span></span><br><span class="line">        <span class="comment"># &#125;</span></span><br><span class="line">    <span class="comment"># &#125;)</span></span><br><span class="line"><span class="comment"># &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># function main() &#123;</span></span><br><span class="line">    <span class="comment"># hook_native()</span></span><br><span class="line"><span class="comment"># &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># setImmediate(main)</span></span><br><span class="line"><span class="comment"># &quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight python"><span class="comment"># jscode = &quot;&quot;&quot;</span>
+
+<span class="comment"># function hook_native() &#123;</span>
+    <span class="comment"># var addr = Module.getExportByName(&quot;libocstool.so&quot;, &quot;Java_com_heytap_cdo_client_OcsTool_c&quot;)</span>
+    <span class="comment"># Interceptor.attach(addr, &#123;</span>
+        <span class="comment"># onEnter: function (args) &#123;</span>
+            <span class="comment"># console.log(&quot;args 1 &quot;, args[0])</span>
+            <span class="comment"># console.log(&quot;str 1 &quot;, Memory.readCString(args[0]))</span>
+
+            <span class="comment"># console.log(&quot;args 2 &quot;, args[1])</span>
+            <span class="comment"># console.log(&quot;str 2 &quot;, Java.vm.getEnv().getStringUtfChars(args[1], null).readCString())</span>
+            <span class="comment"># console.log(&quot;str 3 &quot;, Number(args[2]))</span>
+        <span class="comment"># &#125;, onLeave: function (retval) &#123;</span>
+            <span class="comment"># console.log(&quot;retval is &quot;,  retval)</span>
+        <span class="comment"># &#125;</span>
+    <span class="comment"># &#125;)</span>
+<span class="comment"># &#125;</span>
+
+<span class="comment"># function main() &#123;</span>
+    <span class="comment"># hook_native()</span>
+<span class="comment"># &#125;</span>
+
+<span class="comment"># setImmediate(main)</span>
+<span class="comment"># &quot;&quot;&quot;</span></code></pre>
 
 <p>对 native 的 hook 不是很顺利。入参字符串读不出来。所以直接转到 IDA 里面对 so 进行分析：<br>在 IDA 里面找到 Java_com_heytap_cdo_client_OcsTool_c ，直接 F5 。</p>
 <p><img src="/article_photo/oppo4.png"><br><img src="/article_photo/oppo5.png"></p>
 <p>看到是最后对字符串进行了一个 md5 操作。而且这个 md 还是用 java 调的。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">MD5Encrypt</span> = <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;java.security.MessageDigest&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="title class_">MD5Encrypt</span>.<span class="property">update</span>.<span class="title function_">overload</span>(<span class="string">&#x27;[B&#x27;</span>).<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">args1</span>) &#123;</span><br><span class="line">    <span class="comment">//console.log(&quot;MD5Encrypt args1:&quot;,args1);</span></span><br><span class="line">    <span class="title function_">send</span>(<span class="title class_">Uint8ArrayToString</span>(args1));</span><br><span class="line">    <span class="keyword">var</span> result = <span class="variable language_">this</span>.<span class="title function_">update</span>(args1);</span><br><span class="line">    <span class="title function_">send</span>(<span class="string">&quot;update&quot;</span>, result);</span><br><span class="line">    <span class="title function_">send</span>(<span class="string">&quot;MD5Encrypt.encode result==:&quot;</span>,result);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"> <span class="title class_">MD5Encrypt</span>.<span class="property">digest</span>.<span class="title function_">overload</span>().<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">args1, args2, args3, args4, args5, args6</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> args = <span class="variable language_">this</span>.<span class="title function_">digest</span>();</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;fan_hui&quot;</span>,<span class="title function_">byteToHexString</span>(args));</span><br><span class="line">    <span class="keyword">return</span> args</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight javascript"><span class="keyword">var</span> <span class="title class_">MD5Encrypt</span> = <span class="title class_">Java</span>.<span class="title function_">use</span>(<span class="string">&quot;java.security.MessageDigest&quot;</span>);
+
+<span class="title class_">MD5Encrypt</span>.<span class="property">update</span>.<span class="title function_">overload</span>(<span class="string">&#x27;[B&#x27;</span>).<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">args1</span>) &#123;
+    <span class="comment">//console.log(&quot;MD5Encrypt args1:&quot;,args1);</span>
+    <span class="title function_">send</span>(<span class="title class_">Uint8ArrayToString</span>(args1));
+    <span class="keyword">var</span> result = <span class="variable language_">this</span>.<span class="title function_">update</span>(args1);
+    <span class="title function_">send</span>(<span class="string">&quot;update&quot;</span>, result);
+    <span class="title function_">send</span>(<span class="string">&quot;MD5Encrypt.encode result==:&quot;</span>,result);
+    <span class="keyword">return</span> result;
+&#125;;
+
+ <span class="title class_">MD5Encrypt</span>.<span class="property">digest</span>.<span class="title function_">overload</span>().<span class="property">implementation</span> = <span class="keyword">function</span> (<span class="params">args1, args2, args3, args4, args5, args6</span>) &#123;
+    <span class="keyword">var</span> args = <span class="variable language_">this</span>.<span class="title function_">digest</span>();
+    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;fan_hui&quot;</span>,<span class="title function_">byteToHexString</span>(args));
+    <span class="keyword">return</span> args
+&#125;</code></pre>
 
 
 <p>Hook 一波。发现了 加密方法的 入参。由三部分组成：</p>
 <p>第一部分 <code>cdb09c43063ea6bb08f4fe8a43775179bdc58acb383220be</code></p>
 <p>第二部分</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941454952////search/v1/searchtabId=&amp;size=10&amp;searchType=3&amp;start=0&amp;keyword=健康156</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941454952////search/v1/searchtabId=&amp;size=10&amp;searchType=3&amp;start=0&amp;keyword=健康156</code></pre>
 
 <p>第三部分字符串：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV</code></pre>
 
 <p>标红部分为固定值，黄色为请求 Header 中 ocs 字段，为设备信息不同设备不一样，蓝色部分为 Header 中 t 字段，固定部分。绿色部分为Header中id字段，设备IMEI号码。紫色部分为查询的 url, keyword为搜索字。之后棕色部分为前面字段的length()值。最后的红色部分也为固定字段，可以在 so 里面找到。</p>
 <p><img src="/article_photo/oppo6.png"></p>
@@ -110,17 +190,187 @@
 <p><img src="/article_photo/oppo11.png"></p>
 <p>编写代码：</p>
 <p>搜索接口：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">GET /search/v1/search?tabId=&amp;size=10&amp;searchType=10&amp;start=0&amp;inputWord=%E5%81%A5%E5%BA%B7&amp;keyword=%E5%81%A5%E5%BA%B7 HTTP/1.1</span><br><span class="line">rt: 0</span><br><span class="line"><span class="built_in">pr</span>: 1</span><br><span class="line">romver: -1</span><br><span class="line">cpu-arch: arm64-v8a</span><br><span class="line">User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2</span><br><span class="line">sign: 722c57523c27be3124baa0859e73f10d</span><br><span class="line">nw: 1</span><br><span class="line">pid: 001</span><br><span class="line">enter-id: 1</span><br><span class="line">locale: zh-CN;CN</span><br><span class="line">iad: 3557812%2C30813121%2C39680%2C3417593%2C3368287%2C3056825</span><br><span class="line">ouid-limit-status: 1</span><br><span class="line">sg: 5582a7e2abcf5689c2ca78a083528651</span><br><span class="line">oak: cdb09c43063ea6bb</span><br><span class="line"><span class="built_in">id</span>: ///</span><br><span class="line">ocp: 8767</span><br><span class="line">ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002</span><br><span class="line">traceId: 32QpNqnL-1696933128182</span><br><span class="line">Accept: application/x2-protostuff; charset=UTF-8</span><br><span class="line">ch: 2101</span><br><span class="line">appversion: 8.3.2</span><br><span class="line">token: -1</span><br><span class="line">pkg-ver: 0</span><br><span class="line">component: 83002/2</span><br><span class="line">t: 1696933128180</span><br><span class="line">appid: Redmi<span class="comment">#001#CN</span></span><br><span class="line">ext-info: normal</span><br><span class="line">Host: api-cn.store.heytapmobi.com</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">GET /search/v1/search?tabId=&amp;size=10&amp;searchType=10&amp;start=0&amp;inputWord=%E5%81%A5%E5%BA%B7&amp;keyword=%E5%81%A5%E5%BA%B7 HTTP/1.1
+rt: 0
+<span class="built_in">pr</span>: 1
+romver: -1
+cpu-arch: arm64-v8a
+User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2
+sign: 722c57523c27be3124baa0859e73f10d
+nw: 1
+pid: 001
+enter-id: 1
+locale: zh-CN;CN
+iad: 3557812%2C30813121%2C39680%2C3417593%2C3368287%2C3056825
+ouid-limit-status: 1
+sg: 5582a7e2abcf5689c2ca78a083528651
+oak: cdb09c43063ea6bb
+<span class="built_in">id</span>: ///
+ocp: 8767
+ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002
+traceId: 32QpNqnL-1696933128182
+Accept: application/x2-protostuff; charset=UTF-8
+ch: 2101
+appversion: 8.3.2
+token: -1
+pkg-ver: 0
+component: 83002/2
+t: 1696933128180
+appid: Redmi<span class="comment">#001#CN</span>
+ext-info: normal
+Host: api-cn.store.heytapmobi.com
+Connection: close</code></pre>
 <p>其中application&#x2F;x2-protostuff 协议返回一种二进制文件。直接把 Accept 改成 json 或者直接去掉就行。免得还要分析新的 protostuff 文件。</p>
 <p>下载接口：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">GET /download/v1/23646102?<span class="built_in">type</span>=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027 HTTP/1.1</span><br><span class="line"><span class="built_in">pr</span>: 1</span><br><span class="line">romver: -1</span><br><span class="line">cpu-arch: arm64-v8a</span><br><span class="line">User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2</span><br><span class="line">sign: fe7baf48faf0ea9247f4de0aaff2e566</span><br><span class="line">nw: 1</span><br><span class="line">pid: 001</span><br><span class="line">enter-id: 1</span><br><span class="line">locale: zh-CN;CN</span><br><span class="line">iad: 3557812%2C30813121%2C39680%2C3368287%2C3056825</span><br><span class="line">sid: 7d4a99534f15cee1</span><br><span class="line">ouid-limit-status: 1</span><br><span class="line">sg: 8daa735e2420acb9c0c629878a89e8f1</span><br><span class="line">oak: cdb09c43063ea6bb</span><br><span class="line"><span class="built_in">id</span>: ///</span><br><span class="line">ocp: 8767</span><br><span class="line">ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002</span><br><span class="line">traceId: MdBz6w6Y-1696930967290</span><br><span class="line">ch: 2101</span><br><span class="line">appversion: 8.3.2</span><br><span class="line">token: -1</span><br><span class="line">pkg-ver: 0</span><br><span class="line">component: 83002/2</span><br><span class="line">t: 1696930967288</span><br><span class="line">appid: Redmi<span class="comment">#001#CN</span></span><br><span class="line">ext-info: normal</span><br><span class="line">RANGE: bytes=14208667-28417333</span><br><span class="line">Host: api-cn.store.heytapmobi.com</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">GET /download/v1/23646102?<span class="built_in">type</span>=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027 HTTP/1.1
+<span class="built_in">pr</span>: 1
+romver: -1
+cpu-arch: arm64-v8a
+User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2
+sign: fe7baf48faf0ea9247f4de0aaff2e566
+nw: 1
+pid: 001
+enter-id: 1
+locale: zh-CN;CN
+iad: 3557812%2C30813121%2C39680%2C3368287%2C3056825
+sid: 7d4a99534f15cee1
+ouid-limit-status: 1
+sg: 8daa735e2420acb9c0c629878a89e8f1
+oak: cdb09c43063ea6bb
+<span class="built_in">id</span>: ///
+ocp: 8767
+ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002
+traceId: MdBz6w6Y-1696930967290
+ch: 2101
+appversion: 8.3.2
+token: -1
+pkg-ver: 0
+component: 83002/2
+t: 1696930967288
+appid: Redmi<span class="comment">#001#CN</span>
+ext-info: normal
+RANGE: bytes=14208667-28417333
+Host: api-cn.store.heytapmobi.com
+Connection: close</code></pre>
 
 <p>返回结果：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 302 Found</span><br><span class="line">Server: nginx</span><br><span class="line">Date: Tue, 10 Oct 2023 09:42:47 GMT</span><br><span class="line">Content-Length: 0</span><br><span class="line">Connection: close</span><br><span class="line">location: https://storedl3.heytapdownload.com/apk/202307/26/7bce7d789a29ed1dc72dcbc558fda3c3.apk?sign=52120d03935223f3b3c3b17b66b221c8&amp;t=65251C97&amp;m=e5f378cc3e146776b84f96d439a2f027&amp;hm=0e16ce45b14b6f6e821b71e38039f776</span><br><span class="line">x-ocip: 220.249.100.111</span><br><span class="line">ocd: 1</span><br><span class="line">ogv: 20230908105131</span><br><span class="line">X-Backend-Host: 0409:18817</span><br><span class="line">X-Gateway-Host: 23c5a88d9fa46ae19f3c7bd4cb4a8a9e3f49ef0cb03627023ff6a5beac0b0590d043eff25553b3efe9af951213bdd3d5</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight bash">HTTP/1.1 302 Found
+Server: nginx
+Date: Tue, 10 Oct 2023 09:42:47 GMT
+Content-Length: 0
+Connection: close
+location: https://storedl3.heytapdownload.com/apk/202307/26/7bce7d789a29ed1dc72dcbc558fda3c3.apk?sign=52120d03935223f3b3c3b17b66b221c8&amp;t=65251C97&amp;m=e5f378cc3e146776b84f96d439a2f027&amp;hm=0e16ce45b14b6f6e821b71e38039f776
+x-ocip: 220.249.100.111
+ocd: 1
+ogv: 20230908105131
+X-Backend-Host: 0409:18817
+X-Gateway-Host: 23c5a88d9fa46ae19f3c7bd4cb4a8a9e3f49ef0cb03627023ff6a5beac0b0590d043eff25553b3efe9af951213bdd3d5</code></pre>
 <p>可以看到 nginx 返回 302，并进行了一个跳转，跳转的就是真实可用的下载链接。<br>拿到这个 url 就可以直接下载了。</p>
 <p>参考文档：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42011443/article/details/106814333">https://blog.csdn.net/weixin_42011443/article/details/106814333</a><br><a target="_blank" rel="noopener" href="https://curlconverter.com/">https://curlconverter.com/</a><br><a target="_blank" rel="noopener" href="https://blog.palug.cn/3026.html">https://blog.palug.cn/3026.html</a></p>
 <p>代码：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib.parse</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sign</span>(<span class="params">ocs, t, <span class="built_in">id</span>, uri</span>):</span><br><span class="line">    <span class="comment"># start_token = &quot;23a8ba872e43065370f68c62df3ba8a45f1c1a57c91df63e&quot;</span></span><br><span class="line">    start_token = <span class="string">&quot;cdb09c43063ea6bb08f4fe8a43775179bdc58acb383220be&quot;</span></span><br><span class="line">    end_token = <span class="string">&quot;STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV&quot;</span></span><br><span class="line"></span><br><span class="line">    data = ocs + t + <span class="built_in">id</span> + uri</span><br><span class="line">    <span class="built_in">print</span>(data)</span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">len</span>(data))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># data = start_token + ocs + t + id + uri</span></span><br><span class="line">    data = start_token + data</span><br><span class="line">    <span class="built_in">print</span>(data)</span><br><span class="line"></span><br><span class="line">    length = <span class="built_in">len</span>(data)</span><br><span class="line">    data = data + <span class="built_in">str</span>(length) + end_token</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;----before-----&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(data)</span><br><span class="line"></span><br><span class="line">    hl = hashlib.md5()</span><br><span class="line">    hl.update(data.encode(encoding=<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line">    sign = hl.hexdigest()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;----after-----&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(sign)</span><br><span class="line">    <span class="keyword">return</span> sign</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&#x27;id&#x27;</span>: <span class="string">&#x27;///&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;oak&#x27;</span>: <span class="string">&#x27;cdb09c43063ea6bb&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;ocs&#x27;</span>: <span class="string">&#x27;Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;t&#x27;</span>: <span class="string">&#x27;1697161301085&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;https://api-cn.store.heytapmobi.com&#x27;</span></span><br><span class="line">uri = <span class="string">&#x27;/search/v1/search&#x27;</span></span><br><span class="line"></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&#x27;tabId&#x27;</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;size&#x27;</span>: <span class="string">&#x27;10&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;searchType&#x27;</span>: <span class="string">&#x27;3&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;start&#x27;</span>: <span class="string">&#x27;0&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;keyword&#x27;</span>: <span class="string">&#x27;酷狗&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">url_str = uri</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    url_str += k + <span class="string">&#x27;=&#x27;</span> + v + <span class="string">&#x27;&amp;&#x27;</span></span><br><span class="line"></span><br><span class="line">url_str = url_str[:-<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(url_str)</span><br><span class="line"></span><br><span class="line"><span class="comment"># uri = urllib.parse.quote(uri)</span></span><br><span class="line">url = url + uri</span><br><span class="line"><span class="built_in">print</span>(url)</span><br><span class="line"><span class="comment"># uri = &#x27;/download/v1/23646102?type=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027&#x27;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1697102213193////card/store/v4/search/homesize=10&amp;start=0</span></span><br><span class="line"></span><br><span class="line">headers[<span class="string">&#x27;sign&#x27;</span>] = sign(headers[<span class="string">&#x27;ocs&#x27;</span>], headers[<span class="string">&#x27;t&#x27;</span>], headers[<span class="string">&#x27;id&#x27;</span>], url_str)</span><br><span class="line"></span><br><span class="line"><span class="comment"># response = requests.get(url, params=params, headers=headers)</span></span><br><span class="line"><span class="comment"># # response = requests.get(url, headers=headers)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># print(response.status_code)</span></span><br><span class="line"><span class="comment"># print(response.text)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;https://api-cn.store.heytapmobi.com&quot;</span></span><br><span class="line">uri = <span class="string">&quot;/download/v1/23644742&quot;</span></span><br><span class="line"></span><br><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&#x27;type&#x27;</span>: <span class="string">&#x27;1&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;ref&#x27;</span>: <span class="string">&#x27;200&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line">url_str = uri</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    url_str += k + <span class="string">&#x27;=&#x27;</span> + v + <span class="string">&#x27;&amp;&#x27;</span></span><br><span class="line"></span><br><span class="line">url_str = url_str[:-<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(url_str)</span><br><span class="line"></span><br><span class="line"><span class="comment"># uri = urllib.parse.quote(uri)</span></span><br><span class="line">url = url + uri</span><br><span class="line"><span class="built_in">print</span>(url)</span><br><span class="line"></span><br><span class="line">headers[<span class="string">&#x27;sign&#x27;</span>] = sign(headers[<span class="string">&#x27;ocs&#x27;</span>], headers[<span class="string">&#x27;t&#x27;</span>], headers[<span class="string">&#x27;id&#x27;</span>], url_str)</span><br><span class="line">response = requests.get(url, params=params, headers=headers, allow_redirects=<span class="literal">False</span>)</span><br><span class="line"><span class="comment"># response = requests.get(url, headers=headers)</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(response.status_code)</span><br><span class="line"><span class="built_in">print</span>(response.headers[<span class="string">&#x27;Location&#x27;</span>])</span><br><span class="line"><span class="comment"># with open(&quot;ddd.apk&quot;, &quot;wb&quot;) as f:</span></span><br><span class="line">    <span class="comment"># f.write(response.content)</span></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight python"><span class="comment"># -*- coding: utf-8 -*-</span>
+
+<span class="keyword">import</span> hashlib
+<span class="keyword">import</span> requests
+<span class="keyword">import</span> urllib.parse
+
+
+<span class="keyword">def</span> <span class="title function_">sign</span>(<span class="params">ocs, t, <span class="built_in">id</span>, uri</span>):
+    <span class="comment"># start_token = &quot;23a8ba872e43065370f68c62df3ba8a45f1c1a57c91df63e&quot;</span>
+    start_token = <span class="string">&quot;cdb09c43063ea6bb08f4fe8a43775179bdc58acb383220be&quot;</span>
+    end_token = <span class="string">&quot;STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV&quot;</span>
+
+    data = ocs + t + <span class="built_in">id</span> + uri
+    <span class="built_in">print</span>(data)
+    <span class="built_in">print</span>(<span class="built_in">len</span>(data))
+
+    <span class="comment"># data = start_token + ocs + t + id + uri</span>
+    data = start_token + data
+    <span class="built_in">print</span>(data)
+
+    length = <span class="built_in">len</span>(data)
+    data = data + <span class="built_in">str</span>(length) + end_token
+
+    <span class="built_in">print</span>(<span class="string">&quot;----before-----&quot;</span>)
+    <span class="built_in">print</span>(data)
+
+    hl = hashlib.md5()
+    hl.update(data.encode(encoding=<span class="string">&#x27;utf-8&#x27;</span>))
+    sign = hl.hexdigest()
+
+    <span class="built_in">print</span>(<span class="string">&quot;----after-----&quot;</span>)
+    <span class="built_in">print</span>(sign)
+    <span class="keyword">return</span> sign
+
+
+headers = &#123;
+    <span class="string">&#x27;id&#x27;</span>: <span class="string">&#x27;///&#x27;</span>,
+    <span class="string">&#x27;oak&#x27;</span>: <span class="string">&#x27;cdb09c43063ea6bb&#x27;</span>,
+    <span class="string">&#x27;ocs&#x27;</span>: <span class="string">&#x27;Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002&#x27;</span>,
+    <span class="string">&#x27;t&#x27;</span>: <span class="string">&#x27;1697161301085&#x27;</span>,
+&#125;
+
+url = <span class="string">&#x27;https://api-cn.store.heytapmobi.com&#x27;</span>
+uri = <span class="string">&#x27;/search/v1/search&#x27;</span>
+
+params = &#123;
+    <span class="string">&#x27;tabId&#x27;</span>: <span class="string">&#x27;&#x27;</span>,
+    <span class="string">&#x27;size&#x27;</span>: <span class="string">&#x27;10&#x27;</span>,
+    <span class="string">&#x27;searchType&#x27;</span>: <span class="string">&#x27;3&#x27;</span>,
+    <span class="string">&#x27;start&#x27;</span>: <span class="string">&#x27;0&#x27;</span>,
+    <span class="string">&#x27;keyword&#x27;</span>: <span class="string">&#x27;酷狗&#x27;</span>,
+&#125;
+
+url_str = uri
+<span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():
+    url_str += k + <span class="string">&#x27;=&#x27;</span> + v + <span class="string">&#x27;&amp;&#x27;</span>
+
+url_str = url_str[:-<span class="number">1</span>]
+<span class="built_in">print</span>(url_str)
+
+<span class="comment"># uri = urllib.parse.quote(uri)</span>
+url = url + uri
+<span class="built_in">print</span>(url)
+<span class="comment"># uri = &#x27;/download/v1/23646102?type=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027&#x27;</span>
+
+
+<span class="comment"># 1697102213193////card/store/v4/search/homesize=10&amp;start=0</span>
+
+headers[<span class="string">&#x27;sign&#x27;</span>] = sign(headers[<span class="string">&#x27;ocs&#x27;</span>], headers[<span class="string">&#x27;t&#x27;</span>], headers[<span class="string">&#x27;id&#x27;</span>], url_str)
+
+<span class="comment"># response = requests.get(url, params=params, headers=headers)</span>
+<span class="comment"># # response = requests.get(url, headers=headers)</span>
+
+<span class="comment"># print(response.status_code)</span>
+<span class="comment"># print(response.text)</span>
+
+
+url = <span class="string">&quot;https://api-cn.store.heytapmobi.com&quot;</span>
+uri = <span class="string">&quot;/download/v1/23644742&quot;</span>
+
+params = &#123;
+    <span class="string">&#x27;type&#x27;</span>: <span class="string">&#x27;1&#x27;</span>,
+    <span class="string">&#x27;ref&#x27;</span>: <span class="string">&#x27;200&#x27;</span>,
+&#125;
+url_str = uri
+<span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():
+    url_str += k + <span class="string">&#x27;=&#x27;</span> + v + <span class="string">&#x27;&amp;&#x27;</span>
+
+url_str = url_str[:-<span class="number">1</span>]
+<span class="built_in">print</span>(url_str)
+
+<span class="comment"># uri = urllib.parse.quote(uri)</span>
+url = url + uri
+<span class="built_in">print</span>(url)
+
+headers[<span class="string">&#x27;sign&#x27;</span>] = sign(headers[<span class="string">&#x27;ocs&#x27;</span>], headers[<span class="string">&#x27;t&#x27;</span>], headers[<span class="string">&#x27;id&#x27;</span>], url_str)
+response = requests.get(url, params=params, headers=headers, allow_redirects=<span class="literal">False</span>)
+<span class="comment"># response = requests.get(url, headers=headers)</span>
+
+<span class="built_in">print</span>(response.status_code)
+<span class="built_in">print</span>(response.headers[<span class="string">&#x27;Location&#x27;</span>])
+<span class="comment"># with open(&quot;ddd.apk&quot;, &quot;wb&quot;) as f:</span>
+    <span class="comment"># f.write(response.content)</span></code></pre>
 
   </div>
   <div class="post-footer">

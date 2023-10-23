@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">VIM Quick Reference</h1>
@@ -79,14 +86,14 @@
 <p>经过以上步骤，我们定义了一个存储在寄存器a中的宏，它的操作序列是：0-&gt;x-&gt;j，也就是跳到行首，删除，跳到下一行。</p>
 <p>现在，第一行已经删除了行首的逗号，而且光标也已经在第二行，现在，在normal模式下输入@a，以播放我们刚录制好的存在寄存器a中的宏。于是，第二行行首的逗号也被删除，光标停在了第三行。</p>
 <p>前面加上执行次数， 如 7@a， 就可以执行 7 次。</p>
-<h1 id="批量替换"><a href="#批量替换" class="headerlink" title="批量替换"></a>批量替换</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:[addr]s/源字符串/目的字符串/[option]</span><br></pre></td></tr></table></figure>
+<h1 id="批量替换"><a href="#批量替换" class="headerlink" title="批量替换"></a>批量替换</h1><pre><code class="highlight plaintext">:[addr]s/源字符串/目的字符串/[option]</code></pre>
 <p>全局替换命令为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/源字符串/目的字符串/g</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">:%s/源字符串/目的字符串/g</code></pre>
 
 <p>[addr] 表示检索范围，省略时表示当前行。<br>“1,20”: 表示从第1行到20行；<br>“%”: 表示整个文件，同“1,$”；<br>“.,$”: 从当前行到文件尾；</p>
-<h1 id="在每行行首或行尾添加-x2F-删除内容"><a href="#在每行行首或行尾添加-x2F-删除内容" class="headerlink" title="在每行行首或行尾添加&#x2F;删除内容"></a>在每行行首或行尾添加&#x2F;删除内容</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/^/要添加的内容</span><br></pre></td></tr></table></figure>
+<h1 id="在每行行首或行尾添加-x2F-删除内容"><a href="#在每行行首或行尾添加-x2F-删除内容" class="headerlink" title="在每行行首或行尾添加&#x2F;删除内容"></a>在每行行首或行尾添加&#x2F;删除内容</h1><pre><code class="highlight plaintext">:%s/^/要添加的内容</code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:%s/$/要添加的内容</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">:%s/$/要添加的内容</code></pre>
 
   </div>
   <div class="post-footer">

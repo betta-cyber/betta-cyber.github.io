@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">桌面客户端及 Webview 相关实践</h1>
@@ -94,10 +101,27 @@
 <p>python的打包方案其实不多，这里面就用我比较熟悉用的最多的<code>pyinstaller</code>，pip安装之后，直接执行<code>pyinstaller  -F app.py</code>即可开始打包，注意！app.py是你的入口文件，也就是你要把服务启动起来的文件。他会自动去寻找相关依赖，然后进行打包，当然打包的过程中也可以做很多优化，这里暂时不讨论了。当然打包需要在windows上面进行，这点有点不是很舒服，之后再研究一下。看能不能直接打包出exe文件</p>
 <h3 id="web-view部分"><a href="#web-view部分" class="headerlink" title="web-view部分"></a>web-view部分</h3><p>web-view部分其实比较简单，说白了就是和electron一样的一个浏览器壳，但是又不是浏览器壳。webview有 C&#x2F;C++&#x2F;Golang的实现。通过引入相关头文件对页面进行渲染。而且也有一些坑。</p>
 <p>主体代码其实并不能，就是通过启一个线程去运行python实现的后端程序</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">thread::<span class="title function_ invoke__">spawn</span>(|| &#123;</span><br><span class="line">    Command::<span class="title function_ invoke__">new</span>(<span class="string">&quot;cmd&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">args</span>(&amp;[<span class="string">&quot;/C&quot;</span>, <span class="string">&quot;cd gcheck &amp;&amp; app.exe&quot;</span>])</span><br><span class="line">        .<span class="title function_ invoke__">output</span>()</span><br><span class="line">        .<span class="title function_ invoke__">expect</span>(<span class="string">&quot;failed to execute process&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight rust">thread::<span class="title function_ invoke__">spawn</span>(|| &#123;
+    Command::<span class="title function_ invoke__">new</span>(<span class="string">&quot;cmd&quot;</span>)
+        .<span class="title function_ invoke__">args</span>(&amp;[<span class="string">&quot;/C&quot;</span>, <span class="string">&quot;cd gcheck &amp;&amp; app.exe&quot;</span>])
+        .<span class="title function_ invoke__">output</span>()
+        .<span class="title function_ invoke__">expect</span>(<span class="string">&quot;failed to execute process&quot;</span>);
+&#125;);</code></pre>
 
 <p>然后通过这边webview去请求该页面去进行交互生成桌面应用</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">run</span>(</span><br><span class="line">    <span class="string">&quot;&quot;</span>,</span><br><span class="line">    Content::<span class="title function_ invoke__">Url</span>(<span class="built_in">format!</span>(<span class="string">&quot;http://127.0.0.1:8000&quot;</span>)),</span><br><span class="line">    <span class="title function_ invoke__">Some</span>(size),</span><br><span class="line">    resizable,</span><br><span class="line">    debug,</span><br><span class="line">    titlebar_transparent,</span><br><span class="line">    <span class="keyword">move</span> |<span class="keyword">mut</span> webview| &#123;</span><br><span class="line">        <span class="comment">// webview.set_background_color(0.11, 0.12, 0.13, 1.0);</span></span><br><span class="line">    &#125;,</span><br><span class="line">    frontend_cb,</span><br><span class="line">    userdata</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight rust"><span class="title function_ invoke__">run</span>(
+    <span class="string">&quot;&quot;</span>,
+    Content::<span class="title function_ invoke__">Url</span>(<span class="built_in">format!</span>(<span class="string">&quot;http://127.0.0.1:8000&quot;</span>)),
+    <span class="title function_ invoke__">Some</span>(size),
+    resizable,
+    debug,
+    titlebar_transparent,
+    <span class="keyword">move</span> |<span class="keyword">mut</span> webview| &#123;
+        <span class="comment">// webview.set_background_color(0.11, 0.12, 0.13, 1.0);</span>
+    &#125;,
+    frontend_cb,
+    userdata
+);</code></pre>
 
 <p>在windows下面有一些坑，下面主要列一下：</p>
 <ol>

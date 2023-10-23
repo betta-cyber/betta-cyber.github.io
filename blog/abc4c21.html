@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,12 +71,17 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">MySQL Quick Reference</h1>
   </div>
   <div class="post-content">
-    <h3 id="1-MySQL-解析-json"><a href="#1-MySQL-解析-json" class="headerlink" title="1. MySQL 解析 json"></a>1. MySQL 解析 <strong>json</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select sum(json_extract(a.sec_count, &quot;$.Critical&quot;)) from `result` AS a</span><br><span class="line">where</span><br><span class="line">  task_id &gt; 20220931000999</span><br><span class="line">  and task_id &lt; 20221231000999</span><br><span class="line">  and a.sec_count != &#x27;&#x27;;</span><br></pre></td></tr></table></figure>
+    <h3 id="1-MySQL-解析-json"><a href="#1-MySQL-解析-json" class="headerlink" title="1. MySQL 解析 json"></a>1. MySQL 解析 <strong>json</strong></h3><pre><code class="highlight plaintext">select sum(json_extract(a.sec_count, &quot;$.Critical&quot;)) from `result` AS a
+where
+  task_id &gt; 20220931000999
+  and task_id &lt; 20221231000999
+  and a.sec_count != &#x27;&#x27;;</code></pre>
 
 
 <ul>
@@ -81,7 +92,7 @@
 <p>容易出现的错误是，<strong>如果该字段为空或者空字符串</strong>，会出现解析不了的情况，要注意好判断条件。</p>
 <h3 id="2-MySQL-varchar-转-int-类型-CAST-函数"><a href="#2-MySQL-varchar-转-int-类型-CAST-函数" class="headerlink" title="2. MySQL varchar 转 int 类型: CAST 函数"></a>2. MySQL varchar 转 int 类型: <strong>CAST</strong> 函数</h3><p>在使用CAST函数转换类型时，可以转换的类型是有限制的。这个类型可以是以下值其中的一个。也就是说，UNSIGNED 可以替换成：</p>
 <p>二进制，同带binary前缀的效果 : BINARY<br>字符型，可带参数 : CHAR()<br>日期 : DATE<br>时间: TIME<br>日期时间型 : DATETIME<br>浮点数 : DECIMAL<br>整数 : SIGNED<br>无符号整数 : UNSIGNED</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select max(cast(sex as UNSIGNED INTEGER)) from user;</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">select max(cast(sex as UNSIGNED INTEGER)) from user;</code></pre>
 
   </div>
   <div class="post-footer">

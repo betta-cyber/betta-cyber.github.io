@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">从 ChatGPT 说起</h1>
@@ -75,13 +82,31 @@
 <p>本人决定用微信接入一个 ChatGPT 的账号，然后把接入的账号，作为机器人拉入到群里面供大家玩耍。后面选择了 Github 上面的一个开源项目 <a target="_blank" rel="noopener" href="https://github.com/fuergaosi233/wechat-chatgpt">wechat-chatgpt</a> 进行接入。这个项目用 Nodejs 编写的，而且有比较详细的文档。文档里面提到用 railway 可以自行部署。</p>
 <p>于是测试了一下 railway 平台，简单来说就是一个 Docker 的部署平台，把 Dockerfile 写好，关联一个 Github 就可以之间触发部署了。</p>
 <p>但是在这个项目中，有很多的坑，有对中国的地区 IP 的限制问题，有微信的接入问题，有 ChatGPT 自身的拥堵问题。后面都踩了一遍，就简单记录一下。</p>
-<h1 id="1-Wechaty-的问题。"><a href="#1-Wechaty-的问题。" class="headerlink" title="1. Wechaty 的问题。"></a>1. Wechaty 的问题。</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const bot =  WechatyBuilder.build(&#123;</span><br><span class="line">  name: &quot;wechat-assistant&quot;, // generate xxxx.memory-card.json and save login data for the next login</span><br><span class="line">  puppetOptions: &#123;</span><br><span class="line">    uos: true, // 开启uos协议</span><br><span class="line">  &#125;,</span><br><span class="line">  puppet: &quot;wechaty-puppet-wechat&quot;,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h1 id="1-Wechaty-的问题。"><a href="#1-Wechaty-的问题。" class="headerlink" title="1. Wechaty 的问题。"></a>1. Wechaty 的问题。</h1><pre><code class="highlight plaintext">const bot =  WechatyBuilder.build(&#123;
+  name: &quot;wechat-assistant&quot;, // generate xxxx.memory-card.json and save login data for the next login
+  puppetOptions: &#123;
+    uos: true, // 开启uos协议
+  &#125;,
+  puppet: &quot;wechaty-puppet-wechat&quot;,
+&#125;);</code></pre>
 <p>这段代码在 railway 上面部署的时候，出现 timeout</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">🤖️ Start GPT Bot Success, ready to handle message!</span><br><span class="line">00:37:17 WARN WechatyPuppetMixin start() starting puppet ... timeout</span><br><span class="line">00:37:17 WARN WechatyPuppetMixin start() puppet info: Puppet(wechat-assistant)</span><br><span class="line">00:38:02 ERR PuppetWeChatBridge start() exception: TimeoutError: Navigation timeout of 60000 ms exceeded</span><br><span class="line">00:38:02 ERR PuppetWeChat initBridge() exception: Navigation timeout of 60000 ms exceeded</span><br><span class="line">00:38:02 WARN PuppetWeChatBridge stop() page.close() exception: Error: Protocol error: Connection closed. Most likely the page has been closed.</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">🤖️ Start GPT Bot Success, ready to handle message!
+00:37:17 WARN WechatyPuppetMixin start() starting puppet ... timeout
+00:37:17 WARN WechatyPuppetMixin start() puppet info: Puppet(wechat-assistant)
+00:38:02 ERR PuppetWeChatBridge start() exception: TimeoutError: Navigation timeout of 60000 ms exceeded
+00:38:02 ERR PuppetWeChat initBridge() exception: Navigation timeout of 60000 ms exceeded
+00:38:02 WARN PuppetWeChatBridge stop() page.close() exception: Error: Protocol error: Connection closed. Most likely the page has been closed.</code></pre>
 <p>后面我把 uos 协议给关了，本地可以，但是 railway 上还是不行。改成了下面的代码：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const bot =  WechatyBuilder.singleton();</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">const bot =  WechatyBuilder.singleton();</code></pre>
 <p>这个模式可以出现微信登录二维码，但是这个用的是 web 版本的协议。我在使用了大半天之后，导致一个微信小号被封，虽然可以解封，但是还是很麻烦。后面我研究了一下微信的机器人教程，机器人场景的使用最好使用 ipad 协议。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">const puppet = new PuppetPadlocal(&#123;</span><br><span class="line">    token: &quot;puppet_padlocal_xxxxx&quot;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">const bot =  WechatyBuilder.build(&#123;</span><br><span class="line">  name: &quot;wechat-assistant&quot;,</span><br><span class="line">  puppet</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">const puppet = new PuppetPadlocal(&#123;
+    token: &quot;puppet_padlocal_xxxxx&quot;
+&#125;)
+
+const bot =  WechatyBuilder.build(&#123;
+  name: &quot;wechat-assistant&quot;,
+  puppet
+&#125;);</code></pre>
 <p>这样就可以比较完美的解决微信方面的问题。唯独就是需要付费购买 token。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/wechaty/puppet-padlocal">https://github.com/wechaty/puppet-padlocal</a></p>
 <p>PadLocal 最大的特点是：</p>

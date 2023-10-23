@@ -28,6 +28,12 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+
+  <!--  -->
+    <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
+  <!--  -->
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
 <meta name="generator" content="Hexo 5.4.1"></head>
 
@@ -65,6 +71,7 @@
   </nav>
 </header>
 
+
 <article class="post">
   <div class="post-title">
     <h1 class="article-title">HAProxy 问题解决</h1>
@@ -72,12 +79,27 @@
   <div class="post-content">
     <p>HAProxy 网络错误：无法绑定套接字</p>
 <p>执行日志如下</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@hk-mailng-8-162 ~]# systemctl status haproxy -l</span><br><span class="line">● haproxy.service - HAProxy Load Balancer</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; disabled; vendor preset: disabled)</span><br><span class="line">   Active: failed (Result: exit-code) since Tue 2022-03-22 10:38:05 CST; 11s ago</span><br><span class="line">  Process: 14335 ExecStart=/usr/sbin/haproxy-systemd-wrapper -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid $OPTIONS (code=exited, status=1/FAILURE)</span><br><span class="line"> Main PID: 14335 (code=exited, status=1/FAILURE)</span><br><span class="line"></span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Started HAProxy Load Balancer.</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Starting HAProxy Load Balancer...</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: haproxy-systemd-wrapper: executing /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -Ds</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: [ALERT] 080/103805 (14336) : Starting frontend exchange_smtp: cannot bind socket [0.0.0.0:25]</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: haproxy-systemd-wrapper: exit, haproxy RC=1</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service: main process exited, code=exited, status=1/FAILURE</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Unit haproxy.service entered failed state.</span><br><span class="line">Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service failed.</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">[root@hk-mailng-8-162 ~]# systemctl status haproxy -l
+● haproxy.service - HAProxy Load Balancer
+   Loaded: loaded (/usr/lib/systemd/system/haproxy.service; disabled; vendor preset: disabled)
+   Active: failed (Result: exit-code) since Tue 2022-03-22 10:38:05 CST; 11s ago
+  Process: 14335 ExecStart=/usr/sbin/haproxy-systemd-wrapper -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid $OPTIONS (code=exited, status=1/FAILURE)
+ Main PID: 14335 (code=exited, status=1/FAILURE)
+
+Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Started HAProxy Load Balancer.
+Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Starting HAProxy Load Balancer...
+Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: haproxy-systemd-wrapper: executing /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -Ds
+Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: [ALERT] 080/103805 (14336) : Starting frontend exchange_smtp: cannot bind socket [0.0.0.0:25]
+Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: haproxy-systemd-wrapper: exit, haproxy RC=1
+Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service: main process exited, code=exited, status=1/FAILURE
+Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Unit haproxy.service entered failed state.
+Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service failed.
+</code></pre>
 
 <p>发现Starting frontend exchange_smtp: cannot bind socket [0.0.0.0:25]</p>
 <p>要解决cannot bind socket错误，您需要确定哪些其他进程正在侦听 HAProxy 尝试使用的 IP 地址和端口，或者该 IP 地址是否可用于 HAProxy。</p>
 <p>以下命令将确定已绑定到 port 上 IPv4 接口的进程的名称80。80如果错误消息中的端口与以下命令中的不同，请确保将其替换为端口：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ss -4 -tlnp | grep 80</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">sudo ss -4 -tlnp | grep 80</code></pre>
 
 <p>该ss命令的标志以下列方式更改其默认输出：</p>
 <ul>
@@ -88,19 +110,33 @@
 <li>-p 输出有关绑定到端口的进程的信息。</li>
 <li>| grep 80将输出限制为包含字符80的行，因此您必须检查的行更少</li>
 </ul>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LISTEN   0         511                 0.0.0.0:80               0.0.0.0:*        users:((&quot;nginx&quot;,pid=40,fd=6))</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">LISTEN   0         511                 0.0.0.0:80               0.0.0.0:*        users:((&quot;nginx&quot;,pid=40,fd=6))</code></pre>
 
 <p>也可以使用<code>netstat</code>来查找</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">netstat -ntlp | grep 25</span><br><span class="line"></span><br><span class="line">tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      15903/master</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">netstat -ntlp | grep 25
+
+tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      15903/master</code></pre>
 
 <h4 id="查找进程对应的服务"><a href="#查找进程对应的服务" class="headerlink" title="查找进程对应的服务"></a>查找进程对应的服务</h4><p>可以用<code>locate</code>或者<code>ll /etc/init.d/postfix</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/libexec/postfix/master</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">/usr/libexec/postfix/master</code></pre>
 
 <h4 id="停用服务"><a href="#停用服务" class="headerlink" title="停用服务"></a>停用服务</h4><p>停用postfix服务</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@usm ~]# /etc/init.d/postfix stop</span><br><span class="line">或者</span><br><span class="line">[root@usm ~]# service postfix stop</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">[root@usm ~]# /etc/init.d/postfix stop
+或者
+[root@usm ~]# service postfix stop</code></pre>
 
 <p>最后写的 HAProxy 配置</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">frontend  exchange_smtp</span><br><span class="line">    mode tcp</span><br><span class="line">    bind :25</span><br><span class="line">    default_backend            exchange_25</span><br><span class="line"></span><br><span class="line">backend exchange_25</span><br><span class="line">    mode tcp</span><br><span class="line">    balance     source</span><br><span class="line">    server  mail1 10.56.8.121:25</span><br><span class="line">    server  mail2 10.56.8.122:25</span><br><span class="line">    server  mail3 10.56.8.123:25</span><br></pre></td></tr></table></figure>
+<pre><code class="highlight plaintext">frontend  exchange_smtp
+    mode tcp
+    bind :25
+    default_backend            exchange_25
+
+backend exchange_25
+    mode tcp
+    balance     source
+    server  mail1 10.56.8.121:25
+    server  mail2 10.56.8.122:25
+    server  mail3 10.56.8.123:25</code></pre>
 
 <p>重启之后，25端口不被占据，进行转发。</p>
 <p>最后用 telnet 进行端口测试。</p>
