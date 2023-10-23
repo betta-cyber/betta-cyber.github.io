@@ -35,7 +35,6 @@
   // Replace tooltip message when mouse leaves button
   // and prevent page refresh after click button
   var btns = document.querySelectorAll('.codecopy-btn');
-  console.log("xxxxxx");
   console.log(btns);
 
   btns.forEach(btn => {
