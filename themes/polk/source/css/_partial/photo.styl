@@ -19,11 +19,11 @@
 
   .photo {
     float: left;
-    margin: 5px;
+    margin: auto;
   }
 
   img {
-    height: 250px;
+    height: 500px;
   }
 
   span {
@@ -47,8 +47,8 @@ a:hover .overlay {
 
 .overlay-outer {
   position: relative;
-  width: 90%;
-  max-width: 250px;
+  width: 100%;
+  /* max-width: 250px; */
   margin: auto;
   overflow: hidden;
 }
@@ -104,4 +104,12 @@ a:hover .overlay {
 
 .fadeIn_bottom {
   top: 80%;
+}
+
+
+/* 设置明亮度 */
+@media (prefers-color-scheme: dark) {
+    img, video, svg, iframe {
+        opacity: 1.0 !important;
+    }
 }
