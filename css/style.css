@@ -526,11 +526,6 @@ footer .author {
     width: 400px;
   }
 }
-@media screen and (max-width: 800px) {
-  .album img {
-    height: 120px;
-  }
-}
 a:hover .overlay {
   opacity: 1;
 }
@@ -543,7 +538,7 @@ a:hover .overlay {
 }
 @media screen and (max-width: 800px) {
   .overlay-outer {
-    max-width: 100px;
+    max-width: 800px;
   }
 }
 .overlay {
