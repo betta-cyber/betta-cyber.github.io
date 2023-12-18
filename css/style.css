@@ -511,10 +511,10 @@ footer .author {
 }
 .album .photo {
   float: left;
-  margin: 5px;
+  margin: auto;
 }
 .album img {
-  height: 250px;
+  height: 500px;
 }
 .album span {
   margin-left: 1em;
@@ -536,8 +536,8 @@ a:hover .overlay {
 }
 .overlay-outer {
   position: relative;
-  width: 90%;
-  max-width: 250px;
+  width: 100%;
+/* max-width: 250px; */
   margin: auto;
   overflow: hidden;
 }
@@ -588,6 +588,14 @@ a:hover .overlay {
 }
 .fadeIn_bottom {
   top: 80%;
+}
+@media (prefers-color-scheme: dark) {
+  img,
+  video,
+  svg,
+  iframe {
+    opacity: 1 !important;
+  }
 }
 @font-face {
   font-family: "LXGWWenKai";
