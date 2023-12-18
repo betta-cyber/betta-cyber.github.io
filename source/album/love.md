@@ -1,5 +1,5 @@
 ---
-title: butterfly
+title: love
 content_type: json
 layout: album
 ---

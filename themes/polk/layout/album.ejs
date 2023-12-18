@@ -3,9 +3,7 @@
 <section class="photo-section">
   <h1 class="article-title"></h1>
   <div class="album">
-
-    <% if (site.data && site.data.photos) { %>
-    <% var photos = site.data.photos; %>
+    <% var photos = JSON.parse(page._content); %>
       <div class="photo-box hover">
         <% for (var i = 0, len = photos.length; i < len; i++) { %>
         <% var photo = photos[i]; %>
@@ -20,7 +18,6 @@
         </div>
         <% } %>
     </div>
-    <% } %>
   </div>
 </section>
 
