@@ -1,0 +1,28 @@
+# Favicon
+favicon: /favicon.ico
+
+# SEO
+keywords: betta-cyber, game, betta, shokill
+
+# Site title separator
+separator: '-'
+
+# RSS
+rss: /atom.xml
+
+# SNS config
+sns:
+  Blog: /blog
+  GitHub: https://github.com/betta-cyber
+  Zhihu: https://www.zhihu.com/people/ShoKill
+  Steam: https://steamcommunity.com/id/betta551/
+  # Douban: https://www.douban.com/people/beita502/
+
+# Nav menu
+menu:
+  Home: /
+  Blog: /blog
+  Ebook: /ebook
+  Music: /music
+  Photo: /album
+  About: /about

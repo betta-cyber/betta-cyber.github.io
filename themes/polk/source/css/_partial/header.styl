@@ -1,0 +1,55 @@
+@media (prefers-color-scheme: dark) {
+    html {
+        filter: invert(90%) hue-rotate(180deg);
+        background: aliceblue;
+        /* background: azure; */
+    }
+
+    img, video, svg, iframe {
+        filter: invert(110%) hue-rotate(180deg);
+        opacity: .8;
+    }
+}
+
+.header {
+  margin-bottom: 2em;
+  padding: 0 20px;
+
+  .blog-title {
+    font-size: 2.5em;
+    text-align: center;
+    padding-top: 0.5em
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: gray;
+  }
+
+  .menu {
+    margin: 0;
+    padding: 0;
+    height: 1px;
+    /* border-top: 1px solid #ccc; */
+    margin-top: 0px;
+
+    .menu-item {
+      margin: 0 15px 0 0;
+      padding: 3px 0 3px 0;
+      float: left;
+      display: inline-block;
+    }
+
+    .menu-item-link {
+      color: #999;
+
+      &:hover {
+        color: midnightblue;
+      }
+    }
+
+    .active {
+      color: #000;
+    }
+  }
+}

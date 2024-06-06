@@ -1,0 +1,294 @@
+.post {
+  padding: 0 20px;
+  margin-bottom: 1.5em;
+
+  .article-title {
+    padding-bottom: 10px;
+  }
+
+  img {
+    max-width: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+
+    td, th {
+      padding: 6px 13px;
+      border: 1px solid #dfe2e5;
+    }
+  }
+
+  hr {
+    margin: 1.5em 0;
+  }
+
+  .post-content {
+    text-align: justify;
+    a {
+      border-bottom: 1px dotted;
+
+      &:hover {
+        border-bottom: 1px solid;
+      }
+    }
+
+    ul, ol {
+      text-align: left;
+
+      li {
+        padding: 5px;
+        line-height: 1.5em;
+      }
+    }
+    p {
+      line-height: calc(1ex / 0.32);
+      font-family: LXGWWenKai, Hiragino Sans GB, Microsoft YaHei, WenQuanYi, Airal, sans-serif;
+    }
+  }
+
+  figure {
+      &.highlight {
+        position: relative;
+        margin: 1rem 0;
+        padding-top: 22px;
+      }
+    }
+
+    .code-highlight {
+      position: relative;
+
+      &::before {
+        content: attr(data-lang);
+        font-family: 'Roboto Mono', Consolas, monospace, sans-serif;
+        font-size: 0.6em;
+        color: #b1b1b1;
+        line-height: 18px;
+        position: absolute;
+        top: 4px;
+        right: 18px;
+        z-index: 1;
+      }
+    }
+
+    .codecopy-btn {
+      width: 24px;
+      height: 26px;
+      position: absolute;
+      top: 0;
+      right: -4px;
+      border: none;
+      box-shadow: none;
+      background: none;
+      z-index: 1;
+      font-size: 12px;
+      color: black;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #7bf;
+      }
+    }
+
+
+  figure {
+    margin: 0;
+    table {
+      width: 100%;
+      .code {
+        border: 0;
+        padding: 0;
+      }
+    }
+
+    .gutter {
+      display: none;
+    }
+
+  }
+
+  blockquote {
+    margin: 0;
+    padding: 0 15px;
+    color: #777;
+    border-left: 4px solid #ddd;
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.5em 1.5em;
+    /* overflow: auto; */
+    text-wrap: wrap;
+    font-size: 85%;
+    line-height: 1.8;
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+
+    span {
+        /* width: 600px; */
+        /* display: block; */
+    }
+  }
+
+  code {
+    background: #f7f7f7;
+    border: 1px solid #d6d6d6;
+    font-family: 'Roboto Mono', Consolas, monospace, sans-serif;
+    font-size: 90%;
+    margin: 5px;
+    padding: 0 5px;
+  }
+
+  p {
+    line-height: 1.5em;
+  }
+
+  .post-footer {
+    line-height: 1;
+    min-height: 1em;
+
+    .top {
+      float: right;
+      color: #666;
+
+      &:hover {
+        color: #000;
+      }
+    }
+
+    .post-tag-list {
+      display: inline-block;
+      padding: 0;
+      margin: 0 0 0.5em 0;
+      color: #999;
+
+      .post-tag-list-item {
+        display: inline-block;
+        margin: 0 1em 0 0;
+
+        a {
+          font-size: 85%;
+        }
+
+        &:before {
+          content: '#';
+        }
+
+      }
+    }
+  }
+}
+
+
+.codecopy-btn {
+  width: 24px;
+  height: 26px;
+  position: absolute;
+  top: 0;
+  right: -24px;
+  border: none;
+  box-shadow: none;
+  background: none;
+  z-index: 1;
+  font-size: 12px;
+  color: black;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #7bf;
+  }
+}
+
+// ref: https://github.com/primer/primer/blob/master/modules/primer-tooltips/lib/tooltips.scss
+.tooltipped {
+  position: relative;
+}
+
+// This is the tooltip bubble
+.tooltipped::after {
+  position: absolute;
+  z-index: 1000000;
+  display: none;
+  padding: 0.5em 0.75em;
+  -webkit-font-smoothing: subpixel-antialiased;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: break-word;
+  white-space: pre;
+  pointer-events: none;
+  content: attr(aria-label);
+  background: #616161;
+  border-radius: 3px;
+  opacity: 0;
+}
+
+// This is the tooltip arrow
+.tooltipped::before {
+  position: absolute;
+  z-index: 1000001;
+  display: none;
+  width: 0;
+  height: 0;
+  color: #616161;
+  pointer-events: none;
+  content: '';
+  border: 6px solid transparent;
+  opacity: 0;
+}
+
+// delay animation for tooltip
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// This will indicate when we'll activate the tooltip
+.tooltipped:hover,
+.tooltipped:active,
+.tooltipped:focus {
+  &::before,
+  &::after {
+    display: inline-block;
+    text-decoration: none;
+    animation-name: tooltip-appear;
+    animation-duration: 0.1s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+  }
+}
+
+// Tooltipped south
+.tooltipped-s,
+.tooltipped-sw {
+  &::after {
+    top: 100%;
+    right: 50%;
+    margin-top: 6px;
+  }
+
+  &::before {
+    top: auto;
+    right: 50%;
+    bottom: -7px;
+    margin-right: -6px;
+    border-bottom-color: #616161;
+  }
+}
+
+.tooltipped-sw::after {
+  margin-right: -16px;
+}
+
+// Move the tooltip body to the center of the object.
+.tooltipped-s::after {
+  transform: translateX(50%);
+}

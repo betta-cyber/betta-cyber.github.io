@@ -1,0 +1,12 @@
+<%- partial('_partial/header') %>
+<div class="home">
+  <div class="info">
+    <a href="/" class="logo"><%= config.title %></a>
+    <div class="sns">
+      <% for (let item in theme.sns) { %>
+          <a href="<%- url_for(theme.sns[item]) %>"><%= item %></a>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- partial('_partial/footer') %>
