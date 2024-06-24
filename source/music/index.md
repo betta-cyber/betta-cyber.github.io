@@ -14,6 +14,8 @@
 
 ## [# 电子游戏 ](/music/video_game.html)
 
+## [# 宇多田光 Top ten ](/music/hikaru_utada.html)
+
 
 ## Charming
 
