@@ -35,7 +35,8 @@
 
 ## 5.Traveling
 
-这是一首非常适合夜间高速的歌曲。旋律轻快，充满活力。在MV中让宇多田光化身一头俏丽红色短发的导游，带领听众在无边宇宙进行漫游。
+这是一首非常适合夜间高速的歌曲。旋律轻快，充满活力。在MV中让宇多田光化身一头俏丽红色短发的导游，带领听众在无边宇宙进行漫游。同样类型的歌曲还有《Keep Tryin'》《Celebrate》。这三首都是电子舞曲风格，内容上包含着很积极的情绪。宇多田光的声音质感，好像天生就带着暖意。
+
 
 <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6OxxzC0HsX7zK3ZO3q79H6?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 
