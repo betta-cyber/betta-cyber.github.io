@@ -6,7 +6,7 @@
 
 ## [# Prog Rock](/music/prog_rock.html)
 
-## [# The Cure](/music/the_cure.html)
+## [# The Cure Top ten](/music/the_cure.html)
 
 ## [# The Smiths](/music/the_smiths.html)
 
@@ -15,6 +15,8 @@
 ## [# 电子游戏 ](/music/video_game.html)
 
 ## [# 宇多田光 Top ten ](/music/hikaru_utada.html)
+
+## [# Genre ](/music/genre.html)
 
 
 ## Charming
