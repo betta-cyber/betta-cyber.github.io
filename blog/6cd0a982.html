@@ -83,27 +83,55 @@
     <h1 class="article-title">AVM 架构</h1>
   </div>
   <div class="post-content">
-    <h2 id="核心指令"><a href="#核心指令" class="headerlink" title="核心指令"></a>核心指令</h2><p>OP_DECODEBLOCKINFO</p>
-<p>OP_FT_BALANCE_ADD</p>
-<p>OP_FT_BALANCE</p>
-<p>OP_FT_COUNT</p>
-<p>OP_FT_ITEM</p>
-<p>OP_FT_WITHDRAW</p>
-<p>OP_GETBLOCKINFO</p>
-<p>OP_HASH_FN</p>
-<p>OP_KV_DELETE</p>
-<p>OP_KV_EXISTS</p>
-<p>OP_KV_GET</p>
-<p>OP_KV_PUT</p>
-<p>OP_NFT_COUNT</p>
-<p>OP_NFT_EXISTS</p>
-<p>OP_NFT_ITEM</p>
-<p>OP_NFT_PUT</p>
-<p>OP_NFT_WITHDRAW</p>
-<h1 id="调用流程"><a href="#调用流程" class="headerlink" title="调用流程"></a>调用流程</h1><p>先是引入了一个大类 <code>CScript</code>。这是一个bytes的子类，因此只要接受bytes就可以直接使用它。请注意，这意味着索引<em>不起作用</em>。<br>字节而不是操作码。选择这种格式是为了提高效率，以便一般情况不需要创建很多小的 CScriptOp 对象。然而 iter(script) 确实通过操作码进行迭代。</p>
+    <h2 id="核心指令"><a href="#核心指令" class="headerlink" title="核心指令"></a>核心指令</h2><p>OP_DECODEBLOCKINFO<br>OP_FT_BALANCE_ADD<br>OP_FT_BALANCE<br>OP_FT_COUNT<br>OP_FT_ITEM<br>OP_FT_WITHDRAW<br>OP_GETBLOCKINFO<br>OP_HASH_FN<br>OP_KV_DELETE<br>OP_KV_EXISTS<br>OP_KV_GET<br>OP_KV_PUT<br>OP_NFT_COUNT<br>OP_NFT_EXISTS<br>OP_NFT_ITEM<br>OP_NFT_PUT<br>OP_NFT_WITHDRAW</p>
+<h1 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h1><p><img src="/article_photo/arch.png" alt="arch"></p>
+<p>左侧为BTC主网，里面包含了我们的合约数据、状态数据等；</p>
+<p>中间部分为基于Indexer的编程部分，我们可以调用智能合约代码，代码可以是通过高级语言编译而成的，当执行合约之后，相关的数据（包含token数据，状态数据）在本地进行存储。</p>
+<p>具体执行的函数形式包含两类：一类是Btc原有的op-code，比如 OP_ADD, OP_MUL 等，这里还出现了还未被通过的OP_CAT，另一类是开发者自定义的op-code，OP_NFT_EXISTS, OP_FT_COUN 等。开发者可以在官方库<code>avm-interpreter</code>的基础上继承然后开发新的函数。</p>
+<p>对于自定义的op-code，提出的Two Stack PDA是图灵完备的。</p>
+<p>这里的高级语言开发合约部分，用的是sCrypt来进行开发的。<a target="_blank" rel="noopener" href="https://docs.scrypt.io/">sCrypt</a>是一门基于TypeScript的DSL。可以用来在BSV上面写智能合约，这个语言也被证明是图灵完备的。</p>
+<h1 id="构造流程"><a href="#构造流程" class="headerlink" title="构造流程"></a>构造流程</h1><p>要执行AVM，必须要先编写合约到链上。从代码里面可以看出，我们在parse_operation_from_scrip方法里面新加了三个Operation，分别是def，new，还有c。def是定一个PROTOCOL到链上。new是new一个CONTRACT。c是call，是合约的调用执行。</p>
+<pre><code class="highlight plaintext">elif op_found_struct[&#x27;op&#x27;] == &#x27;def&#x27; and op_found_struct[&#x27;input_index&#x27;] == 0:
+    mint_info[&#x27;type&#x27;] = &#x27;PROTOCOL&#x27;
+    # With AVMFactory the control fields are in the top level payload not the mint_info
+    # The reason is basically to simplify and optimize definitions
+    protocol = payload.get(&#x27;p&#x27;)
+    if isinstance(protocol, str) and protocol == &#x27;&#x27;:
+        logger.warning(f&#x27;AVMFactory protocol name is invalid detected empty str &#123;hash_to_hex_str(tx_hash)&#125;. Skipping....&#x27;)
+        return None, None
+    logger.debug(f&#x27;NFT request_protocol protocol name p &#123;hash_to_hex_str(tx_hash)&#125;, &#123;protocol&#125; &#123;mint_info&#125;&#x27;)
+    if not isinstance(protocol, str) or not is_valid_protocol_string_name(protocol):
+        logger.warning(f&#x27;NFT request_protocol name p is invalid &#123;hash_to_hex_str(tx_hash)&#125;, &#123;protocol&#125; &#123;mint_info&#125;. Skipping....&#x27;)
+        return None, None
+    mint_info[&#x27;$request_protocol&#x27;] = protocol
+    # TODO: Perform sanity checks on the payload here...
+elif op_found_struct[&#x27;op&#x27;] == &#x27;new&#x27; and op_found_struct[&#x27;input_index&#x27;] == 0:
+    mint_info[&#x27;type&#x27;] = &#x27;CONTRACT&#x27;
+    # With AVMFactory the control fields are in the top level payload not the mint_info
+    # The reason is basically to simplify and optimize definitions
+    contract_name = payload.get(&#x27;name&#x27;)
+    if isinstance(contract_name, str) and contract_name == &#x27;&#x27;:
+        logger.warning(f&#x27;AVMFactory contract_name is invalid detected empty str &#123;hash_to_hex_str(tx_hash)&#125;. Skipping....&#x27;)
+        return None, None
+    logger.debug(f&#x27;CONTRACT name &#123;hash_to_hex_str(tx_hash)&#125;, &#123;contract_name&#125; &#123;mint_info&#125;&#x27;)
+    # Contract name can be empty
+    if isinstance(contract_name, str) and not is_valid_contract_string_name(contract_name):
+        logger.warning(f&#x27;CONTRACT name is invalid &#123;hash_to_hex_str(tx_hash)&#125;, &#123;contract_name&#125; &#123;mint_info&#125;. Skipping....&#x27;)
+        return None, None
+    # If contract name is set then assign request_contract
+    if contract_name:
+        mint_info[&#x27;$request_contract&#x27;] = contract_name
+    protocol_name = payload.get(&#x27;p&#x27;)
+    if not isinstance(protocol_name, str) or not is_valid_protocol_string_name(protocol_name):
+        logger.warning(f&#x27;CONTRACT p is invalid &#123;hash_to_hex_str(tx_hash)&#125;, &#123;protocol_name&#125; &#123;mint_info&#125;. Skipping....&#x27;)
+        return None, None
+    mint_info[&#x27;$instance_of_protocol&#x27;] = protocol_name</code></pre>
+
+<h1 id="调用流程"><a href="#调用流程" class="headerlink" title="调用流程"></a>调用流程</h1><p>有了合约，那么就需要在同步区块的时候，对tx进行解析并且进行执行。如果indexer在执行的过程中，发现有<code>c</code>操作码，想要执行合约。那么就需要把相关合约都给拉出来，创建好上下文，然后执行。</p>
+<p>先是引入了一个大类 <code>CScript</code>。这是一个bytes的子类，因此只要接受bytes就可以直接使用它。<br>字节而不是操作码。选择这种格式是为了提高效率，以便一般情况不需要创建很多小的 CScriptOp 对象。然而 iter(script) 确实通过操作码进行迭代。</p>
 <p>又引入了 &#96;encode_op_pushdata 方法。<br>encode_op_pushdata 函数根据数据的长度，对数据进行 PUSHDATA 操作编码，并返回相应的字节序列。具体地，它会根据数据长度选择适当的 PUSHDATA 操作码（OP_PUSHDATA1, OP_PUSHDATA2, OP_PUSHDATA4），并将数据长度和数据一起编码。</p>
 <p>接着引入 ReactorContext 类, 用于存储和管理有关区块链状态和交易信息的上下文。</p>
-<p>包含参数<br>state_hash: 区块链状态的哈希值。如果 state_hash 为 None，则使用一个全零的哈希值（32 字节的零字节序列）。<br>state: 当前区块链状态。<br>state_updates: 状态更新列表或字典。<br>state_deletes: 状态删除列表或字典。<br>nft_incoming: 传入的不可替代代币（NFT）的列表或字典。<br>ft_incoming: 传入的可替代代币（FT）的列表或字典。<br>nft_balances: NFT 余额列表或字典。<br>nft_balances_updates: NFT 余额更新列表或字典。<br>ft_balances: FT 余额列表或字典。<br>ft_balances_updates: FT 余额更新列表或字典。<br>nft_withdraws: 提取的 NFT 列表或字典。<br>ft_withdraws: 提取的 FT 列表或字典。</p>
+<p>包含参数<br>state_hash: 区块链状态的哈希值。<br>state: 当前区块链状态。<br>state_updates: 状态更新列表或字典。<br>state_deletes: 状态删除列表或字典。<br>nft_incoming: 传入的不可替代代币（NFT）的列表或字典。<br>ft_incoming: 传入的可替代代币（FT）的列表或字典。<br>nft_balances: NFT 余额列表或字典。<br>nft_balances_updates: NFT 余额更新列表或字典。<br>ft_balances: FT 余额列表或字典。<br>ft_balances_updates: FT 余额更新列表或字典。<br>nft_withdraws: 提取的 NFT 列表或字典。<br>ft_withdraws: 提取的 FT 列表或字典。</p>
 <p>最后来看AVM的主要执行过程:</p>
 <p>处理好前面的流程之后，先实例化 ReactorContext，然后维护 request_tx_context 和 blockchain_context 以及 script_context 上下文。最后执行 ConsensusVerifyScriptAvmExecute。</p>
 <p>ConsensusVerifyScriptAvmExecute是一个调用外部C语言库的Python代码，利用ctypes库与C库进行交互。</p>
@@ -115,8 +143,9 @@
 <li>准备 CBOR 数据：将各种上下文数据序列化为 CBOR 格式，准备传递给外部库。<br>执行共识验证脚本：调用外部库的 atomicalsconsensus_verify_script_avm 函数进行验证和执行，传递所有必要的数据和变量。</li>
 <li>检查错误代码：根据 error_code 和 execute_result 的值，判断执行结果，并处理错误或返回更新的 reactor_context。</li>
 </ol>
-<p>简单来说 <code>atomicalsconsensus.py</code> 只是相当于一个执行器。用来执行 avm-interprter中的代码。</p>
-<h2 id="探究-atomicalsconsensus-verify-script-avm"><a href="#探究-atomicalsconsensus-verify-script-avm" class="headerlink" title="探究 atomicalsconsensus_verify_script_avm"></a>探究 atomicalsconsensus_verify_script_avm</h2><p>接着来看 <code>atomicalsconsensus.cpp</code> 中的 atomicalsconsensus_verify_script_avm 方法。</p>
+<p>所以，简单来说 <code>atomicalsconsensus.py</code> 只是相当于一个执行器。用来执行 avm-interprter中的代码。</p>
+<h2 id="探究-atomicalsconsensus-verify-script-avm"><a href="#探究-atomicalsconsensus-verify-script-avm" class="headerlink" title="探究 atomicalsconsensus_verify_script_avm"></a>探究 atomicalsconsensus_verify_script_avm</h2><p>avm-interprter 算是一个魔改版本BSV。我们跟随上面的方法调用，继续往下走。</p>
+<p>接着来看 <code>atomicalsconsensus.cpp</code> 中的 atomicalsconsensus_verify_script_avm 方法。</p>
 <p>这个函数 atomicalsconsensus_verify_script_avm 是用于验证基于 Atomicals 共识协议的脚本。它接受许多输入数据，包括锁定脚本、解锁脚本、交易数据、状态数据等，执行验证逻辑，并返回验证结果和更新的状态数据。</p>
 <p>函数逻辑是:</p>
 <ol>
@@ -145,7 +174,7 @@ auto error_code = VerifyScriptAvm(unlockSig, spk, TransactionSignatureChecker(&a
 <p>GenericTransactionSignatureChecker 用于检查交易的相对锁定时间是否满足条件。具体地，它检查交易输入的序列号（nSequence）与给定的脚本数字（CScriptNum）之间的关系，以确定交易是否可以在当前区块高度或时间被包含在区块中。</p>
 <p>VerifyScriptAvm 这个函数的目的是将解锁脚本和锁定脚本结合起来执行，并在成功时返回累积的脚本执行指标。失败时，这些结果不应依赖。</p>
 <p>VerifyScriptAvm 函数内部调用 EvalScript 来执行 AVM 的合约。</p>
-<p>EvalScript 函数负责执行给定的脚本，验证其合法性，并根据执行结果返回相应的错误码。这个函数是比特币脚本验证的核心部分之一，它处理脚本的各个操作码，并对堆栈进行相应的操作。</p>
+<p>EvalScript 函数负责执行给定的脚本，验证其合法性，并根据执行结果返回相应的错误码。这个函数是比特币脚本验证的核心部分之一，主要逻辑是从待执行脚本中取出操作码并执行，直至取完、执行过程中遇到OP_RETURN、执行过程中VERIFY类验证失败、执行过程中遇到错误（例如操作数不足等）才会结束执行。我们的 AVM 就在这里加入了自己实现的一些OP。来达到对上下文的一个维护。</p>
 <pre><code class="highlight plaintext">bool EvalScript(std::vector&lt;valtype&gt; &amp;stack, const CScript &amp;script, uint32_t flags, const BaseSignatureChecker &amp;checker,
                 ScriptExecutionMetrics &amp;metrics, ScriptExecutionContextOpt const &amp;context,
                 ScriptStateContext &amp;stateContext, ScriptError *serror, unsigned int *serror_op_num)
@@ -228,6 +257,7 @@ uint64_t ScriptStateContext::contractFtBalanceIncoming(const uint288 &amp;ftId) 
 </li>
 </ol>
 <p>总结<br>AVM 是一个高度模块化和可扩展的虚拟机，专为管理和操作 NFT 和 FT 设计。通过一组精确定义的操作码，AVM 能够执行各种复杂的操作，确保在区块链环境中的高效和安全运行。</p>
+<p>相关资料：<br><a target="_blank" rel="noopener" href="https://doxygen.bitcoincore.org/class_c_script.html">https://doxygen.bitcoincore.org/class_c_script.html</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013434801/article/details/120636272">https://blog.csdn.net/u013434801/article/details/120636272</a><br><a target="_blank" rel="noopener" href="https://startbitcoin.org/5523/">https://startbitcoin.org/5523/</a><br><a target="_blank" rel="noopener" href="https://startbitcoin.org/5508/">https://startbitcoin.org/5508/</a><br><a target="_blank" rel="noopener" href="https://scrypt.io/">https://scrypt.io/</a></p>
 
   </div>
   <div class="post-footer">
