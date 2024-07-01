@@ -4,12 +4,12 @@
 
 # Site
 title: B
-subtitle: ''
-description: 'betta'
-keywords: 'betta betta-cyber'
+subtitle: ""
+description: "betta"
+keywords: "betta betta-cyber"
 author: betta
 language: en
-timezone: ''
+timezone: ""
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -42,17 +42,17 @@ titlecase: false # Transform title into titlecase
 external_link:
   enable: true # Open external links in new tab
   field: site # Apply to the whole site
-  exclude: ''
+  exclude: ""
 filename_case: 0
 render_drafts: false
 post_asset_folder: false
 relative_link: false
 future: true
 highlight:
-  enable: true
+  enable: false
   line_number: false
   auto_detect: false
-  tab_replace: ''
+  tab_replace: ""
   wrap: false
   hljs: false
 
@@ -61,7 +61,7 @@ highlight:
 # per_page: Posts displayed per page. (0 = disable pagination)
 # order_by: Posts order. (Order by date descending by default)
 index_generator:
-  path: ''
+  path: ""
   per_page: 10
   order_by: -date
 
@@ -102,7 +102,7 @@ theme: polk
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: ''
+  type: ""
 
 favicon:
   small: /favicon.ico
@@ -110,5 +110,11 @@ favicon:
   apple_touch_icon: /favicon.ico
 
 highlight_theme: night bright
-code_copy:
-    enable: true
+# code_copy:
+#   enable: true
+
+prism_plugin:
+  mode: "realtime" # realtime/preprocess
+  theme: "tomorrow"
+  line_number: true # default false
+  custom_css:

@@ -42,7 +42,7 @@ OP_NFT_WITHDRAW
 
 要执行AVM，必须要先编写合约到链上。从代码里面可以看出，我们在parse_operation_from_scrip方法里面新加了三个Operation，分别是def，new，还有c。def是定一个PROTOCOL到链上。new是new一个CONTRACT。c是call，是合约的调用执行。
 
-```
+```python
 elif op_found_struct['op'] == 'def' and op_found_struct['input_index'] == 0:
     mint_info['type'] = 'PROTOCOL'
     # With AVMFactory the control fields are in the top level payload not the mint_info
@@ -135,15 +135,15 @@ avm-interprter 算是一个魔改版本BSV。我们跟随上面的方法调用�
 函数逻辑是:
 1. 设置初始错误状态
 2. 复制状态数据
-```
+```cpp
 std::vector<std::uint8_t> prevStateHashBytes(prevStateHash, prevStateHash + 32);
 ```
 3. 从 CBOR 数据中解析 JSON
-```
+```cpp
 auto ftState = json::from_cbor(ftStateBytes, true, true, json::cbor_tag_handler_t::error);
 ```
 4. 调用脚本验证函数
-```
+```cpp
 int result = ::verify_script_avm(lockScript, lockScriptLen, unlockScript, unlockScriptLen, ftState, ftStateIncoming, nftState, nftStateIncoming, contractState, contractExternalState, txTo, txToLen, flags, err, script_err, script_err_op_num, &stateContext);
 ```
 5. 清理和验证最终状态
@@ -153,7 +153,7 @@ int result = ::verify_script_avm(lockScript, lockScriptLen, unlockScript, unlock
 所以直接跟着看最核心的 `verify_script_avm`:
 
 函数的主要逻辑是先验证flag，有一个verify_flags，不通过就抛出atomicalsconsensus_ERR_INVALID_FLAGS。然后是反序列化。
-```
+```cpp
 TxInputStream stream(SER_NETWORK, PROTOCOL_VERSION, txTo, txToLen);
 CTransaction tx(deserialize, stream);
 CTransactionView txView(tx);
@@ -165,7 +165,7 @@ if (GetSerializeSize(tx, PROTOCOL_VERSION) != txToLen) {
 
 设置初始错误状态，创建脚本和预计算交易数据，复制状态数据，创建和初始化脚本执行上下文。
 接着调用脚本验证函数：
-```
+```cpp
 ScriptError tempScriptError = ScriptError::OK;
 auto error_code = VerifyScriptAvm(unlockSig, spk, TransactionSignatureChecker(&tx, 0, Amount::zero(), txdata), context, state, &tempScriptError, script_err_op_num);
 ```
@@ -178,7 +178,7 @@ VerifyScriptAvm 函数内部调用 EvalScript 来执行 AVM 的合约。
 
 EvalScript 函数负责执行给定的脚本，验证其合法性，并根据执行结果返回相应的错误码。这个函数是比特币脚本验证的核心部分之一，主要逻辑是从待执行脚本中取出操作码并执行，直至取完、执行过程中遇到OP_RETURN、执行过程中VERIFY类验证失败、执行过程中遇到错误（例如操作数不足等）才会结束执行。我们的 AVM 就在这里加入了自己实现的一些OP。来达到对上下文的一个维护。
 
-```
+```cpp
 bool EvalScript(std::vector<valtype> &stack, const CScript &script, uint32_t flags, const BaseSignatureChecker &checker,
                 ScriptExecutionMetrics &metrics, ScriptExecutionContextOpt const &context,
                 ScriptStateContext &stateContext, ScriptError *serror, unsigned int *serror_op_num)
@@ -244,7 +244,7 @@ OP_FT_WITHDRAW: 从合约中提取特定的代币。需要提供代币引用、�
 
 
 随便看一段case代码：
-```
+```cpp
 case OP_FT_BALANCE: {
   if (vch1.size() != 36) {
       return set_error(serror, ScriptError::INVALID_ATOMICAL_REF_SIZE);
@@ -278,7 +278,7 @@ case OP_FT_BALANCE: {
 具体的contractFtBalanceIncoming和contractFtBalance的方法在src/script/script_execution_context.cpp里面：
 主要是对 ScriptStateContext 里面的内容进行维护：
 
-```
+```cpp
 uint64_t ScriptStateContext::contractFtBalance(const uint288 &ftId) {
     auto ftBalanceIt = _ftState.find(ftId.GetHex());
     if (ftBalanceIt == _ftState.end()) {

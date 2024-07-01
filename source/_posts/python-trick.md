@@ -10,7 +10,7 @@ date: 2024-06-26 09:00:00
 速度也可以。
 
 ### 2. 使用 pickle
-```
+```python
 data = pickle.loads(pickle.dumps(data))
 ```
 

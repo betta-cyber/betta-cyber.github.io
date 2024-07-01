@@ -5,7 +5,7 @@ favicon: /favicon.ico
 keywords: betta-cyber, game, betta, shokill
 
 # Site title separator
-separator: '-'
+separator: "-"
 
 # RSS
 rss: /atom.xml
@@ -26,3 +26,9 @@ menu:
   Music: /music
   Photo: /album
   About: /about
+
+code:
+  lang: true # 代码块是否显示名称
+  copy: true # 代码块是否可复制
+  shrink: true # 代码块是否可以收缩
+  break: false # 代码是否折行

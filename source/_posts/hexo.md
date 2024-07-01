@@ -28,6 +28,9 @@ date: 2023-01-18 09:00:00
 
 需要调试暗黑模式的话，控制台下 `command + shift + p` 输入 dark 或者 light 就可以相关的模拟选项。
 
+`prefers-color-scheme: dark`
+`prefers-color-scheme: light`
+
 参考:
 https://www.izhaoo.com/2020/11/12/adapt-to-dark-mode/
 https://www.zhangxinxu.com/wordpress/2020/11/css-mix-blend-mode-filter-dark-theme/
