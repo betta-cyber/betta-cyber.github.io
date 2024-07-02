@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -98,28 +97,28 @@
 <li>透过设定档设定资料处理流程。</li>
 </ul>
 <h2 id="td-agent"><a href="#td-agent" class="headerlink" title="td-agent"></a>td-agent</h2><p>要使用 Fluentd 除了直接透过 Ruby Gem 安装外，也可安装 td-agent，由 Treasure Data 所维护的的发行版(The stable distribution of Fluentd)，因此之后的使用范例均用 td-agent。</p>
-<h3 id="安装-td-agent-Ubuntu"><a href="#安装-td-agent-Ubuntu" class="headerlink" title="安装 td-agent (Ubuntu)"></a>安装 td-agent (Ubuntu)</h3><pre><code>## Ubuntu 16.04 (Xenial)
-curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-xenial-td-agent3.sh | sh
+<h3 id="安装-td-agent-Ubuntu"><a href="#安装-td-agent-Ubuntu" class="headerlink" title="安装 td-agent (Ubuntu)"></a>安装 td-agent (Ubuntu)</h3><pre class="line-numbers language-none"><code class="language-none">## Ubuntu 16.04 (Xenial)
+curl -L https:&#x2F;&#x2F;toolbelt.treasuredata.com&#x2F;sh&#x2F;install-ubuntu-xenial-td-agent3.sh | sh
 
 ## Ubuntu 18.04 (Bionic)
-curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh | sh
-</code></pre>
+curl -L https:&#x2F;&#x2F;toolbelt.treasuredata.com&#x2F;sh&#x2F;install-ubuntu-bionic-td-agent3.sh | sh<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h3 id="安裝-plugin"><a href="#安裝-plugin" class="headerlink" title="安裝 plugin"></a>安裝 plugin</h3><p>Fluentd 可透过安装外部 plugin 来扩充功能，可到 Fluentd 官网查询可安装列表，之后使用 td-agent-gem 指令来安装支援该服务的 plugin 到 td-agent 中。</p>
 <p>如安装 elasticsearch 的 Fluentd plugin，可执行下列指令</p>
-<pre><code>td-agent-gem install fluent-plugin-elasticsearch
-</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">td-agent-gem install fluent-plugin-elasticsearch<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <h3 id="Fluentd-Config"><a href="#Fluentd-Config" class="headerlink" title="Fluentd Config"></a>Fluentd Config</h3><p>Fluentd 的资料接收，资料处理与资料导出的资料流处理流程都透过设定档来进行设定。而 td-agent 的设定档位于&#x2F;etc&#x2F;td-agent&#x2F;td-agent.conf。其中包含许多资料处理区间如</p>
-<pre><code>&lt;source&gt;
+<pre class="line-numbers language-none"><code class="language-none">&lt;source&gt;
 ...
-&lt;/source&gt;
+&lt;&#x2F;source&gt;
 
 &lt;match pattern&gt;
   &lt;filter&gt;
   ...
-  &lt;/filter&gt;
+  &lt;&#x2F;filter&gt;
 ...
-&lt;/match&gt;
-</code></pre>
+&lt;&#x2F;match&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>该区间就是在定义 Fluentd 的资料来源与处理方式。不同区间代表不同的处理类型，如</p>
 <ul>
 <li>&lt;source&gt; - 资料输入(Input)来源设定</li>
@@ -127,60 +126,62 @@ curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-bionic-td-agent3.sh 
 <li>&lt;filter&gt;: 资料处理与过滤方式。</li>
 </ul>
 <p>还有其他如 <code>&lt;parse&gt;</code>，<code>&lt;format&gt;</code>，<code>&lt;buffer&gt;</code> 等处理区间。</p>
-<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><pre><code>&lt;source&gt;
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><pre class="line-numbers language-none"><code class="language-none">&lt;source&gt;
   @type http
   port 9880
-&lt;/source&gt;
+&lt;&#x2F;source&gt;
 
 &lt;match debug.**&gt;
   @type stdout
-&lt;/match&gt;
-</code></pre>
+&lt;&#x2F;match&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>上面的设定 Fluentd 会接收来自 port 9880 的输入，并将 Tag 为 debug.* 的内容输出到标准输出。当透过指令输入</p>
 <h3 id="Routing"><a href="#Routing" class="headerlink" title="Routing"></a>Routing</h3><p>由于 Fluentd 的资料流为 Top-down 的方式处理，也就是若之前已经使用 &lt;match pattern&gt; 撷取资料，在之后的段落是无法取得已经被撷取的资料，因此可以透过相关 plugin 对资料做 Routing 以分流处理。</p>
 <h3 id="copy"><a href="#copy" class="headerlink" title="copy"></a>copy</h3><p><code>out_copy</code> plugin 可以复制资料流到不同的 &lt;match&gt; 区间中</p>
-<pre><code>&lt;match park.log&gt;
+<pre class="line-numbers language-none"><code class="language-none">&lt;match park.log&gt;
   @type copy
   &lt;store&gt;
     @type file
     ...
-  &lt;/store&gt;
+  &lt;&#x2F;store&gt;
   &lt;store&gt;
     @type forward
     ...
-  &lt;/store&gt;
-&lt;/match&gt;
-</code></pre>
+  &lt;&#x2F;store&gt;
+&lt;&#x2F;match&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h3 id="relabel"><a href="#relabel" class="headerlink" title="relabel"></a>relabel</h3><p>通过 <code>out_relable</code> plugin，将资料标注新 label 并在外部处理</p>
-<pre><code>&lt;match park.log&gt;
+<pre class="line-numbers language-none"><code class="language-none">&lt;match park.log&gt;
   @type copy
   &lt;store&gt;
     @type relabel
     @label OUTPUT_FILE
-  &lt;/store&gt;
+  &lt;&#x2F;store&gt;
   &lt;store&gt;
     @type relabe
     @label OUTPUT_FORWARD
-  &lt;/store&gt;
-&lt;/match&gt;
+  &lt;&#x2F;store&gt;
+&lt;&#x2F;match&gt;
 
 &lt;label @OUTPUT_FILE&gt;
   &lt;match park.log&gt;
     @type file
     ...
-  &lt;/match&gt;
-&lt;/label&gt;
+  &lt;&#x2F;match&gt;
+&lt;&#x2F;label&gt;
 
 &lt;label @OUTPUT_FORWARD&gt;
   &lt;match park.log&gt;
     @type forward
     ...
-  &lt;/match&gt;
-&lt;/label&gt;
-</code></pre>
+  &lt;&#x2F;match&gt;
+&lt;&#x2F;label&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
 <h3 id="测试-config-并重新启动服务"><a href="#测试-config-并重新启动服务" class="headerlink" title="测试 config 并重新启动服务"></a>测试 config 并重新启动服务</h3><p>当修改过 td-agent.conf 后可先测试该 config 设定是否可执行，只要在资料中</p>
-<pre><code>td-agent --dry-run -c [config-file]
-</code></pre>
+<pre class="line-numbers language-none"><code class="language-none">td-agent --dry-run -c [config-file]<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
 <h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ul>
 <li><a target="_blank" rel="noopener" href="https://www.fluentd.org/">Fluentd</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.fluentd.org/">Fluentd - Doc</a></li>

@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -87,27 +86,27 @@
   <div class="post-content">
     <p>HAProxy 网络错误：无法绑定套接字</p>
 <p>执行日志如下</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@hk-mailng-8-162 ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># systemctl status haproxy -l</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@hk-mailng-8-162 ~<span class="token punctuation">]</span><span class="token comment"># systemctl status haproxy -l</span>
 ● haproxy.service - HAProxy Load Balancer
    Loaded: loaded <span class="token punctuation">(</span>/usr/lib/systemd/system/haproxy.service<span class="token punctuation">;</span> disabled<span class="token punctuation">;</span> vendor preset: disabled<span class="token punctuation">)</span>
-   Active: failed <span class="token punctuation">(</span>Result: exit-code<span class="token punctuation">)</span> since Tue 2022-03-22 10:38:05 CST<span class="token punctuation">;</span> 11s ago
-  Process: 14335 ExecStart<span class="token operator">=</span>/usr/sbin/haproxy-systemd-wrapper -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid <span class="token variable">$OPTIONS</span> <span class="token punctuation">(</span>code<span class="token operator">=</span>exited, status<span class="token operator">=</span>1/FAILURE<span class="token punctuation">)</span>
- Main PID: 14335 <span class="token punctuation">(</span>code<span class="token operator">=</span>exited, status<span class="token operator">=</span>1/FAILURE<span class="token punctuation">)</span>
+   Active: failed <span class="token punctuation">(</span>Result: exit-code<span class="token punctuation">)</span> since Tue <span class="token number">2022</span>-03-22 <span class="token number">10</span>:38:05 CST<span class="token punctuation">;</span> 11s ago
+  Process: <span class="token number">14335</span> <span class="token assign-left variable">ExecStart</span><span class="token operator">=</span>/usr/sbin/haproxy-systemd-wrapper -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid <span class="token variable">$OPTIONS</span> <span class="token punctuation">(</span>code<span class="token operator">=</span>exited, <span class="token assign-left variable">status</span><span class="token operator">=</span><span class="token number">1</span>/FAILURE<span class="token punctuation">)</span>
+ Main PID: <span class="token number">14335</span> <span class="token punctuation">(</span>code<span class="token operator">=</span>exited, <span class="token assign-left variable">status</span><span class="token operator">=</span><span class="token number">1</span>/FAILURE<span class="token punctuation">)</span>
 
-Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1<span class="token punctuation">]</span>: Started HAProxy Load Balancer.
-Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1<span class="token punctuation">]</span>: Starting HAProxy Load Balancer<span class="token punctuation">..</span>.
-Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span>14335<span class="token punctuation">]</span>: haproxy-systemd-wrapper: executing /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -Ds
-Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span>14335<span class="token punctuation">]</span>: <span class="token punctuation">[</span>ALERT<span class="token punctuation">]</span> 080/103805 <span class="token punctuation">(</span>14336<span class="token punctuation">)</span> <span class="token keyword">:</span> Starting frontend exchange_smtp: cannot bind socket <span class="token punctuation">[</span>0.0.0.0:25<span class="token punctuation">]</span>
-Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span>14335<span class="token punctuation">]</span>: haproxy-systemd-wrapper: exit, haproxy RC<span class="token operator">=</span>1
-Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1<span class="token punctuation">]</span>: haproxy.service: main process exited, code<span class="token operator">=</span>exited, status<span class="token operator">=</span>1/FAILURE
-Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1<span class="token punctuation">]</span>: Unit haproxy.service entered failed state.
-Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1<span class="token punctuation">]</span>: haproxy.service failed.
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>: Started HAProxy Load Balancer.
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>: Starting HAProxy Load Balancer<span class="token punctuation">..</span>.
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span><span class="token number">14335</span><span class="token punctuation">]</span>: haproxy-systemd-wrapper: executing /usr/sbin/haproxy -f /etc/haproxy/haproxy.cfg -p /run/haproxy.pid -Ds
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span><span class="token number">14335</span><span class="token punctuation">]</span>: <span class="token punctuation">[</span>ALERT<span class="token punctuation">]</span> 080/103805 <span class="token punctuation">(</span><span class="token number">14336</span><span class="token punctuation">)</span> <span class="token builtin class-name">:</span> Starting frontend exchange_smtp: cannot <span class="token builtin class-name">bind</span> socket <span class="token punctuation">[</span><span class="token number">0.0</span>.0.0:25<span class="token punctuation">]</span>
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 haproxy-systemd-wrapper<span class="token punctuation">[</span><span class="token number">14335</span><span class="token punctuation">]</span>: haproxy-systemd-wrapper: exit, haproxy <span class="token assign-left variable">RC</span><span class="token operator">=</span><span class="token number">1</span>
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>: haproxy.service: main process exited, <span class="token assign-left variable">code</span><span class="token operator">=</span>exited, <span class="token assign-left variable">status</span><span class="token operator">=</span><span class="token number">1</span>/FAILURE
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>: Unit haproxy.service entered failed state.
+Mar <span class="token number">22</span> <span class="token number">10</span>:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>: haproxy.service failed.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>发现Starting frontend exchange_smtp: cannot bind socket [0.0.0.0:25]</p>
 <p>要解决cannot bind socket错误，您需要确定哪些其他进程正在侦听 HAProxy 尝试使用的 IP 地址和端口，或者该 IP 地址是否可用于 HAProxy。</p>
 <p>以下命令将确定已绑定到 port 上 IPv4 接口的进程的名称80。80如果错误消息中的端口与以下命令中的不同，请确保将其替换为端口：</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">sudo</span> ss -4 -tlnp <span class="token operator">|</span> <span class="token function">grep</span> 80
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> ss -4 -tlnp <span class="token operator">|</span> <span class="token function">grep</span> <span class="token number">80</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>该ss命令的标志以下列方式更改其默认输出：</p>
 <ul>
 <li>-4 限制ss为仅显示与 IPv4 相关的套接字信息。</li>
@@ -117,24 +116,23 @@ Mar 22 10:38:05 hk-mailng-8-162 systemd<span class="token punctuation">[</span>1
 <li>-p 输出有关绑定到端口的进程的信息。</li>
 <li>| grep 80将输出限制为包含字符80的行，因此您必须检查的行更少</li>
 </ul>
-<pre class="line-numbers language-bash"><code class="language-bash">LISTEN   0         511                 0.0.0.0:80               0.0.0.0:*        users:<span class="token punctuation">((</span><span class="token string">"nginx"</span>,pid<span class="token operator">=</span>40,fd<span class="token operator">=</span>6<span class="token punctuation">))</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>也可以使用<code>netstat</code>来查找</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">netstat</span> -ntlp <span class="token operator">|</span> <span class="token function">grep</span> 25
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">LISTEN   <span class="token number">0</span>         <span class="token number">511</span>                 <span class="token number">0.0</span>.0.0:80               <span class="token number">0.0</span>.0.0:*        users:<span class="token variable"><span class="token punctuation">((</span>"nginx"<span class="token punctuation">,</span>pid<span class="token operator">=</span><span class="token number">40</span><span class="token punctuation">,</span>fd<span class="token operator">=</span><span class="token number">6</span><span class="token punctuation">))</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
-tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      15903/master
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>也可以使用<code>netstat</code>来查找</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">netstat</span> -ntlp <span class="token operator">|</span> <span class="token function">grep</span> <span class="token number">25</span>
+
+tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">127.0</span>.0.1:25                <span class="token number">0.0</span>.0.0:*                   LISTEN      <span class="token number">15903</span>/master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <h4 id="查找进程对应的服务"><a href="#查找进程对应的服务" class="headerlink" title="查找进程对应的服务"></a>查找进程对应的服务</h4><p>可以用<code>locate</code>或者<code>ll /etc/init.d/postfix</code></p>
-<pre class="line-numbers language-bash"><code class="language-bash">/usr/libexec/postfix/master
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/usr/libexec/postfix/master<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <h4 id="停用服务"><a href="#停用服务" class="headerlink" title="停用服务"></a>停用服务</h4><p>停用postfix服务</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@usm ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># /etc/init.d/postfix stop</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@usm ~<span class="token punctuation">]</span><span class="token comment"># /etc/init.d/postfix stop</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>或者</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>root@usm ~<span class="token punctuation">]</span><span class="token comment" spellcheck="true"># service postfix stop</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@usm ~<span class="token punctuation">]</span><span class="token comment"># service postfix stop</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>最后写的 HAProxy 配置</p>
-<pre class="line-numbers language-config"><code class="language-config">frontend  exchange_smtp
+<pre class="line-numbers language-config" data-language="config"><code class="language-config">frontend  exchange_smtp
     mode tcp
     bind :25
     default_backend            exchange_25
@@ -144,8 +142,8 @@ backend exchange_25
     balance     source
     server  mail1 10.56.8.121:25
     server  mail2 10.56.8.122:25
-    server  mail3 10.56.8.123:25
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    server  mail3 10.56.8.123:25<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>重启之后，25端口不被占据，进行转发。</p>
 <p>最后用 telnet 进行端口测试。</p>
 

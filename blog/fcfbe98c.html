@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -92,7 +91,7 @@
 <p>LuaJIT 的运行时环境，除了一个汇编实现的 Lua 解释器外，还有一个可以直接生成机器代码的 JIT 编译器。</p>
 <p>LuaJIT 中 JIT 编译器的实现还不完善，有一些原语它还无法编译，因为这些原语实现起来比较困难，再加上 LuaJIT 的作者目前处于半退休状态。这些原语包括常见的 pairs() 函数、unpack() 函数、基于 Lua CFunction 实现的 Lua C 模块等。这样一来，当 JIT 编译器在当前代码路径上遇到它不支持的操作时，便会退回到解释器模式。</p>
 <p>完整的<a target="_blank" rel="noopener" href="http://wiki.luajit.org/NYI">NYI列表</a></p>
-<pre class="line-numbers language-bash"><code class="language-bash">resty -j <span class="token function">v</span> -e <span class="token string">'local t = &amp;#123;&amp;#125;
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">resty -j <span class="token function">v</span> -e <span class="token string">'local t = &#123;&#125;
 for i=1,100 do
     t[i] = i
 end
@@ -103,66 +102,65 @@ for i=1, 1000 do
             --
         end
     end
-end'</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+end'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>output</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>TRACE   1 <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:2 loop<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode 72 at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>TRACE   <span class="token number">1</span> <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:2 loop<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:7 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:6 -- NYI: bytecode <span class="token number">72</span> at <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:8<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>If could be JIT:</p>
-<pre class="line-numbers language-bash"><code class="language-bash">resty -j <span class="token function">v</span> -e <span class="token string">'for i=1, 1000 do local newstr, n, err = ngx.re.gsub("hello, world", "([a-z])[a-z]+", "[<span class="token variable">$0</span>,<span class="token variable">$1</span>]", "i") end'</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">resty -j <span class="token function">v</span> -e <span class="token string">'for i=1, 1000 do local newstr, n, err = ngx.re.gsub("hello, world", "([a-z])[a-z]+", "[$0,$1]", "i") end'</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>output:</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>TRACE   1 regex.lua:1081 loop<span class="token punctuation">]</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>TRACE   <span class="token number">1</span> regex.lua:1081 loop<span class="token punctuation">]</span>
 <span class="token punctuation">[</span>TRACE --- <span class="token punctuation">(</span>command line -e<span class="token punctuation">)</span>:1 -- inner loop <span class="token keyword">in</span> root trace at regex.lua:1082<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE   2 <span class="token punctuation">(</span>1/10<span class="token punctuation">)</span> regex.lua:1116 -<span class="token operator">></span> 1<span class="token punctuation">]</span>
-<span class="token punctuation">[</span>TRACE   3 <span class="token punctuation">(</span>1/21<span class="token punctuation">)</span> regex.lua:1084 -<span class="token operator">></span> 1<span class="token punctuation">]</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">[</span>TRACE   <span class="token number">2</span> <span class="token punctuation">(</span><span class="token number">1</span>/10<span class="token punctuation">)</span> regex.lua:1116 -<span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">]</span>
+<span class="token punctuation">[</span>TRACE   <span class="token number">3</span> <span class="token punctuation">(</span><span class="token number">1</span>/21<span class="token punctuation">)</span> regex.lua:1084 -<span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>every code could be traced</p>
 <h2 id="Table"><a href="#Table" class="headerlink" title="Table"></a>Table</h2><h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><p>千万不要在热代码路径上拼接字符串：</p>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token comment" spellcheck="true">--No</span>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token comment">--No</span>
 <span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token string">""</span>
 <span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100000</span> <span class="token keyword">do</span>
     s <span class="token operator">=</span> s <span class="token operator">..</span> <span class="token string">"a"</span>
-<span class="token keyword">end</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token comment" spellcheck="true">--Yes</span>
-<span class="token keyword">local</span> t <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token comment">--Yes</span>
+<span class="token keyword">local</span> t <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 <span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100000</span> <span class="token keyword">do</span>
     t<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"a"</span>
 <span class="token keyword">end</span>
-<span class="token keyword">local</span> s <span class="token operator">=</span>  table<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>t<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token keyword">local</span> s <span class="token operator">=</span>  table<span class="token punctuation">.</span><span class="token function">concat</span><span class="token punctuation">(</span>t<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h2 id="编码方式"><a href="#编码方式" class="headerlink" title="编码方式"></a>编码方式</h2><p>为了风格的统一，require 和 ngx 也需要 local 化：</p>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> ngx <span class="token operator">=</span> ngx
-<span class="token keyword">local</span> require <span class="token operator">=</span> require
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> ngx <span class="token operator">=</span> ngx
+<span class="token keyword">local</span> require <span class="token operator">=</span> require<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
 <h2 id="常见的坑"><a href="#常见的坑" class="headerlink" title="常见的坑"></a>常见的坑</h2><h3 id="下标从-0-开始还是从-1-开始"><a href="#下标从-0-开始还是从-1-开始" class="headerlink" title="下标从 0 开始还是从 1 开始"></a>下标从 0 开始还是从 1 开始</h3><p>第一个坑，Lua 的下标是从 1 开始的</p>
 <p>在 LuaJIT 中，使用 ffi.new 创建的数组，下标又是从 0 开始的:</p>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> buf <span class="token operator">=</span> <span class="token function">ffi_new</span><span class="token punctuation">(</span><span class="token string">"char[?]"</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> buf <span class="token operator">=</span> <span class="token function">ffi_new</span><span class="token punctuation">(</span><span class="token string">"char[?]"</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>所以，如果你要访问上面这段代码中 buf 这个 cdata，请记得下标从 0 开始，而不是 1。</p>
 <h2 id="luacheck"><a href="#luacheck" class="headerlink" title="luacheck"></a>luacheck</h2><p><a target="_blank" rel="noopener" href="https://github.com/mpeterv/luacheck">luacheck</a></p>
 <p>install luacheck by luarocks</p>
-<pre class="line-numbers language-bash"><code class="language-bash">luarocks <span class="token function">install</span> luacheck
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<h3 id="usage"><a href="#usage" class="headerlink" title="usage"></a>usage</h3><pre class="line-numbers language-bash"><code class="language-bash">luacheck src extra_file.lua another_file.lua
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">luarocks <span class="token function">install</span> luacheck<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="usage"><a href="#usage" class="headerlink" title="usage"></a>usage</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">luacheck src extra_file.lua another_file.lua<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <h1 id="API"><a href="#API" class="headerlink" title="API"></a>API</h1><h2 id="请求行"><a href="#请求行" class="headerlink" title="请求行"></a>请求行</h2><p><a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/ngx_http_core_module.html#variables">完整的 NGINX 内置变量列表</a></p>
 <p>既然可以通过ngx.var.* 这种返回变量值的方法，来得到请求行中的数据，为什么 OpenResty 还要单独提供针对请求行的 API 呢？</p>
 <p>比如ngx.req.get_method</p>
@@ -173,24 +171,23 @@ end'</span>
 <li>另外是对灵活性的考虑，绝大部分的 ngx.var 是只读的，只有很少数的变量是可写的，比如 $args 和 limit_rate，可很多时候，我们会有修改 method、URI 和 args 的需求。</li>
 </ul>
 <h2 id="请求头"><a href="#请求头" class="headerlink" title="请求头"></a>请求头</h2><p>改写和删除请求头</p>
-<pre class="line-numbers language-c"><code class="language-c">ngx<span class="token punctuation">.</span>req<span class="token punctuation">.</span><span class="token function">set_header</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"text/css"</span><span class="token punctuation">)</span>
-ngx<span class="token punctuation">.</span>req<span class="token punctuation">.</span><span class="token function">clear_header</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">ngx<span class="token punctuation">.</span>req<span class="token punctuation">.</span><span class="token function">set_header</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> <span class="token string">"text/css"</span><span class="token punctuation">)</span>
+ngx<span class="token punctuation">.</span>req<span class="token punctuation">.</span><span class="token function">clear_header</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
 <h2 id="响应状态行"><a href="#响应状态行" class="headerlink" title="响应状态行"></a>响应状态行</h2><p>状态行中，我们主要关注的是状态码。在默认情况下，返回的 HTTP 状态码是 200，也就是 OpenResty 中内置的常量 ngx.HTTP_OK。但在代码的世界中，处理异常情况的代码总是占比最多的。如果你检测了请求报文，发现这是一个恶意的请求，那么你需要终止请求:</p>
-<pre class="line-numbers language-c"><code class="language-c">ngx<span class="token punctuation">.</span><span class="token function">exit</span><span class="token punctuation">(</span>ngx<span class="token punctuation">.</span>HTTP_BAD_REQUEST<span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">ngx<span class="token punctuation">.</span><span class="token function">exit</span><span class="token punctuation">(</span>ngx<span class="token punctuation">.</span>HTTP_BAD_REQUEST<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>不过，OpenResty 的 HTTP 状态码中，有一个特别的常量：ngx.OK。当 ngx.exit(ngx.OK) 时，请求会退出当前处理阶段，进入下一个阶段，而不是直接返回给客户端。</p>
 <p>ngx.OK 确实不是http状态码，它是 OpenResty 中的一个常量，值是0.<br>ngx.exit 的官方文档正好可以解答你的问题：</p>
-<pre><code>When status &gt;= 200 (i.e., ngx.HTTP_OK and above), it will interrupt the execution of the current request and return status code to nginx.
+<pre class="line-numbers language-none"><code class="language-none">When status &gt;&#x3D; 200 (i.e., ngx.HTTP_OK and above), it will interrupt the execution of the current request and return status code to nginx.
 
-When status == 0 (i.e., ngx.OK), it will only quit the current phase handler (or the content handler if the content_by_lua* directive is used) and continue to run later phases (if any) for the current request.
-</code></pre>
+When status &#x3D;&#x3D; 0 (i.e., ngx.OK), it will only quit the current phase handler (or the content handler if the content_by_lua* directive is used) and continue to run later phases (if any) for the current request.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <p>不过，里面并没有提到对于ngx.exit(ngx.ERROR)和ngx.exit(ngx.DECLINED)是如何处理的，我们可以自己来做个测试：</p>
-<pre class="line-numbers language-nginx"><code class="language-nginx"><span class="token keyword">location</span> <span class="token operator">/</span>lua <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
-    rewrite_by_lua <span class="token string">"ngx.exit(ngx.ERROR)"</span><span class="token punctuation">;</span>
-    echo hello<span class="token punctuation">;</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-nginx" data-language="nginx"><code class="language-nginx"><span class="token directive"><span class="token keyword">location</span> /lua</span> <span class="token punctuation">&#123;</span>
+    <span class="token directive"><span class="token keyword">rewrite_by_lua</span> <span class="token string">"ngx.exit(ngx.ERROR)"</span></span><span class="token punctuation">;</span>
+    <span class="token directive"><span class="token keyword">echo</span> hello</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>访问这个 location，可以看到 http 响应码为空，响应体也是空。并没有引入下一个执行阶段。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/openresty/lua-nginx-module/#http-status-constants">更多状态行</a></p>
 <h2 id="数据共享"><a href="#数据共享" class="headerlink" title="数据共享"></a>数据共享</h2><p>基于 shared dict，你可以实现多个 worker 之间的缓存和通信，以及限流限速、流量统计等功能。你可以把 shared dict 当作简单的 Redis 来使用，只不过 shared dict 中的数据不能持久化，所以你存放在其中的数据，一定要考虑到丢失的情况。</p>
@@ -209,18 +206,17 @@ When status == 0 (i.e., ngx.OK), it will only quit the current phase handler (or
 <li>连接池：tcpsock:setkeepalive。</li>
 <li>关闭连接：tcpsock:close。</li>
 </ul>
-<h2 id="privileged-process"><a href="#privileged-process" class="headerlink" title="privileged process"></a>privileged process</h2><pre class="line-numbers language-lua"><code class="language-lua">init_by_lua_block <span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">123</span><span class="token punctuation">;</span>
+<h2 id="privileged-process"><a href="#privileged-process" class="headerlink" title="privileged process"></a>privileged process</h2><pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token function">init_by_lua_block</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">local</span> process <span class="token operator">=</span> require <span class="token string">"ngx.process"</span>
 
     <span class="token keyword">local</span> ok<span class="token punctuation">,</span> err <span class="token operator">=</span> process<span class="token punctuation">.</span><span class="token function">enable_privileged_agent</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     <span class="token keyword">if</span> <span class="token keyword">not</span> ok <span class="token keyword">then</span>
         ngx<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>ngx<span class="token punctuation">.</span>ERR<span class="token punctuation">,</span> <span class="token string">"enables privileged agent failed error:"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
     <span class="token keyword">end</span>
-<span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">125</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>特权只在 init_worker_by_lua 阶段运行一次，既然它不监听端口，也就是不能被终端请求触发，那就只有使用我们刚才介绍的 ngx.timer ，来周期性地触发了</p>
 <p>example</p>
-<pre class="line-numbers language-lua"><code class="language-lua">init_worker_by_lua_block <span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">123</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token function">init_worker_by_lua_block</span> <span class="token punctuation">&#123;</span>
     <span class="token keyword">local</span> process <span class="token operator">=</span> require <span class="token string">"ngx.process"</span>
 
     <span class="token keyword">local</span> <span class="token keyword">function</span> <span class="token function">reload</span><span class="token punctuation">(</span>premature<span class="token punctuation">)</span>
@@ -239,37 +235,36 @@ When status == 0 (i.e., ngx.OK), it will only quit the current phase handler (or
             ngx<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>ngx<span class="token punctuation">.</span>ERR<span class="token punctuation">,</span> err<span class="token punctuation">)</span>
         <span class="token keyword">end</span>
     <span class="token keyword">end</span>
-<span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">125</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="非阻塞的-ngx-pipe"><a href="#非阻塞的-ngx-pipe" class="headerlink" title="非阻塞的 ngx.pipe"></a>非阻塞的 ngx.pipe</h2><pre class="line-numbers language-bash"><code class="language-bash">os.execute<span class="token punctuation">(</span><span class="token string">"kill -HUP "</span> <span class="token punctuation">..</span> pid<span class="token punctuation">)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="非阻塞的-ngx-pipe"><a href="#非阻塞的-ngx-pipe" class="headerlink" title="非阻塞的 ngx.pipe"></a>非阻塞的 ngx.pipe</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">os.execute<span class="token punctuation">(</span><span class="token string">"kill -HUP "</span> <span class="token punctuation">..</span> pid<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>会导致阻塞，这显然是不好的。</p>
 <p>为此，lua-resty-shell 库应运而生，使用它来调用命令行就是非阻塞的：</p>
 <h2 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h2><p>这些返回当前时间的 API，如果没有非阻塞网络 IO 操作来触发，便会一直返回缓存的值，而不是像我们想的那样，能够返回当前的实时时间。</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ resty -e <span class="token string">'ngx.say(ngx.now())
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ resty -e <span class="token string">'ngx.say(ngx.now())
 os.execute("sleep 1")
-ngx.say(ngx.now())'</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+ngx.say(ngx.now())'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <p>在两次调用 ngx.now 之间，我们使用 Lua 的阻塞函数 sleep 了 1 秒钟，但从打印的结果来看，这两次返回的时间戳却是一模一样的。</p>
 <p>如果换成是非阻塞的 sleep 函数</p>
-<pre class="line-numbers language-bash"><code class="language-bash">$ resty -e <span class="token string">'ngx.say(ngx.now())
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ resty -e <span class="token string">'ngx.say(ngx.now())
 ngx.sleep(1)
-ngx.say(ngx.now())'</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+ngx.say(ngx.now())'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
 <p>显然，它就会打印出不同的时间戳了。</p>
 <p>Nginx 是以性能优先作为设计理念的，它会把时间缓存下来。从 ngx.now 的源码中我们可以得到印证：</p>
-<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">int</span>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">static</span> <span class="token keyword">int</span>
 <span class="token function">ngx_http_lua_ngx_now</span><span class="token punctuation">(</span>lua_State <span class="token operator">*</span>L<span class="token punctuation">)</span>
-<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    ngx_time_t <span class="token operator">*</span>tp<span class="token punctuation">;</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">ngx_time_t</span> <span class="token operator">*</span>tp<span class="token punctuation">;</span>
 
     tp <span class="token operator">=</span> <span class="token function">ngx_timeofday</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token function">lua_pushnumber</span><span class="token punctuation">(</span>L<span class="token punctuation">,</span> <span class="token punctuation">(</span>lua_Number<span class="token punctuation">)</span> <span class="token punctuation">(</span>tp<span class="token operator">-></span>sec <span class="token operator">+</span> tp<span class="token operator">-></span>msec <span class="token operator">/</span> <span class="token number">1000.0L</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
     <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
 <p>是调用了 Nginx 中的 ngx_timeofday 函数获取的时间。<br>而这个函数其实是一个宏定义：<br>&#96;&#96;#define ngx_timeofday() (ngx_time_t *) ngx_cached_time&#96;</p>
 <p>而 ngx_cached_time 的值只在函数 ngx_time_update 中会更新。<br>那问题就简化为 ngx_time_update 什么时候会被调用。如果你在 Nginx 的源码中去跟踪它的话，就会发现ngx_time_update的调用比较多，在事件循环中都有出现。</p>
 <p>也就是说只有在调用了 ngx_timer_update 的时候，ngx.timer的值才会更新，而调用前者多是在事件循环中，而调用yield 函数通常是添加了一个事件。这样解释了需要yield操作之后，ngx.timer才会更新</p>
@@ -292,14 +287,14 @@ ngx.say(ngx.now())'</span>
 </ul>
 <p>理念二：避免产生中间数据</p>
 <h2 id="用好-table"><a href="#用好-table" class="headerlink" title="用好 table"></a>用好 table</h2><p>尽量复用，避免不必要的 table 创建。</p>
-<h3 id="预先生成数组"><a href="#预先生成数组" class="headerlink" title="预先生成数组"></a>预先生成数组</h3><pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> new_tab <span class="token operator">=</span> require <span class="token string">"table.new"</span>
+<h3 id="预先生成数组"><a href="#预先生成数组" class="headerlink" title="预先生成数组"></a>预先生成数组</h3><pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> new_tab <span class="token operator">=</span> require <span class="token string">"table.new"</span>
 <span class="token keyword">local</span> t <span class="token operator">=</span> <span class="token function">new_tab</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
 <span class="token keyword">for</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">100</span> <span class="token keyword">do</span>
   t<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> i
-<span class="token keyword">end</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h3 id="自己计算-table-下标"><a href="#自己计算-table-下标" class="headerlink" title="自己计算 table 下标"></a>自己计算 table 下标</h3><p>lua-resty-redis example</p>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> <span class="token keyword">function</span> <span class="token function">_gen_req</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> <span class="token keyword">function</span> <span class="token function">_gen_req</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span>
     <span class="token keyword">local</span> nargs <span class="token operator">=</span> <span class="token operator">#</span>args
 
 
@@ -318,9 +313,8 @@ ngx.say(ngx.now())'</span>
         nbits <span class="token operator">=</span> nbits <span class="token operator">+</span> <span class="token number">5</span>
     <span class="token keyword">end</span>
     <span class="token keyword">return</span> req
-<span class="token keyword">end</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="循环使用单个-table"><a href="#循环使用单个-table" class="headerlink" title="循环使用单个 table"></a>循环使用单个 table</h3><pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> local_plugins <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="循环使用单个-table"><a href="#循环使用单个-table" class="headerlink" title="循环使用单个 table"></a>循环使用单个 table</h3><pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> local_plugins <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 
 <span class="token keyword">function</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
     core<span class="token punctuation">.</span>table<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span>local_plugins<span class="token punctuation">)</span>
@@ -330,7 +324,7 @@ ngx.say(ngx.now())'</span>
     <span class="token keyword">local</span> plugin_names <span class="token operator">=</span> local_conf<span class="token punctuation">.</span>plugins
 
 
-    <span class="token keyword">local</span> processed <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">123</span><span class="token punctuation">;</span><span class="token operator">&amp;</span><span class="token operator">#</span><span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token keyword">local</span> processed <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
     <span class="token keyword">for</span> _<span class="token punctuation">,</span> name <span class="token keyword">in</span> <span class="token function">ipairs</span><span class="token punctuation">(</span>plugin_names<span class="token punctuation">)</span> <span class="token keyword">do</span>
         <span class="token keyword">if</span> processed<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token keyword">nil</span> <span class="token keyword">then</span>
             processed<span class="token punctuation">[</span>name<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">true</span>
@@ -339,20 +333,19 @@ ngx.say(ngx.now())'</span>
     <span class="token keyword">end</span>
 
 
-    <span class="token keyword">return</span> local_plugins
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token keyword">return</span> local_plugins<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <h3 id="table-池"><a href="#table-池" class="headerlink" title="table 池"></a>table 池</h3><p>lua-tablepool 官方库</p>
-<pre class="line-numbers language-lua"><code class="language-lua"><span class="token keyword">local</span> tablepool <span class="token operator">=</span> require <span class="token string">"tablepool"</span>
+<pre class="line-numbers language-lua" data-language="lua"><code class="language-lua"><span class="token keyword">local</span> tablepool <span class="token operator">=</span> require <span class="token string">"tablepool"</span>
 <span class="token keyword">local</span> tablepool_fetch <span class="token operator">=</span> tablepool<span class="token punctuation">.</span>fetch
 <span class="token keyword">local</span> tablepool_release <span class="token operator">=</span> tablepool<span class="token punctuation">.</span>release
 
 <span class="token keyword">local</span> pool_name <span class="token operator">=</span> <span class="token string">"some_tag"</span>
 <span class="token keyword">local</span> <span class="token keyword">function</span> <span class="token function">do_sth</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
      <span class="token keyword">local</span> t <span class="token operator">=</span> <span class="token function">tablepool_fetch</span><span class="token punctuation">(</span>pool_name<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
-     <span class="token comment" spellcheck="true">-- -- using t for some purposes</span>
+     <span class="token comment">-- -- using t for some purposes</span>
     <span class="token function">tablepool_release</span><span class="token punctuation">(</span>pool_name<span class="token punctuation">,</span> t<span class="token punctuation">)</span>
-<span class="token keyword">end</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token keyword">end</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
   </div>
   <div class="post-footer">

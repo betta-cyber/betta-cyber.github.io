@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -86,24 +85,24 @@
   </div>
   <div class="post-content">
     <h1 id="简单记录一下写博客时碰到的一些问题"><a href="#简单记录一下写博客时碰到的一些问题" class="headerlink" title="简单记录一下写博客时碰到的一些问题"></a>简单记录一下写博客时碰到的一些问题</h1><h2 id="1-Dark-mode"><a href="#1-Dark-mode" class="headerlink" title="1. Dark mode"></a>1. Dark mode</h2><p>现在的站点基本上都适配了暗黑模式，我这个小博客也不能凑合着适配一下吧。使用了最简单的 CSS 代码，代码内容如下：</p>
-<pre class="line-numbers language-css"><code class="language-css"><span class="token atrule"><span class="token rule">@media</span> <span class="token punctuation">(</span><span class="token property">prefers-color-scheme</span><span class="token punctuation">:</span> dark<span class="token punctuation">)</span> &amp;#123<span class="token punctuation">;</span></span>
-    html &amp;<span class="token hexcode">#123</span><span class="token punctuation">;</span>
-        <span class="token property">filter</span><span class="token punctuation">:</span> <span class="token function">invert</span><span class="token punctuation">(</span><span class="token number">90%</span><span class="token punctuation">)</span> <span class="token function">hue-rotate</span><span class="token punctuation">(</span><span class="token number">180</span>deg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-css" data-language="css"><code class="language-css"><span class="token atrule"><span class="token rule">@media</span> <span class="token punctuation">(</span><span class="token property">prefers-color-scheme</span><span class="token punctuation">:</span> dark<span class="token punctuation">)</span></span> <span class="token punctuation">&#123;</span>
+    <span class="token selector">html</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">filter</span><span class="token punctuation">:</span> <span class="token function">invert</span><span class="token punctuation">(</span>90%<span class="token punctuation">)</span> <span class="token function">hue-rotate</span><span class="token punctuation">(</span>180deg<span class="token punctuation">)</span><span class="token punctuation">;</span>
         <span class="token property">background</span><span class="token punctuation">:</span> aliceblue<span class="token punctuation">;</span>
-    &amp;<span class="token hexcode">#125</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
 
-    img, video, svg, iframe &amp;<span class="token hexcode">#123</span><span class="token punctuation">;</span>
-        <span class="token property">filter</span><span class="token punctuation">:</span> <span class="token function">invert</span><span class="token punctuation">(</span><span class="token number">110%</span><span class="token punctuation">)</span> <span class="token function">hue-rotate</span><span class="token punctuation">(</span><span class="token number">180</span>deg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token property">opacity</span><span class="token punctuation">:</span> <span class="token number">.8</span><span class="token punctuation">;</span>
-    &amp;<span class="token hexcode">#125</span><span class="token punctuation">;</span>
-&amp;<span class="token hexcode">#125</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token selector">img, video, svg, iframe</span> <span class="token punctuation">&#123;</span>
+        <span class="token property">filter</span><span class="token punctuation">:</span> <span class="token function">invert</span><span class="token punctuation">(</span>110%<span class="token punctuation">)</span> <span class="token function">hue-rotate</span><span class="token punctuation">(</span>180deg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token property">opacity</span><span class="token punctuation">:</span> .8<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>代码就是简单的通过 media 进行判断，然后 invert 一下，我自己对背景色做了个处理。</p>
 <p>需要调试暗黑模式的话，控制台下 <code>command + shift + p</code> 输入 dark 或者 light 就可以相关的模拟选项。</p>
 <p><code>prefers-color-scheme: dark</code><br><code>prefers-color-scheme: light</code></p>
 <p>参考:<br><a target="_blank" rel="noopener" href="https://www.izhaoo.com/2020/11/12/adapt-to-dark-mode/">https://www.izhaoo.com/2020/11/12/adapt-to-dark-mode/</a><br><a target="_blank" rel="noopener" href="https://www.zhangxinxu.com/wordpress/2020/11/css-mix-blend-mode-filter-dark-theme/">https://www.zhangxinxu.com/wordpress/2020/11/css-mix-blend-mode-filter-dark-theme/</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/hiumanChung/article/details/120788659">https://blog.csdn.net/hiumanChung/article/details/120788659</a></p>
 <h2 id="2-Font"><a href="#2-Font" class="headerlink" title="2. Font"></a>2. Font</h2><p>本站点采用的中文字体为<a target="_blank" rel="noopener" href="https://github.com/lxgw/LxgwWenKai">霞鹜文楷</a>，但是个人觉得在加载的时候字体有点大，对字体加载方面也不是很了解，又不想妥协采用其他的方案。就写了一点小程序，对原字体进行处理。</p>
-<pre class="line-numbers language-yml"><code class="language-yml">name: github pages
+<pre class="line-numbers language-yml" data-language="yml"><code class="language-yml">name: github pages
 
 on:
   push:
@@ -114,18 +113,18 @@ jobs:
   build-deploy:
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions&#x2F;checkout@v1
 
     - name: Setup Node
-      uses: actions/setup-node@v1
+      uses: actions&#x2F;setup-node@v1
       with:
-        node-version: '12.x'
+        node-version: &#39;12.x&#39;
 
     - name: Cache dependencies
-      uses: actions/cache@v1
+      uses: actions&#x2F;cache@v1
       with:
-        path: ~/.npm
-        key: $&#123;&#123; runner.os &#125;&#125;-node-$&#123;&#123; hashFiles('**/package-lock.json') &#125;&#125;
+        path: ~&#x2F;.npm
+        key: $&#123;&#123; runner.os &#125;&#125;-node-$&#123;&#123; hashFiles(&#39;**&#x2F;package-lock.json&#39;) &#125;&#125;
         restore-keys: |
           $&#123;&#123; runner.os &#125;&#125;-node-
 
@@ -133,17 +132,17 @@ jobs:
     - run: npm install
     - run: npm install font-spider -g
     - run: npm run build
-    - run: sed -i 's/\/css\/style.css/..\/css\/style.css/g' `grep ".html" -rl public`
-    - run: font-spider "public/!(page)**/*.html" --debug
-    - run: sed -i 's/..\/css\/style.css/\/css\/style.css/g' `grep ".html" -rl public`
+    - run: sed -i &#39;s&#x2F;\&#x2F;css\&#x2F;style.css&#x2F;..\&#x2F;css\&#x2F;style.css&#x2F;g&#39; &#96;grep &quot;.html&quot; -rl public&#96;
+    - run: font-spider &quot;public&#x2F;!(page)**&#x2F;*.html&quot; --debug
+    - run: sed -i &#39;s&#x2F;..\&#x2F;css\&#x2F;style.css&#x2F;\&#x2F;css\&#x2F;style.css&#x2F;g&#39; &#96;grep &quot;.html&quot; -rl public&#96;
 
     - name: Deploy
-      uses: peaceiris/actions-gh-pages@v2
+      uses: peaceiris&#x2F;actions-gh-pages@v2
       env:
         ACTIONS_DEPLOY_KEY: $&#123;&#123; secrets.ACTIONS_DEPLOY_KEY &#125;&#125;
         PUBLISH_BRANCH: master
-        PUBLISH_DIR: ./public
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+        PUBLISH_DIR: .&#x2F;public<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>这段是我的 Github Action 文件，我在这里使用了 <a target="_blank" rel="noopener" href="https://github.com/aui/font-spider">font-spider</a> 做一个字体处理，把我 html 文件中需要用到的文字全部提取出来，然后用 font-spider 进行一个全盘的抽取替换，最后再把之前的内容还原回去。这样字体库中就之后拥有我博客中需要的字了，多余用不到的字就被去掉了，体积大大缩减。本来 15M 的字体现在不到 1M ，满足了我的需求。</p>
 <p>参考:<br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904019060588551">https://juejin.cn/post/6844904019060588551</a></p>
 <h2 id="3-Deploy"><a href="#3-Deploy" class="headerlink" title="3. Deploy"></a>3. Deploy</h2><p>其实博客的部署很简单，代码也是参考上面的 Action 文件。平时写作用的是 dev 分支，部署的时候，通过 build 出相关的静态代码。放在 Github Pages 上。官方文档写得已经很清楚了。</p>
@@ -156,18 +155,17 @@ jobs:
 <p>参考：<br><a target="_blank" rel="noopener" href="https://penghh.fun/2022/09/10/2022-9-10-notion_music/">https://penghh.fun/2022/09/10/2022-9-10-notion_music/</a></p>
 <h2 id="5-git-action-调试"><a href="#5-git-action-调试" class="headerlink" title="5. git action 调试"></a>5. git action 调试</h2><p>github action是git-ops中不可缺少的环节，使用在线环境只能查看logs，对于实际解决问题，起不到调试作用。这里请出<code>act</code>。它可以帮助我们在本地调试github action。</p>
 <p>Install</p>
-<pre class="line-numbers language-bash"><code class="language-bash">brew <span class="token function">install</span> act
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">brew <span class="token function">install</span> act<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>Usage</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## 列出workflow</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## 列出workflow</span>
 act -l
-<span class="token comment" spellcheck="true">## act dryrun模式，列出执行顺序，但是不真正执行</span>
-act -n
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token comment" spellcheck="true">## mac m1上执行需要加额外参数指定架构</span>
-<span class="token comment" spellcheck="true">## 直接通过-s 来指定GITHUB_TOKEN</span>
-act --container-architecture linux/amd64 -s GITHUB_TOKEN<span class="token operator">=</span>xxxx
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">## act dryrun模式，列出执行顺序，但是不真正执行</span>
+act -n<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## mac m1上执行需要加额外参数指定架构</span>
+<span class="token comment">## 直接通过-s 来指定GITHUB_TOKEN</span>
+act --container-architecture linux/amd64 -s <span class="token assign-left variable">GITHUB_TOKEN</span><span class="token operator">=</span>xxxx<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>就可以愉快的进行本地调试了，而不污染 git 仓库。</p>
 
   </div>

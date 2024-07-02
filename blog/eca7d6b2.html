@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -88,31 +87,31 @@
     <p>直接用 frida 进行 hook 抓包，bp 中发现原始包中包含 sign。对 sign 生成流程进行分析。<br><img src="/article_photo/oppo1.png"></p>
 <p><img src="/article_photo/oppo2.png"></p>
 <p>利用 frida 遍历类和方法找到想要 hook 的函数：</p>
-<pre class="line-numbers language-python"><code class="language-python">jscode <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
-Java.perform(function()&amp;#123;
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">jscode <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
+Java.perform(function()&#123;
     var classz = Java.enumerateLoadedClassesSync();
-    for(var i=0;i&lt;classz.length;i++)&amp;#123;
-        if (classz[i].indexOf("com.heytap.cdo.client.OcsTool") != -1)&amp;#123;
+    for(var i=0;i&lt;classz.length;i++)&#123;
+        if (classz[i].indexOf("com.heytap.cdo.client.OcsTool") != -1)&#123;
             console.log(classz[i])
 
             var MainActivity = Java.use(classz[i]);
             var methods = MainActivity.class.getDeclaredMethods();
 
-            for(var j=0;j&lt;methods.length;j++)&amp;#123;
+            for(var j=0;j&lt;methods.length;j++)&#123;
                 console.log(methods[j].getName())
-            &amp;#125;
-        &amp;#125;
-    &amp;#125;
-&amp;#125;)
-"""</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+            &#125;
+        &#125;
+    &#125;
+&#125;)
+"""</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>对 addSign 方法进行 hook：</p>
-<pre class="line-numbers language-python"><code class="language-python">jscode <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
-Java.perform(function()&amp;#123;
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">jscode <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
+Java.perform(function()&#123;
 
     var temp = Java.use('com.heytap.cdo.client.domain.network.interceptor.HeaderInitInterceptor');
 
-    temp.addSign.implementation = function(arg1, arg2, arg3, arg4) &amp;#123;
+    temp.addSign.implementation = function(arg1, arg2, arg3, arg4) &#123;
         send("Hook start....");
         var result = this.addSign(arg1, arg2, arg3, arg4);
         send("***arg1***:" + arg1);
@@ -121,73 +120,73 @@ Java.perform(function()&amp;#123;
         send("***arg4***:" + arg4);
         send("***result***" + result);
         return result;
-    &amp;#125;;
-&amp;#125;);
-"""</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    &#125;;
+&#125;);
+"""</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>hook到了参数和结果：</p>
-<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> Hook start<span class="token punctuation">..</span><span class="token punctuation">..</span>
-<span class="token punctuation">[</span>*<span class="token punctuation">]</span> ***arg1***:Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941420183////tracker/v1/infopkg<span class="token operator">=</span><span class="token operator">&amp;</span>start<span class="token operator">=</span>0<span class="token operator">&amp;</span>type<span class="token operator">=</span>0
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> Hook start<span class="token punctuation">..</span><span class="token punctuation">..</span>
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> ***arg1***:Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941420183////tracker/v1/infopkg<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token assign-left variable">start</span><span class="token operator">=</span><span class="token number">0</span><span class="token operator">&amp;</span><span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token number">0</span>
 <span class="token punctuation">[</span>*<span class="token punctuation">]</span> ***arg2***:128
-<span class="token punctuation">[</span>*<span class="token punctuation">]</span> ***result***7f0ad3db84508c082a9e732a4d1ee520
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> ***result***7f0ad3db84508c082a9e732a4d1ee520<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>发现 addSign 中内部调用了一个 so 的 native 方法：</p>
 <p><img src="/article_photo/oppo3.png"></p>
 <p>public static native String c(String p0,int p1);</p>
 <p>于是想着先对 so 进行 hook：</p>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># jscode = </span><span class="token triple-quoted-string string">"""
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># jscode = """</span>
 
-# function hook_native() &amp;#123;
-    # var addr = Module.getExportByName("libocstool.so", "Java_com_heytap_cdo_client_OcsTool_c")
-    # Interceptor.attach(addr, &amp;#123;
-        # onEnter: function (args) &amp;#123;
-            # console.log("args 1 ", args[0])
-            # console.log("str 1 ", Memory.readCString(args[0]))
+<span class="token comment"># function hook_native() &#123;</span>
+    <span class="token comment"># var addr = Module.getExportByName("libocstool.so", "Java_com_heytap_cdo_client_OcsTool_c")</span>
+    <span class="token comment"># Interceptor.attach(addr, &#123;</span>
+        <span class="token comment"># onEnter: function (args) &#123;</span>
+            <span class="token comment"># console.log("args 1 ", args[0])</span>
+            <span class="token comment"># console.log("str 1 ", Memory.readCString(args[0]))</span>
 
-            # console.log("args 2 ", args[1])
-            # console.log("str 2 ", Java.vm.getEnv().getStringUtfChars(args[1], null).readCString())
-            # console.log("str 3 ", Number(args[2]))
-        # &amp;#125;, onLeave: function (retval) &amp;#123;
-            # console.log("retval is ",  retval)
-        # &amp;#125;
-    # &amp;#125;)
-# &amp;#125;
+            <span class="token comment"># console.log("args 2 ", args[1])</span>
+            <span class="token comment"># console.log("str 2 ", Java.vm.getEnv().getStringUtfChars(args[1], null).readCString())</span>
+            <span class="token comment"># console.log("str 3 ", Number(args[2]))</span>
+        <span class="token comment"># &#125;, onLeave: function (retval) &#123;</span>
+            <span class="token comment"># console.log("retval is ",  retval)</span>
+        <span class="token comment"># &#125;</span>
+    <span class="token comment"># &#125;)</span>
+<span class="token comment"># &#125;</span>
 
-# function main() &amp;#123;
-    # hook_native()
-# &amp;#125;
+<span class="token comment"># function main() &#123;</span>
+    <span class="token comment"># hook_native()</span>
+<span class="token comment"># &#125;</span>
 
-# setImmediate(main)
-# """</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment"># setImmediate(main)</span>
+<span class="token comment"># """</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>对 native 的 hook 不是很顺利。入参字符串读不出来。所以直接转到 IDA 里面对 so 进行分析：<br>在 IDA 里面找到 Java_com_heytap_cdo_client_OcsTool_c ，直接 F5 。</p>
 <p><img src="/article_photo/oppo4.png"><br><img src="/article_photo/oppo5.png"></p>
 <p>看到是最后对字符串进行了一个 md5 操作。而且这个 md 还是用 java 调的。</p>
-<pre class="line-numbers language-javascript"><code class="language-javascript">    <span class="token keyword">var</span> MD5Encrypt <span class="token operator">=</span> Java<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">"java.security.MessageDigest"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">var</span> MD5Encrypt <span class="token operator">=</span> Java<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">"java.security.MessageDigest"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    MD5Encrypt<span class="token punctuation">.</span>update<span class="token punctuation">.</span><span class="token function">overload</span><span class="token punctuation">(</span><span class="token string">'[B'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>implementation <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>args1<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">//console.log("MD5Encrypt args1:",args1);</span>
-        <span class="token function">send</span><span class="token punctuation">(</span><span class="token function">Uint8ArrayToString</span><span class="token punctuation">(</span>args1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>args1<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"update"</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"MD5Encrypt.encode result==:"</span><span class="token punctuation">,</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> result<span class="token punctuation">;</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+MD5Encrypt<span class="token punctuation">.</span>update<span class="token punctuation">.</span><span class="token function">overload</span><span class="token punctuation">(</span><span class="token string">'[B'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function-variable function">implementation</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">args1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//console.log("MD5Encrypt args1:",args1);</span>
+    <span class="token function">send</span><span class="token punctuation">(</span><span class="token function">Uint8ArrayToString</span><span class="token punctuation">(</span>args1<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> result <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>args1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"update"</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"MD5Encrypt.encode result==:"</span><span class="token punctuation">,</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
 
-     MD5Encrypt<span class="token punctuation">.</span>digest<span class="token punctuation">.</span><span class="token function">overload</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>implementation <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>args1<span class="token punctuation">,</span> args2<span class="token punctuation">,</span> args3<span class="token punctuation">,</span> args4<span class="token punctuation">,</span> args5<span class="token punctuation">,</span> args6<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token keyword">var</span> args <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">digest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"fan_hui"</span><span class="token punctuation">,</span><span class="token function">byteToHexString</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> args
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+ MD5Encrypt<span class="token punctuation">.</span>digest<span class="token punctuation">.</span><span class="token function">overload</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function-variable function">implementation</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">args1<span class="token punctuation">,</span> args2<span class="token punctuation">,</span> args3<span class="token punctuation">,</span> args4<span class="token punctuation">,</span> args5<span class="token punctuation">,</span> args6</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> args <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">digest</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"fan_hui"</span><span class="token punctuation">,</span><span class="token function">byteToHexString</span><span class="token punctuation">(</span>args<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> args
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
 <p>Hook 一波。发现了 加密方法的 入参。由三部分组成：</p>
 <p>第一部分 <code>cdb09c43063ea6bb08f4fe8a43775179bdc58acb383220be</code></p>
 <p>第二部分</p>
-<pre class="line-numbers language-bash"><code class="language-bash">Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941454952////search/v1/searchtabId<span class="token operator">=</span><span class="token operator">&amp;</span>size<span class="token operator">=</span>10<span class="token operator">&amp;</span>searchType<span class="token operator">=</span>3<span class="token operator">&amp;</span>start<span class="token operator">=</span>0<span class="token operator">&amp;</span>keyword<span class="token operator">=</span>健康156
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F830021696941454952////search/v1/searchtabId<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token assign-left variable">size</span><span class="token operator">=</span><span class="token number">10</span><span class="token operator">&amp;</span><span class="token assign-left variable">searchType</span><span class="token operator">=</span><span class="token number">3</span><span class="token operator">&amp;</span><span class="token assign-left variable">start</span><span class="token operator">=</span><span class="token number">0</span><span class="token operator">&amp;</span><span class="token assign-left variable">keyword</span><span class="token operator">=</span>健康156<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>第三部分字符串：</p>
-<pre class="line-numbers language-bash"><code class="language-bash">STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>标红部分为固定值，黄色为请求 Header 中 ocs 字段，为设备信息不同设备不一样，蓝色部分为 Header 中 t 字段，固定部分。绿色部分为Header中id字段，设备IMEI号码。紫色部分为查询的 url, keyword为搜索字。之后棕色部分为前面字段的length()值。最后的红色部分也为固定字段，可以在 so 里面找到。</p>
 <p><img src="/article_photo/oppo6.png"></p>
 <p>md5 之后 转成 16 进制，tohex</p>
@@ -198,108 +197,106 @@ Java.perform(function()&amp;#123;
 <p><img src="/article_photo/oppo11.png"></p>
 <p>编写代码：</p>
 <p>搜索接口：</p>
-<pre class="line-numbers language-bash"><code class="language-bash">GET /search/v1/search?tabId<span class="token operator">=</span><span class="token operator">&amp;</span>size<span class="token operator">=</span>10<span class="token operator">&amp;</span>searchType<span class="token operator">=</span>10<span class="token operator">&amp;</span>start<span class="token operator">=</span>0<span class="token operator">&amp;</span>inputWord<span class="token operator">=</span>%E5%81%A5%E5%BA%B7<span class="token operator">&amp;</span>keyword<span class="token operator">=</span>%E5%81%A5%E5%BA%B7 HTTP/1.1
-rt: 0
-pr: 1
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">GET /search/v1/search?tabId<span class="token operator">=</span><span class="token operator">&amp;</span><span class="token assign-left variable">size</span><span class="token operator">=</span><span class="token number">10</span><span class="token operator">&amp;</span><span class="token assign-left variable">searchType</span><span class="token operator">=</span><span class="token number">10</span><span class="token operator">&amp;</span><span class="token assign-left variable">start</span><span class="token operator">=</span><span class="token number">0</span><span class="token operator">&amp;</span><span class="token assign-left variable">inputWord</span><span class="token operator">=</span>%E5%81%A5%E5%BA%B7<span class="token operator">&amp;</span><span class="token assign-left variable">keyword</span><span class="token operator">=</span>%E5%81%A5%E5%BA%B7 HTTP/1.1
+rt: <span class="token number">0</span>
+pr: <span class="token number">1</span>
 romver: -1
 cpu-arch: arm64-v8a
 User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2
 sign: 722c57523c27be3124baa0859e73f10d
-nw: 1
+nw: <span class="token number">1</span>
 pid: 001
-enter-id: 1
+enter-id: <span class="token number">1</span>
 locale: zh-CN<span class="token punctuation">;</span>CN
-iad: 3557812%2C30813121%2C39680%2C3417593%2C3368287%2C3056825
-ouid-limit-status: 1
+iad: <span class="token number">3557812</span>%2C30813121%2C39680%2C3417593%2C3368287%2C3056825
+ouid-limit-status: <span class="token number">1</span>
 sg: 5582a7e2abcf5689c2ca78a083528651
 oak: cdb09c43063ea6bb
 id: ///
-ocp: 8767
+ocp: <span class="token number">8767</span>
 ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002
 traceId: 32QpNqnL-1696933128182
-Accept: application/x2-protostuff<span class="token punctuation">;</span> charset<span class="token operator">=</span>UTF-8
-ch: 2101
-appversion: 8.3.2
+Accept: application/x2-protostuff<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>UTF-8
+ch: <span class="token number">2101</span>
+appversion: <span class="token number">8.3</span>.2
 token: -1
-pkg-ver: 0
-component: 83002/2
-t: 1696933128180
-appid: Redmi<span class="token comment" spellcheck="true">#001#CN</span>
+pkg-ver: <span class="token number">0</span>
+component: <span class="token number">83002</span>/2
+t: <span class="token number">1696933128180</span>
+appid: Redmi<span class="token comment">#001#CN</span>
 ext-info: normal
 Host: api-cn.store.heytapmobi.com
-Connection: close
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+Connection: close<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>其中application&#x2F;x2-protostuff 协议返回一种二进制文件。直接把 Accept 改成 json 或者直接去掉就行。免得还要分析新的 protostuff 文件。</p>
 <p>下载接口：</p>
-<pre class="line-numbers language-bash"><code class="language-bash">GET /download/v1/23646102?type<span class="token operator">=</span>1<span class="token operator">&amp;</span>ref<span class="token operator">=</span>200<span class="token operator">&amp;</span>mtag<span class="token operator">=</span>e5f378cc3e146776b84f96d439a2f027 HTTP/1.1
-pr: 1
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">GET /download/v1/23646102?type<span class="token operator">=</span><span class="token number">1</span><span class="token operator">&amp;</span><span class="token assign-left variable">ref</span><span class="token operator">=</span><span class="token number">200</span><span class="token operator">&amp;</span><span class="token assign-left variable">mtag</span><span class="token operator">=</span>e5f378cc3e146776b84f96d439a2f027 HTTP/1.1
+pr: <span class="token number">1</span>
 romver: -1
 cpu-arch: arm64-v8a
 User-Agent: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2F2101%2F83002%2F8.3.2
 sign: fe7baf48faf0ea9247f4de0aaff2e566
-nw: 1
+nw: <span class="token number">1</span>
 pid: 001
-enter-id: 1
+enter-id: <span class="token number">1</span>
 locale: zh-CN<span class="token punctuation">;</span>CN
-iad: 3557812%2C30813121%2C39680%2C3368287%2C3056825
+iad: <span class="token number">3557812</span>%2C30813121%2C39680%2C3368287%2C3056825
 sid: 7d4a99534f15cee1
-ouid-limit-status: 1
+ouid-limit-status: <span class="token number">1</span>
 sg: 8daa735e2420acb9c0c629878a89e8f1
 oak: cdb09c43063ea6bb
 id: ///
-ocp: 8767
+ocp: <span class="token number">8767</span>
 ocs: Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002
 traceId: MdBz6w6Y-1696930967290
-ch: 2101
-appversion: 8.3.2
+ch: <span class="token number">2101</span>
+appversion: <span class="token number">8.3</span>.2
 token: -1
-pkg-ver: 0
-component: 83002/2
-t: 1696930967288
-appid: Redmi<span class="token comment" spellcheck="true">#001#CN</span>
+pkg-ver: <span class="token number">0</span>
+component: <span class="token number">83002</span>/2
+t: <span class="token number">1696930967288</span>
+appid: Redmi<span class="token comment">#001#CN</span>
 ext-info: normal
-RANGE: bytes<span class="token operator">=</span>14208667-28417333
+RANGE: <span class="token assign-left variable">bytes</span><span class="token operator">=</span><span class="token number">14208667</span>-28417333
 Host: api-cn.store.heytapmobi.com
-Connection: close
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+Connection: close<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>返回结果：</p>
-<pre class="line-numbers language-bash"><code class="language-bash">HTTP/1.1 302 Found
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">HTTP/1.1 <span class="token number">302</span> Found
 Server: nginx
-Date: Tue, 10 Oct 2023 09:42:47 GMT
-Content-Length: 0
+Date: Tue, <span class="token number">10</span> Oct <span class="token number">2023</span> 09:42:47 GMT
+Content-Length: <span class="token number">0</span>
 Connection: close
-location: https://storedl3.heytapdownload.com/apk/202307/26/7bce7d789a29ed1dc72dcbc558fda3c3.apk?sign<span class="token operator">=</span>52120d03935223f3b3c3b17b66b221c8<span class="token operator">&amp;</span>t<span class="token operator">=</span>65251C97<span class="token operator">&amp;</span>m<span class="token operator">=</span>e5f378cc3e146776b84f96d439a2f027<span class="token operator">&amp;</span>hm<span class="token operator">=</span>0e16ce45b14b6f6e821b71e38039f776
-x-ocip: 220.249.100.111
-ocd: 1
-ogv: 20230908105131
+location: https://storedl3.heytapdownload.com/apk/202307/26/7bce7d789a29ed1dc72dcbc558fda3c3.apk?sign<span class="token operator">=</span>52120d03935223f3b3c3b17b66b221c8<span class="token operator">&amp;</span><span class="token assign-left variable">t</span><span class="token operator">=</span>65251C97<span class="token operator">&amp;</span><span class="token assign-left variable">m</span><span class="token operator">=</span>e5f378cc3e146776b84f96d439a2f027<span class="token operator">&amp;</span><span class="token assign-left variable">hm</span><span class="token operator">=</span>0e16ce45b14b6f6e821b71e38039f776
+x-ocip: <span class="token number">220.249</span>.100.111
+ocd: <span class="token number">1</span>
+ogv: <span class="token number">20230908105131</span>
 X-Backend-Host: 0409:18817
-X-Gateway-Host: 23c5a88d9fa46ae19f3c7bd4cb4a8a9e3f49ef0cb03627023ff6a5beac0b0590d043eff25553b3efe9af951213bdd3d5
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+X-Gateway-Host: 23c5a88d9fa46ae19f3c7bd4cb4a8a9e3f49ef0cb03627023ff6a5beac0b0590d043eff25553b3efe9af951213bdd3d5<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看到 nginx 返回 302，并进行了一个跳转，跳转的就是真实可用的下载链接。<br>拿到这个 url 就可以直接下载了。</p>
 <p>参考文档：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42011443/article/details/106814333">https://blog.csdn.net/weixin_42011443/article/details/106814333</a><br><a target="_blank" rel="noopener" href="https://curlconverter.com/">https://curlconverter.com/</a><br><a target="_blank" rel="noopener" href="https://blog.palug.cn/3026.html">https://blog.palug.cn/3026.html</a></p>
 <p>代码：</p>
-<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment"># -*- coding: utf-8 -*-</span>
 
 <span class="token keyword">import</span> hashlib
 <span class="token keyword">import</span> requests
 <span class="token keyword">import</span> urllib<span class="token punctuation">.</span>parse
 
 
-<span class="token keyword">def</span> <span class="token function">sign</span><span class="token punctuation">(</span>ocs<span class="token punctuation">,</span> t<span class="token punctuation">,</span> id<span class="token punctuation">,</span> uri<span class="token punctuation">)</span><span class="token punctuation">:</span>
-    <span class="token comment" spellcheck="true"># start_token = "23a8ba872e43065370f68c62df3ba8a45f1c1a57c91df63e"</span>
+<span class="token keyword">def</span> <span class="token function">sign</span><span class="token punctuation">(</span>ocs<span class="token punctuation">,</span> t<span class="token punctuation">,</span> <span class="token builtin">id</span><span class="token punctuation">,</span> uri<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># start_token = "23a8ba872e43065370f68c62df3ba8a45f1c1a57c91df63e"</span>
     start_token <span class="token operator">=</span> <span class="token string">"cdb09c43063ea6bb08f4fe8a43775179bdc58acb383220be"</span>
     end_token <span class="token operator">=</span> <span class="token string">"STORENEWMIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBANYFY/UJGSzhIhpx6YM5KJ9yRHc7YeURxzb9tDvJvMfENHlnP3DtVkOIjERbpsSd76fjtZnMWY60TpGLGyrNkvuV40L15JQhHAo9yURpPQoI0eg3SLFmTEI/MUiPRCwfwYf2deqKKlsmMSysYYHX9JiGzQuWiYZaawxprSuiqDGvAgMBAAECgYEAtQ0QV00gGABISljNMy5aeDBBTSBWG2OjxJhxLRbndZM81OsMFysgC7dq+bUS6ke1YrDWgsoFhRxxTtx/2gDYciGp/c/h0Td5pGw7T9W6zo2xWI5oh1WyTnn0Xj17O9CmOk4fFDpJ6bapL+fyDy7gkEUChJ9+p66WSAlsfUhJ2TECQQD5sFWMGE2IiEuz4fIPaDrNSTHeFQQr/ZpZ7VzB2tcG7GyZRx5YORbZmX1jR7l3H4F98MgqCGs88w6FKnCpxDK3AkEA225CphAcfyiH0ShlZxEXBgIYt3V8nQuc/g2KJtiV6eeFkxmOMHbVTPGkARvt5VoPYEjwPTg43oqTDJVtlWagyQJBAOvEeJLno9aHNExvznyD4/pR4hec6qqLNgMyIYMfHCl6d3UodVvC1HO1/nMPl+4GvuRnxuoBtxj/PTe7AlUbYPMCQQDOkf4sVv58tqslO+I6JNyHy3F5RCELtuMUR6rG5x46FLqqwGQbO8ORq+m5IZHTV/Uhr4h6GXNwDQRh1EpVW0gBAkAp/v3tPI1riz6UuG0I6uf5er26yl5evPyPrjrD299L4Qy/1EIunayC7JYcSGlR01+EDYYgwUkec+QgrRC/NstV"</span>
 
-    data <span class="token operator">=</span> ocs <span class="token operator">+</span> t <span class="token operator">+</span> id <span class="token operator">+</span> uri
+    data <span class="token operator">=</span> ocs <span class="token operator">+</span> t <span class="token operator">+</span> <span class="token builtin">id</span> <span class="token operator">+</span> uri
     <span class="token keyword">print</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
-    <span class="token keyword">print</span><span class="token punctuation">(</span>len<span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-    <span class="token comment" spellcheck="true"># data = start_token + ocs + t + id + uri</span>
+    <span class="token comment"># data = start_token + ocs + t + id + uri</span>
     data <span class="token operator">=</span> start_token <span class="token operator">+</span> data
     <span class="token keyword">print</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
 
-    length <span class="token operator">=</span> len<span class="token punctuation">(</span>data<span class="token punctuation">)</span>
-    data <span class="token operator">=</span> data <span class="token operator">+</span> str<span class="token punctuation">(</span>length<span class="token punctuation">)</span> <span class="token operator">+</span> end_token
+    length <span class="token operator">=</span> <span class="token builtin">len</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+    data <span class="token operator">=</span> data <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>length<span class="token punctuation">)</span> <span class="token operator">+</span> end_token
 
     <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">"----before-----"</span><span class="token punctuation">)</span>
     <span class="token keyword">print</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
@@ -313,23 +310,23 @@ X-Gateway-Host: 23c5a88d9fa46ae19f3c7bd4cb4a8a9e3f49ef0cb03627023ff6a5beac0b0590
     <span class="token keyword">return</span> sign
 
 
-headers <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+headers <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
     <span class="token string">'id'</span><span class="token punctuation">:</span> <span class="token string">'///'</span><span class="token punctuation">,</span>
     <span class="token string">'oak'</span><span class="token punctuation">:</span> <span class="token string">'cdb09c43063ea6bb'</span><span class="token punctuation">,</span>
     <span class="token string">'ocs'</span><span class="token punctuation">:</span> <span class="token string">'Redmi%2FM2007J3SC%2F30%2F11%2FUNKNOWN%2F2%2FRKQ1.200826.002+test-keys%2F83002'</span><span class="token punctuation">,</span>
     <span class="token string">'t'</span><span class="token punctuation">:</span> <span class="token string">'1697161301085'</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">&#125;</span>
 
 url <span class="token operator">=</span> <span class="token string">'https://api-cn.store.heytapmobi.com'</span>
 uri <span class="token operator">=</span> <span class="token string">'/search/v1/search'</span>
 
-params <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+params <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
     <span class="token string">'tabId'</span><span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
     <span class="token string">'size'</span><span class="token punctuation">:</span> <span class="token string">'10'</span><span class="token punctuation">,</span>
     <span class="token string">'searchType'</span><span class="token punctuation">:</span> <span class="token string">'3'</span><span class="token punctuation">,</span>
     <span class="token string">'start'</span><span class="token punctuation">:</span> <span class="token string">'0'</span><span class="token punctuation">,</span>
     <span class="token string">'keyword'</span><span class="token punctuation">:</span> <span class="token string">'酷狗'</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">&#125;</span>
 
 url_str <span class="token operator">=</span> uri
 <span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> params<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
@@ -338,30 +335,30 @@ url_str <span class="token operator">=</span> uri
 url_str <span class="token operator">=</span> url_str<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
 <span class="token keyword">print</span><span class="token punctuation">(</span>url_str<span class="token punctuation">)</span>
 
-<span class="token comment" spellcheck="true"># uri = urllib.parse.quote(uri)</span>
+<span class="token comment"># uri = urllib.parse.quote(uri)</span>
 url <span class="token operator">=</span> url <span class="token operator">+</span> uri
 <span class="token keyword">print</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># uri = '/download/v1/23646102?type=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027'</span>
+<span class="token comment"># uri = '/download/v1/23646102?type=1&amp;ref=200&amp;mtag=e5f378cc3e146776b84f96d439a2f027'</span>
 
 
-<span class="token comment" spellcheck="true"># 1697102213193////card/store/v4/search/homesize=10&amp;start=0</span>
+<span class="token comment"># 1697102213193////card/store/v4/search/homesize=10&amp;start=0</span>
 
 headers<span class="token punctuation">[</span><span class="token string">'sign'</span><span class="token punctuation">]</span> <span class="token operator">=</span> sign<span class="token punctuation">(</span>headers<span class="token punctuation">[</span><span class="token string">'ocs'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> headers<span class="token punctuation">[</span><span class="token string">'t'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> headers<span class="token punctuation">[</span><span class="token string">'id'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> url_str<span class="token punctuation">)</span>
 
-<span class="token comment" spellcheck="true"># response = requests.get(url, params=params, headers=headers)</span>
-<span class="token comment" spellcheck="true"># # response = requests.get(url, headers=headers)</span>
+<span class="token comment"># response = requests.get(url, params=params, headers=headers)</span>
+<span class="token comment"># # response = requests.get(url, headers=headers)</span>
 
-<span class="token comment" spellcheck="true"># print(response.status_code)</span>
-<span class="token comment" spellcheck="true"># print(response.text)</span>
+<span class="token comment"># print(response.status_code)</span>
+<span class="token comment"># print(response.text)</span>
 
 
 url <span class="token operator">=</span> <span class="token string">"https://api-cn.store.heytapmobi.com"</span>
 uri <span class="token operator">=</span> <span class="token string">"/download/v1/23644742"</span>
 
-params <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+params <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
     <span class="token string">'type'</span><span class="token punctuation">:</span> <span class="token string">'1'</span><span class="token punctuation">,</span>
     <span class="token string">'ref'</span><span class="token punctuation">:</span> <span class="token string">'200'</span><span class="token punctuation">,</span>
-<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token punctuation">&#125;</span>
 url_str <span class="token operator">=</span> uri
 <span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token keyword">in</span> params<span class="token punctuation">.</span>items<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
     url_str <span class="token operator">+=</span> k <span class="token operator">+</span> <span class="token string">'='</span> <span class="token operator">+</span> v <span class="token operator">+</span> <span class="token string">'&amp;'</span>
@@ -369,19 +366,18 @@ url_str <span class="token operator">=</span> uri
 url_str <span class="token operator">=</span> url_str<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span>
 <span class="token keyword">print</span><span class="token punctuation">(</span>url_str<span class="token punctuation">)</span>
 
-<span class="token comment" spellcheck="true"># uri = urllib.parse.quote(uri)</span>
+<span class="token comment"># uri = urllib.parse.quote(uri)</span>
 url <span class="token operator">=</span> url <span class="token operator">+</span> uri
 <span class="token keyword">print</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span>
 
 headers<span class="token punctuation">[</span><span class="token string">'sign'</span><span class="token punctuation">]</span> <span class="token operator">=</span> sign<span class="token punctuation">(</span>headers<span class="token punctuation">[</span><span class="token string">'ocs'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> headers<span class="token punctuation">[</span><span class="token string">'t'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> headers<span class="token punctuation">[</span><span class="token string">'id'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> url_str<span class="token punctuation">)</span>
 response <span class="token operator">=</span> requests<span class="token punctuation">.</span>get<span class="token punctuation">(</span>url<span class="token punctuation">,</span> params<span class="token operator">=</span>params<span class="token punctuation">,</span> headers<span class="token operator">=</span>headers<span class="token punctuation">,</span> allow_redirects<span class="token operator">=</span><span class="token boolean">False</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># response = requests.get(url, headers=headers)</span>
+<span class="token comment"># response = requests.get(url, headers=headers)</span>
 
 <span class="token keyword">print</span><span class="token punctuation">(</span>response<span class="token punctuation">.</span>status_code<span class="token punctuation">)</span>
 <span class="token keyword">print</span><span class="token punctuation">(</span>response<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'Location'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true"># with open("ddd.apk", "wb") as f:</span>
-    <span class="token comment" spellcheck="true"># f.write(response.content)</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment"># with open("ddd.apk", "wb") as f:</span>
+    <span class="token comment"># f.write(response.content)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
   </div>
   <div class="post-footer">

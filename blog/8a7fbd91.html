@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -109,28 +108,28 @@
 <p>python的打包方案其实不多，这里面就用我比较熟悉用的最多的<code>pyinstaller</code>，pip安装之后，直接执行<code>pyinstaller  -F app.py</code>即可开始打包，注意！app.py是你的入口文件，也就是你要把服务启动起来的文件。他会自动去寻找相关依赖，然后进行打包，当然打包的过程中也可以做很多优化，这里暂时不讨论了。当然打包需要在windows上面进行，这点有点不是很舒服，之后再研究一下。看能不能直接打包出exe文件</p>
 <h3 id="web-view部分"><a href="#web-view部分" class="headerlink" title="web-view部分"></a>web-view部分</h3><p>web-view部分其实比较简单，说白了就是和electron一样的一个浏览器壳，但是又不是浏览器壳。webview有 C&#x2F;C++&#x2F;Golang的实现。通过引入相关头文件对页面进行渲染。而且也有一些坑。</p>
 <p>主体代码其实并不能，就是通过启一个线程去运行python实现的后端程序</p>
-<pre class="line-numbers language-rust"><code class="language-rust">thread<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token operator">||</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-    Command<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span>
+<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token namespace">thread<span class="token punctuation">::</span></span><span class="token function">spawn</span><span class="token punctuation">(</span><span class="token closure-params"><span class="token closure-punctuation punctuation">|</span><span class="token closure-punctuation punctuation">|</span></span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Command</span><span class="token punctuation">::</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"cmd"</span><span class="token punctuation">)</span>
         <span class="token punctuation">.</span><span class="token function">args</span><span class="token punctuation">(</span><span class="token operator">&amp;</span><span class="token punctuation">[</span><span class="token string">"/C"</span><span class="token punctuation">,</span> <span class="token string">"cd gcheck &amp;&amp; app.exe"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
         <span class="token punctuation">.</span><span class="token function">output</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
         <span class="token punctuation">.</span><span class="token function">expect</span><span class="token punctuation">(</span><span class="token string">"failed to execute process"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>然后通过这边webview去请求该页面去进行交互生成桌面应用</p>
-<pre class="line-numbers language-rust"><code class="language-rust"><span class="token function">run</span><span class="token punctuation">(</span>
+<pre class="line-numbers language-rust" data-language="rust"><code class="language-rust"><span class="token function">run</span><span class="token punctuation">(</span>
     <span class="token string">""</span><span class="token punctuation">,</span>
-    Content<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">Url</span><span class="token punctuation">(</span><span class="token function">format!</span><span class="token punctuation">(</span><span class="token string">"http://127.0.0.1:8000"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-    <span class="token function">Some</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token class-name">Content</span><span class="token punctuation">::</span><span class="token class-name">Url</span><span class="token punctuation">(</span><span class="token macro property">format!</span><span class="token punctuation">(</span><span class="token string">"http://127.0.0.1:8000"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token class-name">Some</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">,</span>
     resizable<span class="token punctuation">,</span>
     debug<span class="token punctuation">,</span>
     titlebar_transparent<span class="token punctuation">,</span>
-    <span class="token keyword">move</span> <span class="token operator">|</span><span class="token keyword">mut</span> webview<span class="token operator">|</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// webview.set_background_color(0.11, 0.12, 0.13, 1.0);</span>
-    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+    <span class="token keyword">move</span> <span class="token closure-params"><span class="token closure-punctuation punctuation">|</span><span class="token keyword">mut</span> webview<span class="token closure-punctuation punctuation">|</span></span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// webview.set_background_color(0.11, 0.12, 0.13, 1.0);</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
     frontend_cb<span class="token punctuation">,</span>
     userdata
-<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>在windows下面有一些坑，下面主要列一下：</p>
 <ol>
 <li><p>ie浏览器的兼容性问题，由于win下面使用的MSHTML作为其底层技术，那么浏览器的一个兼容问题是必须要考虑的。我之前就是因为一些js的写法导致出现了<code>script 1003</code> <code>script 1002</code>这样的一些脚本错误。归根结底的一个问题就是ie对ES6语法的支持不行，需要采用ES5的写法。最好的解决方案就是在vue项目当中<code>npm install --save-dev babel-polyfill</code> 然后在项目中<code>import &#39;babel-polyfill&#39;</code>引入。</p>

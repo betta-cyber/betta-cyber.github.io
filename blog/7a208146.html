@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -94,16 +93,14 @@
 <p>经过以上步骤，我们定义了一个存储在寄存器a中的宏，它的操作序列是：0-&gt;x-&gt;j，也就是跳到行首，删除，跳到下一行。</p>
 <p>现在，第一行已经删除了行首的逗号，而且光标也已经在第二行，现在，在normal模式下输入@a，以播放我们刚录制好的存在寄存器a中的宏。于是，第二行行首的逗号也被删除，光标停在了第三行。</p>
 <p>前面加上执行次数， 如 7@a， 就可以执行 7 次。</p>
-<h1 id="批量替换"><a href="#批量替换" class="headerlink" title="批量替换"></a>批量替换</h1><pre class="line-numbers language-regex"><code class="language-regex">:[addr]s/源字符串/目的字符串/[option]
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h1 id="批量替换"><a href="#批量替换" class="headerlink" title="批量替换"></a>批量替换</h1><pre class="line-numbers language-regex" data-language="regex"><code class="language-regex">:<span class="token char-class"><span class="token char-class-punctuation punctuation">[</span>addr<span class="token char-class-punctuation punctuation">]</span></span>s/源字符串/目的字符串/<span class="token char-class"><span class="token char-class-punctuation punctuation">[</span>option<span class="token char-class-punctuation punctuation">]</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>全局替换命令为：</p>
-<pre class="line-numbers language-regex"><code class="language-regex">:%s/源字符串/目的字符串/g
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-regex" data-language="regex"><code class="language-regex">:%s/源字符串/目的字符串/g<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 <p>[addr] 表示检索范围，省略时表示当前行。<br>“1,20”: 表示从第1行到20行；<br>“%”: 表示整个文件，同“1,$”；<br>“.,$”: 从当前行到文件尾；</p>
-<h1 id="在每行行首或行尾添加-x2F-删除内容"><a href="#在每行行首或行尾添加-x2F-删除内容" class="headerlink" title="在每行行首或行尾添加&#x2F;删除内容"></a>在每行行首或行尾添加&#x2F;删除内容</h1><pre class="line-numbers language-regex"><code class="language-regex">:%s/^/要添加的内容
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<pre class="line-numbers language-regex"><code class="language-regex">:%s/$/要添加的内容
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h1 id="在每行行首或行尾添加-x2F-删除内容"><a href="#在每行行首或行尾添加-x2F-删除内容" class="headerlink" title="在每行行首或行尾添加&#x2F;删除内容"></a>在每行行首或行尾添加&#x2F;删除内容</h1><pre class="line-numbers language-regex" data-language="regex"><code class="language-regex">:%s/<span class="token anchor function">^</span>/要添加的内容<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<pre class="line-numbers language-regex" data-language="regex"><code class="language-regex">:%s/<span class="token anchor function">$</span>/要添加的内容<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
   </div>
   <div class="post-footer">

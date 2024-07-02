@@ -38,8 +38,7 @@
   <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
-<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
+<meta name="generator" content="Hexo 5.4.1"></head>
 
   <body>
     <div class="container">
@@ -85,12 +84,13 @@
     <h1 class="article-title">MySQL Quick Reference</h1>
   </div>
   <div class="post-content">
-    <h3 id="1-MySQL-解析-json"><a href="#1-MySQL-解析-json" class="headerlink" title="1. MySQL 解析 json"></a>1. MySQL 解析 <strong>json</strong></h3><pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">sum</span><span class="token punctuation">(</span>json_extract<span class="token punctuation">(</span><span class="token number">a</span><span class="token punctuation">.</span>sec_count<span class="token punctuation">,</span> <span class="token string">"$.Critical"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">from</span> <span class="token punctuation">`</span>result<span class="token punctuation">`</span> <span class="token keyword">AS</span> <span class="token number">a</span>
+    <h3 id="1-MySQL-解析-json"><a href="#1-MySQL-解析-json" class="headerlink" title="1. MySQL 解析 json"></a>1. MySQL 解析 <strong>json</strong></h3><pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">sum</span><span class="token punctuation">(</span>json_extract<span class="token punctuation">(</span>a<span class="token punctuation">.</span>sec_count<span class="token punctuation">,</span> <span class="token string">"$.Critical"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">from</span> <span class="token identifier"><span class="token punctuation">`</span>result<span class="token punctuation">`</span></span> <span class="token keyword">AS</span> a
 <span class="token keyword">where</span>
   task_id <span class="token operator">></span> <span class="token number">20220931000999</span>
   <span class="token operator">and</span> task_id <span class="token operator">&lt;</span> <span class="token number">20221231000999</span>
-  <span class="token operator">and</span> <span class="token number">a</span><span class="token punctuation">.</span>sec_count <span class="token operator">!=</span> <span class="token string">''</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token operator">and</span> a<span class="token punctuation">.</span>sec_count <span class="token operator">!=</span> <span class="token string">''</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
 <ul>
 <li>使用 字段-&gt;’$.json属性’进行查询条件</li>
 <li>使用json_extract函数查询，json_extract(字段,”$.json属性”)</li>
@@ -99,8 +99,7 @@
 <p>容易出现的错误是，<strong>如果该字段为空或者空字符串</strong>，会出现解析不了的情况，要注意好判断条件。</p>
 <h3 id="2-MySQL-varchar-转-int-类型-CAST-函数"><a href="#2-MySQL-varchar-转-int-类型-CAST-函数" class="headerlink" title="2. MySQL varchar 转 int 类型: CAST 函数"></a>2. MySQL varchar 转 int 类型: <strong>CAST</strong> 函数</h3><p>在使用CAST函数转换类型时，可以转换的类型是有限制的。这个类型可以是以下值其中的一个。也就是说，UNSIGNED 可以替换成：</p>
 <p>二进制，同带binary前缀的效果 : BINARY<br>字符型，可带参数 : CHAR()<br>日期 : DATE<br>时间: TIME<br>日期时间型 : DATETIME<br>浮点数 : DECIMAL<br>整数 : SIGNED<br>无符号整数 : UNSIGNED</p>
-<pre class="line-numbers language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">max</span><span class="token punctuation">(</span>cast<span class="token punctuation">(</span>sex <span class="token keyword">as</span> UNSIGNED <span class="token keyword">INTEGER</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">from</span> <span class="token keyword">user</span><span class="token punctuation">;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token function">max</span><span class="token punctuation">(</span>cast<span class="token punctuation">(</span>sex <span class="token keyword">as</span> <span class="token keyword">UNSIGNED</span> <span class="token keyword">INTEGER</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">from</span> <span class="token keyword">user</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
   </div>
   <div class="post-footer">
