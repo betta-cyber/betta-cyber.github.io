@@ -7,7 +7,7 @@ date: 2023-08-30 09:00:00
 
 ### 1. MySQL 解析 **json**
 
-```
+``` sql
 select sum(json_extract(a.sec_count, "$.Critical")) from `result` AS a
 where
   task_id > 20220931000999
@@ -37,6 +37,6 @@ where
 整数 : SIGNED
 无符号整数 : UNSIGNED
 
-```
+``` sql
 select max(cast(sex as UNSIGNED INTEGER)) from user;
 ```

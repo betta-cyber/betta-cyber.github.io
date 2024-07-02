@@ -8,7 +8,7 @@ HAProxy 网络错误：无法绑定套接字
 
 执行日志如下
 
-```
+``` bash
 [root@hk-mailng-8-162 ~]# systemctl status haproxy -l
 ● haproxy.service - HAProxy Load Balancer
    Loaded: loaded (/usr/lib/systemd/system/haproxy.service; disabled; vendor preset: disabled)
@@ -24,7 +24,6 @@ Mar 22 10:38:05 hk-mailng-8-162 haproxy-systemd-wrapper[14335]: haproxy-systemd-
 Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service: main process exited, code=exited, status=1/FAILURE
 Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: Unit haproxy.service entered failed state.
 Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service failed.
-
 ```
 
 发现Starting frontend exchange_smtp: cannot bind socket [0.0.0.0:25]
@@ -33,7 +32,7 @@ Mar 22 10:38:05 hk-mailng-8-162 systemd[1]: haproxy.service failed.
 
 以下命令将确定已绑定到 port 上 IPv4 接口的进程的名称80。80如果错误消息中的端口与以下命令中的不同，请确保将其替换为端口：
 
-```
+``` bash
 sudo ss -4 -tlnp | grep 80
 ```
 
@@ -47,13 +46,13 @@ sudo ss -4 -tlnp | grep 80
 - | grep 80将输出限制为包含字符80的行，因此您必须检查的行更少
 
 
-```
+``` bash
 LISTEN   0         511                 0.0.0.0:80               0.0.0.0:*        users:(("nginx",pid=40,fd=6))
 ```
 
 也可以使用`netstat`来查找
 
-```
+``` bash
 netstat -ntlp | grep 25
 
 tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LISTEN      15903/master
@@ -63,7 +62,7 @@ tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LIST
 
 可以用`locate`或者`ll /etc/init.d/postfix`
 
-```
+``` bash
 /usr/libexec/postfix/master
 ```
 
@@ -71,15 +70,17 @@ tcp        0      0 127.0.0.1:25                0.0.0.0:*                   LIST
 
 停用postfix服务
 
-```
+``` bash
 [root@usm ~]# /etc/init.d/postfix stop
+```
 或者
+``` bash
 [root@usm ~]# service postfix stop
 ```
 
 最后写的 HAProxy 配置
 
-```
+``` config
 frontend  exchange_smtp
     mode tcp
     bind :25

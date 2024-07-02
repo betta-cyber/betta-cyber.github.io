@@ -16,7 +16,7 @@ ChatGPT 自 2022 年末大火一波之后，最近又突然爆火，第一次是
 
 # 1. Wechaty 的问题。
 
-```
+``` javascript
 const bot =  WechatyBuilder.build({
   name: "wechat-assistant", // generate xxxx.memory-card.json and save login data for the next login
   puppetOptions: {
@@ -26,7 +26,7 @@ const bot =  WechatyBuilder.build({
 });
 ```
 这段代码在 railway 上面部署的时候，出现 timeout
-```
+``` bash
 🤖️ Start GPT Bot Success, ready to handle message!
 00:37:17 WARN WechatyPuppetMixin start() starting puppet ... timeout
 00:37:17 WARN WechatyPuppetMixin start() puppet info: Puppet(wechat-assistant)
@@ -35,11 +35,11 @@ const bot =  WechatyBuilder.build({
 00:38:02 WARN PuppetWeChatBridge stop() page.close() exception: Error: Protocol error: Connection closed. Most likely the page has been closed.
 ```
 后面我把 uos 协议给关了，本地可以，但是 railway 上还是不行。改成了下面的代码：
-```
+``` javascript
 const bot =  WechatyBuilder.singleton();
 ```
 这个模式可以出现微信登录二维码，但是这个用的是 web 版本的协议。我在使用了大半天之后，导致一个微信小号被封，虽然可以解封，但是还是很麻烦。后面我研究了一下微信的机器人教程，机器人场景的使用最好使用 ipad 协议。
-```
+``` javascript
 const puppet = new PuppetPadlocal({
     token: "puppet_padlocal_xxxxx"
 })

@@ -27,7 +27,7 @@ LuaJIT 中 JIT 编译器的实现还不完善，有一些原语它还无法编�
 
 完整的[NYI列表](http://wiki.luajit.org/NYI)
 
-```
+``` bash
 resty -j v -e 'local t = {}
 for i=1,100 do
     t[i] = i
@@ -43,7 +43,7 @@ end'
 ```
 output
 
-```
+``` bash
 [TRACE   1 (command line -e):2 loop]
 [TRACE --- (command line -e):7 -- NYI: bytecode 72 at (command line -e):8]
 [TRACE --- (command line -e):7 -- NYI: bytecode 72 at (command line -e):8]
@@ -65,13 +65,13 @@ output
 
 If could be JIT:
 
-```
+``` bash
 resty -j v -e 'for i=1, 1000 do local newstr, n, err = ngx.re.gsub("hello, world", "([a-z])[a-z]+", "[$0,$1]", "i") end'
 ```
 
 output:
 
-```
+``` bash
 [TRACE   1 regex.lua:1081 loop]
 [TRACE --- (command line -e):1 -- inner loop in root trace at regex.lua:1082]
 [TRACE   2 (1/10) regex.lua:1116 -> 1]
@@ -86,8 +86,7 @@ every code could be traced
 
 千万不要在热代码路径上拼接字符串：
 
-```
-
+``` lua
 --No
 local s = ""
 for i = 1, 100000 do
@@ -96,7 +95,7 @@ end
 ```
 
 
-```
+``` lua
 --Yes
 local t = {}
 for i = 1, 100000 do
@@ -109,7 +108,7 @@ local s =  table.concat(t, "")
 
 为了风格的统一，require 和 ngx 也需要 local 化：
 
-```
+``` lua
 local ngx = ngx
 local require = require
 ```
@@ -122,7 +121,7 @@ local require = require
 
 在 LuaJIT 中，使用 ffi.new 创建的数组，下标又是从 0 开始的:
 
-```
+``` lua
 local buf = ffi_new("char[?]", 128)
 ```
 
@@ -135,13 +134,13 @@ local buf = ffi_new("char[?]", 128)
 
 install luacheck by luarocks
 
-```
+``` bash
 luarocks install luacheck
 ```
 
 ### usage
 
-```
+``` bash
 luacheck src extra_file.lua another_file.lua
 ```
 
@@ -164,7 +163,7 @@ luacheck src extra_file.lua another_file.lua
 
 改写和删除请求头
 
-```
+``` c
 ngx.req.set_header("Content-Type", "text/css")
 ngx.req.clear_header("Content-Type")
 ```
@@ -173,7 +172,7 @@ ngx.req.clear_header("Content-Type")
 
 状态行中，我们主要关注的是状态码。在默认情况下，返回的 HTTP 状态码是 200，也就是 OpenResty 中内置的常量 ngx.HTTP_OK。但在代码的世界中，处理异常情况的代码总是占比最多的。如果你检测了请求报文，发现这是一个恶意的请求，那么你需要终止请求:
 
-```
+``` c
 ngx.exit(ngx.HTTP_BAD_REQUEST)
 ```
 
@@ -188,7 +187,7 @@ When status == 0 (i.e., ngx.OK), it will only quit the current phase handler (or
 ```
 
 不过，里面并没有提到对于ngx.exit(ngx.ERROR)和ngx.exit(ngx.DECLINED)是如何处理的，我们可以自己来做个测试：
-```
+``` nginx
 location /lua {
     rewrite_by_lua "ngx.exit(ngx.ERROR)";
     echo hello;
@@ -229,8 +228,7 @@ TCP 相关的 cosocket API 可以分为下面这几类。
 
 ## privileged process
 
-```
-
+``` lua
 init_by_lua_block {
     local process = require "ngx.process"
 
@@ -244,7 +242,7 @@ init_by_lua_block {
 
 
 example
-```
+``` lua
 init_worker_by_lua_block {
     local process = require "ngx.process"
 
@@ -268,7 +266,7 @@ init_worker_by_lua_block {
 ```
 ## 非阻塞的 ngx.pipe
 
-```
+``` bash
 os.execute("kill -HUP " .. pid)
 ```
 会导致阻塞，这显然是不好的。
@@ -279,8 +277,7 @@ os.execute("kill -HUP " .. pid)
 
 这些返回当前时间的 API，如果没有非阻塞网络 IO 操作来触发，便会一直返回缓存的值，而不是像我们想的那样，能够返回当前的实时时间。
 
-```
-
+``` bash
 $ resty -e 'ngx.say(ngx.now())
 os.execute("sleep 1")
 ngx.say(ngx.now())'
@@ -290,8 +287,7 @@ ngx.say(ngx.now())'
 
 如果换成是非阻塞的 sleep 函数
 
-```
-
+``` bash
 $ resty -e 'ngx.say(ngx.now())
 ngx.sleep(1)
 ngx.say(ngx.now())'
@@ -300,7 +296,7 @@ ngx.say(ngx.now())'
 显然，它就会打印出不同的时间戳了。
 
 Nginx 是以性能优先作为设计理念的，它会把时间缓存下来。从 ngx.now 的源码中我们可以得到印证：
-```
+``` c
 static int
 ngx_http_lua_ngx_now(lua_State *L)
 {
@@ -374,8 +370,7 @@ test::nginx 糅合了 Perl、数据驱动以及 DSL（领域小语言）。对�
 
 ### 预先生成数组
 
-```
-
+``` lua
 local new_tab = require "table.new"
 local t = new_tab(100, 0)
 for i = 1, 100 do
@@ -387,7 +382,7 @@ end
 
 lua-resty-redis example
 
-```
+``` lua
 local function _gen_req(args)
     local nargs = #args
 
@@ -411,8 +406,7 @@ end
 ```
 ### 循环使用单个 table
 
-```
-
+``` lua
 local local_plugins = {}
 
 function load()
@@ -439,11 +433,10 @@ function load()
 
 lua-tablepool 官方库
 
-```
+``` lua
 local tablepool = require "tablepool"
- local tablepool_fetch = tablepool.fetch
- local tablepool_release = tablepool.release
-
+local tablepool_fetch = tablepool.fetch
+local tablepool_release = tablepool.release
 
 local pool_name = "some_tag"
 local function do_sth()

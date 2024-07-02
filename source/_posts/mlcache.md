@@ -55,7 +55,7 @@ L3 层提供一个自定义函数，有一个 Worker 执行，通过 lua-resty-l
 
 我们直接贴一下官方的示例
 
-```
+``` nginx
 # nginx.conf
 
 http {
@@ -100,7 +100,7 @@ http {
 
 将局部配置修改如下：
 
-```
+``` c
 lua_shared_dict cache_dict 1m;
 lua_shared_dict cache_lock 1m;
 
@@ -133,7 +133,7 @@ init_by_lua_block {
 
 我们看以下官方提供的示例
 
-```
+``` c
 lua_shared_dict process_events 1m;
 
 init_worker_by_lua_block {
@@ -171,7 +171,7 @@ init_worker_by_lua_block {
 lua-resty-mlcache提供了ipc接口来支持lua-resty-worker-events模块，我们直接配置参数即可。
 
 
-```
+``` c
 lua_shared_dict cache_dict    1m;
 lua_shared_dict cache_lock    1m;
 lua_shared_dict worker_events 1m;
@@ -181,13 +181,13 @@ init_worker_by_lua_block {
     local worker_events = require "resty.worker.events"
 
     local ok, err = worker_events.configure {
-        shm = "worker_events", 
-        timeout = 2,           
-        interval = 1,    
+        shm = "worker_events",
+        timeout = 2,
+        interval = 1,
 
-        wait_interval = 0.010, 
-        wait_max = 0.5,  
-        shm_retries = 999,  
+        wait_interval = 0.010,
+        wait_max = 0.5,
+        shm_retries = 999,
     }
 
     local cache, err = mlcache.new("my_cache", "cache_dict", {
@@ -221,4 +221,3 @@ init_worker_by_lua_block {
     end
 }
 ```
-

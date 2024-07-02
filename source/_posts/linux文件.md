@@ -7,7 +7,7 @@ date: 2023-07-11 09:00:00
 # 一、方式
 1. stat
 stat是一个在Linux系统上查看文件或文件系统状态的工具。用获取文件的最近访问时间、修改时间、权限等信息，并编写脚本以定期运行该命令以监控文件状态的变化。
-2. sysdig 
+2. sysdig
   sysdig 是一个超级系统工具，可用来捕获系统状态信息。提供命令行接口以及强大的交互界面。支持各种 IO 活动：进程、文件、网络连接等。
 3. inotifywait
 需要安装inotify-tools。
@@ -27,12 +27,12 @@ inotify具有以下主要特点：
 
 ## 2.3 工作方式
 接口说明
-```
+``` c
 #include <sys/inotify.h>
 
 int inotify_init(void);
 int inotify_init1(int flags);
-/* 
+/*
  * flags：初始化标志，用于指定inotify实例的行为选项。
  * 可以使用以下标志进行设置：
  * IN_CLOEXEC：设置此标志后，在执行exec时会关闭inotify文件描述符。
@@ -81,7 +81,7 @@ struct inotify_event
 
 实例演示：
 统计写falsh次数，防止高频度写falsh引发坏块。
-```
+``` c
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -131,7 +131,7 @@ int main(int argc ,char* argv[]) {
             if (event->mask & IN_OPEN) {
                 printf("File opened: %s\n", event->name);
             }
-            
+
             // 指向下一个事件
             event = (struct inotify_event *) ((char *) event + EVENT_SIZE + event->len);
             len -= EVENT_SIZE + event->len;
@@ -174,7 +174,7 @@ max_user_watches 表示每个用户可创建的监控项（watch）的最大数�
 - 事件合并： 如果多个事件发生在同一个文件上，并且这些事件之间的时间间隔很短，你可以考虑将它们合并为一个事件进行处理。例如，如果一个文件在短时间内连续被修改了多次，你可以只触发一次处理操作，而不是每次修改都触发。
 - 并发处理： 使用多线程或多进程来并发处理事件。将事件分发给多个处理线程或进程，可以并行处理多个事件，提高处理速度。但要注意避免并发处理导致的竞态条件和资源冲突问题。
 3. 无法追踪操作的进程。
-  - 结合进程监控工具：如 lsof、fuser 或 ltrace 
+  - 结合进程监控工具：如 lsof、fuser 或 ltrace
 局限：嵌入式设备系统上没有lsof、strace等命令。
 
 # 三、fanotify简介
@@ -189,7 +189,7 @@ max_user_watches 表示每个用户可创建的监控项（watch）的最大数�
 - 文件同步和备份
 
 接口介绍
-```
+``` c
 #include <fcntl.h>
 #include <sys/fanotify.h>
 
@@ -202,7 +202,7 @@ flags: 通知类别
   FAN_CLOEXEC 在执行exec时会关闭fanotify文件描述符
 event_f_flags：文件状态标志，比如O_RDONLY O_RDONLY  O_LARGEFILE
 */
-int fanotify_mark(int fanotify_fd, unsigned int flags, uint64_t mask, 
+int fanotify_mark(int fanotify_fd, unsigned int flags, uint64_t mask,
                 int dirfd, const char*pathname);
 /*
 fanotify_fd：fanotify 文件描述符，通过 fanotify_init 函数获得。
@@ -254,7 +254,7 @@ FAN_EVENT_NEXT(meta, len)
 fanotify实例演示
 示例1
 根据监控事件，获取对应修改文件的程序名称及被修改文件名称
-```
+``` c
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -289,10 +289,10 @@ enum {
 
 /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
 static uint64_t event_mask =
-  (FAN_ACCESS |         
-   FAN_MODIFY |         
-   FAN_CLOSE_WRITE |   
-   FAN_CLOSE_NOWRITE | 
+  (FAN_ACCESS |
+   FAN_MODIFY |
+   FAN_CLOSE_WRITE |
+   FAN_CLOSE_NOWRITE |
    FAN_OPEN );
 /* Array of directories being monitored */
 static monitored_t *monitors;
@@ -548,7 +548,7 @@ int main (int argc, const char **argv)
 示例2
 拦截访问
 
-```
+``` c
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -566,7 +566,7 @@ int main(int argc, const char **argv) {
 
     if (fanotify_fd == -1) {
         perror("fanotify_init");
-        exit(EXIT_FAILURE); 
+        exit(EXIT_FAILURE);
     }
 
     int wd = fanotify_mark(fanotify_fd, FAN_MARK_ADD, FAN_OPEN_PERM, AT_FDCWD, path);

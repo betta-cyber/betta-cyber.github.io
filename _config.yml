@@ -114,7 +114,7 @@ highlight_theme: night bright
 #   enable: true
 
 prism_plugin:
-  mode: "realtime" # realtime/preprocess
+  mode: "preprocess" # realtime/preprocess
   theme: "tomorrow"
   line_number: true # default false
   custom_css:

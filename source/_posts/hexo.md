@@ -10,7 +10,7 @@ date: 2023-01-18 09:00:00
 
 现在的站点基本上都适配了暗黑模式，我这个小博客也不能凑合着适配一下吧。使用了最简单的 CSS 代码，代码内容如下：
 
-```
+``` css
 @media (prefers-color-scheme: dark) {
     html {
         filter: invert(90%) hue-rotate(180deg);
@@ -40,7 +40,7 @@ https://blog.csdn.net/hiumanChung/article/details/120788659
 
 本站点采用的中文字体为[霞鹜文楷](https://github.com/lxgw/LxgwWenKai)，但是个人觉得在加载的时候字体有点大，对字体加载方面也不是很了解，又不想妥协采用其他的方案。就写了一点小程序，对原字体进行处理。
 
-```
+``` yml
 name: github pages
 
 on:
@@ -110,3 +110,28 @@ https://hexo.io/zh-cn/docs/github-pages.html
 
 参考：
 https://penghh.fun/2022/09/10/2022-9-10-notion_music/
+
+
+## 5. git action 调试
+
+github action是git-ops中不可缺少的环节，使用在线环境只能查看logs，对于实际解决问题，起不到调试作用。这里请出`act`。它可以帮助我们在本地调试github action。
+
+Install
+``` bash
+brew install act
+```
+
+Usage
+``` bash
+## 列出workflow
+act -l
+## act dryrun模式，列出执行顺序，但是不真正执行
+act -n
+```
+
+``` bash
+## mac m1上执行需要加额外参数指定架构
+## 直接通过-s 来指定GITHUB_TOKEN
+act --container-architecture linux/amd64 -s GITHUB_TOKEN=xxxx
+```
+就可以愉快的进行本地调试了，而不污染 git 仓库。

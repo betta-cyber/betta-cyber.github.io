@@ -7,7 +7,7 @@ date: 2020-02-04 01:13:14
 ## 问题由来
 
 由于涉及到 Rust 交叉编译的问题，本人不太想折腾。主要是在不想在 Windows 上安装 Rust 相关。手头现在有一台 MacOS 设备和一台 Linux 服务器，想交叉编译到 Win 上，于是做了一点尝试。MinGW 应该是比较靠谱的方案。本人在 Mac 上通过
-```
+``` bash
 brew install FiloSottile/musl-cross/musl-cross
 brew install mingw-w64
 ```
@@ -15,7 +15,7 @@ brew install mingw-w64
 
 ## travis 相关
 
-```
+``` yml
 os: windows
 language: rust
 rust:
@@ -52,7 +52,7 @@ deploy:
 
 ## GitHub actions
 
-```
+``` yml
 name: Continuous Integration
 on:
   push:
@@ -82,7 +82,7 @@ jobs:
 2 月 5 号更新，鉴于 travis 生成的 exe 文件在 win10 上面不能成功运行，且 trace 看不出什么究竟，故而选择在 macOS 上面交叉编译，macOS 上面由于 rust 官方 toolchains 的 lib 中 crt2.o 较老，会出现一些 `undefined reference to '__imp___acrt_iob_func'` 类似的报错，需要手动进行替换。
 在 `~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/x86_64-pc-windows-gnu/lib` 目录下，也就是你的 rust 版本的 lib 下，进行备份，然后将通过 brew 安装的 mingw-w64 下的 lib crt2 进行替换。
 
-```
+``` bash
 mv crt2.o crt2.o.bak
 cp /System/Volumes/Data/usr/local/Cellar/mingw-w64/7.0.0/toolchain-x86_64/x86_64-w64-mingw32/lib/crt2.o ./
 ```
@@ -103,7 +103,7 @@ cp /System/Volumes/Data/usr/local/Cellar/mingw-w64/7.0.0/toolchain-x86_64/x86_64
 
 1. 执行 `rustup component remove rust-mingw`
 2. 添加配置到 cargo 的 config 当中
-```
+``` toml
 [target.x86_64-pc-windows-gnu]
 linker = "C:\\mingw64\\bin\\gcc.exe"
 ar = "C:\\mingw64\\bin\\ar.exe"

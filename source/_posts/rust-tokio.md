@@ -16,7 +16,7 @@ tokio::select! 宏允许在多个异步计算中等待，并在单个计算完�
 <模式> = <async 表达式> => <结果处理>,
 
 
-```
+``` rust
 use tokio::sync::oneshot;
 
 #[tokio::main]
@@ -50,7 +50,7 @@ async fn main() {
 创建一个异步任务,不仅可以单独的走异步任务，异步任务还可以返回结果，使用 await 接收
 
 
-```
+``` rust
 use tokio;
 
 #[tokio::main]
@@ -85,7 +85,7 @@ async fn main() {
 
 使用 tokio::join! 宏同时执行多个异步任务
 
-```
+``` rust
 async fn do_stuff_async() -> &'static str {
     let s = tokio::spawn(async {
         "one"
@@ -120,7 +120,7 @@ tokio提供了两种工作模式的runtime：
 
 创建单一线程的runtime
 
-```
+``` rust
 #![allow(unused)]
 fn main() {
     // 创建单一线程的runtime
@@ -129,7 +129,7 @@ fn main() {
 ```
 
 创建多线程的runtime，查看其线程数:
-```
+``` rust
 use tokio;
 
 fn main(){

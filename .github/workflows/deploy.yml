@@ -29,8 +29,10 @@ jobs:
       - run: npm install font-spider -g
       - run: npm run build
       - run: sed -i 's/\/css\/style.css/..\/css\/style.css/g' `grep ".html" -rl public`
-      - run: font-spider --ignore "(font-awesome.min|prism-tomorrow).css" "public/!(page|blackhole|dream)**/*.html" --debug
+      - run: sed -i 's/\/css\/prism-tomorrow.css/..\/css\/prism-tomorrow.css/g' `grep ".html" -rl public`
+      - run: font-spider --ignore ".*css$" "public/!(page|blackhole|dream)**/*.html" --debug
       - run: sed -i 's/..\/css\/style.css/\/css\/style.css/g' `grep ".html" -rl public`
+      - run: sed -i 's/..\/css\/prism-tomorrow.css/\/css\/prism-tomorrow.css/g' `grep ".html" -rl public`
       # - run: cp -rf source/music_rym public
 
       - name: Deploy

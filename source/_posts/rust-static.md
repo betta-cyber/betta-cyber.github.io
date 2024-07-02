@@ -12,7 +12,7 @@ Linux 下 Rust 默认使用 gcc 作为链接器，编译后的文件在运行时
 
 我用 Cargo 创建一个可执行项目。这个项目是一个 grpc 项目，编译这个项目，用 ldd 命令查看编译出来的执行文件依赖了哪些动态链接库：
 
-```
+``` bash
 ➜  dagent git:(master) ✗ ldd target/release/dagent
         linux-vdso.so.1 (0x00007ffdbfbf6000)
         libssl.so.1.1 => /usr/lib/x86_64-linux-gnu/libssl.so.1.1 (0x00007fbac355f000)
@@ -34,14 +34,14 @@ Linux 下 Rust 默认使用 gcc 作为链接器，编译后的文件在运行时
 
 使用 MUSL 编译，首先需要安装 musl 环境。命令如下：
 
-```
+``` bash
 $ rustup target add x86_64-unknown-linux-musl
 $ rustup target add x86_64-unknown-linux-musl --toolchain=nightly
 ```
 
 然后，我们编译前面创建的 hello 工程。
 
-```
+``` bash
 $ cd hello
 $ cargo build --release --target=x86_64-unknown-linux-musl
 $ ldd target/x86_64-unknown-linux-musl/release/hello
@@ -62,7 +62,7 @@ $ ldd target/x86_64-unknown-linux-musl/release/hello
 
 我们直接用这个容器来编译我们前面创建的 grpc 工程。然后依然用 ldd 来查看编译好的可执行文件。
 
-```
+``` bash
 $ cd dagent
 $ docker run -it --rm \
 -v $PWD:/workdir \
@@ -81,4 +81,3 @@ $ ldd target/x86_64-unknown-linux-musl/release/dagent
 ## PS.
 
 https://github.com/sfackler/rust-openssl/issues/766
-

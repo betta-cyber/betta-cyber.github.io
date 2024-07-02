@@ -23,7 +23,7 @@ date: 2021-09-16 10:00:00
 
 要解决 coredump ，那就先要生成 coredump 文件。首先要在服务器上把 ulimit 开启。可以用`ulimit -c unlimited`来临时设置一下coredump时的文件大小，设置为 unlimited 。还需要设定 coredump 文件的保存位置与格式。`sysctl -w kernel.core_pattern=/var/crash/core.%u.%e.%p` 可以用 sysctl 命令设置一下。到时候发生 coredump 的时候就会在该目录生成 coredump 文件。 %u，%e，%p 这种都具有特殊的含义，可以查一下文档。
 
-```
+``` c
 Program terminated with signal 11, Segmentation fault.
 #0  0x0000000000545f28 in ngx_http_upstream_ntlm_close_handler (ev=<optimized out>)
     at /root/openresty-1.19.3.2/../nginx-ntlm-module/ngx_http_upstream_ntlm_module.c:435
@@ -32,20 +32,20 @@ Program terminated with signal 11, Segmentation fault.
 可以看到 Nginx 发生了 signal 11, Segmentation fault。
 
 gdb 加载一下 coredump 文件。使用 `bt` 查看调用栈
-```
+``` gdb
 #0  0x00000000004700fa in ngx_http_upstream_handler (ev=0x7fd98103dab0)
     at src/http/ngx_http_upstream.c:1276
-#1  0x0000000000442630 in ngx_event_process_posted (cycle=cycle@entry=0x1413ff0, 
+#1  0x0000000000442630 in ngx_event_process_posted (cycle=cycle@entry=0x1413ff0,
     posted=0x7d5dc0 <ngx_posted_events>) at src/event/ngx_event_posted.c:35
 #2  0x00000000004421ce in ngx_process_events_and_timers (cycle=cycle@entry=0x1413ff0)
     at src/event/ngx_event.c:274
-#3  0x0000000000449142 in ngx_worker_process_cycle (cycle=cycle@entry=0x1413ff0, 
+#3  0x0000000000449142 in ngx_worker_process_cycle (cycle=cycle@entry=0x1413ff0,
     data=data@entry=0x13) at src/os/unix/ngx_process_cycle.c:811
-#4  0x0000000000447ad0 in ngx_spawn_process (cycle=cycle@entry=0x1413ff0, 
-    proc=proc@entry=0x4490d0 <ngx_worker_process_cycle>, data=data@entry=0x13, 
+#4  0x0000000000447ad0 in ngx_spawn_process (cycle=cycle@entry=0x1413ff0,
+    proc=proc@entry=0x4490d0 <ngx_worker_process_cycle>, data=data@entry=0x13,
     name=name@entry=0x54b0c5 "worker process", respawn=respawn@entry=-3)
     at src/os/unix/ngx_process.c:199
-#5  0x0000000000449594 in ngx_start_worker_processes (cycle=cycle@entry=0x1413ff0, n=32, 
+#5  0x0000000000449594 in ngx_start_worker_processes (cycle=cycle@entry=0x1413ff0, n=32,
     type=type@entry=-3) at src/os/unix/ngx_process_cycle.c:387
 #6  0x0000000000449e98 in ngx_master_process_cycle (cycle=cycle@entry=0x1413ff0)
     at src/os/unix/ngx_process_cycle.c:135
@@ -55,17 +55,15 @@ gdb 加载一下 coredump 文件。使用 `bt` 查看调用栈
 
 stackoverflow一下，看到有一个相关问题。
 
-```
 Three basic rules:
 1. Set pointer to NULL after free
 2. Check for NULL before freeing.
 3. Initialise pointer to NULL in the start.
 Combination of these three works quite well.
-```
 
 分析一下，大概是引用了空指针问题，为了查看更多的调试信息。把 OpenResty 中的 Nginx 进行 debug 模式编译。
 
-```
+``` bash
 ./configure --prefix=/home/work/openresty_debug --with-debug --with-http_stub_status_module  --with-http_v2_module --with-stream  --with-stream_realip_module  --with-pcre-jit --with-http_realip_module --add-module=../nginx-ntlm-module
 gmake && gmake install
 ```
@@ -75,18 +73,18 @@ gmake && gmake install
 这里还没有仔细琢磨 Nginx 模块的调用流程，就凭感觉再猜测调试，导致浪费了很多时间。
 
 尝试使用 Valgrind memcheck 工具运行你的 Nginx 应用，检查是否有内存问题。在此运行模式下，建议使用下面的命令构造 OpenResty:
-```
+``` bash
 ./configure --with-debug --with-no-pool-patch \
            --with-luajit-xcflags='-DLUAJIT_USE_SYSMALLOC -DLUAJIT_USE_VALGRIND'
 ```
 然后在 valgrind 运行模式下，在 nginx.conf 中作如下配置：
-```
+``` conf
 worker_processes  1;
 daemon off;
 master_process off;
 ```
 
-```
+``` bash
 valgrind --tool=memcheck /home/work/openresty_debug/nginx/sbin/nginx -p /home/work/bin/exchange_debug/ -c conf/nginx.conf
 ```
 
@@ -114,7 +112,7 @@ Nginx 的调试日志简单分为以下三种：
 第2个参数 log，用于部分回调功能。
 
 常见获取方式包括
-```
+``` bash
 [ngx_conf_t].log
 [ngx_http_request_t].connection.log
 [ngx_connection_t].log
@@ -142,7 +140,7 @@ Nginx 的调试日志简单分为以下三种：
 
 ## 问题结论
 
-```
+``` c
 for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
          q = ngx_queue_next(q)) {
         item = ngx_queue_data(q, ngx_http_upstream_ntlm_cache_t, queue);
@@ -162,14 +160,14 @@ for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
 另外一点，在 ngx_http_upstream_client_conn_cleanup 方法中。有一个 `ngx_post_event(item->peer_connection->read,&ngx_posted_events);` 代码，我最后把他给注释掉了，因为据我调试发现，item->peer_connection->read 本身是一个 `ngx_event_t` 对象。但是在 post_event 之后，会尝试去获取它的 data 和 data->log 这个因为 data 本身为 void data，没有赋予到相应的值。会导致空指针。
 
 另外在修复代码当中，因为我的一个小错误。在 close 连接的代码中：
-```
+``` c
 ngx_queue_remove(&item->queue);
 ngx_queue_insert_head(&conf->free, &item->queue);
 ```
 
 我把这段代码的顺序给弄反了。导致编译后运行的代码运行一段时间之后 CPU 直接飙升到 100% 。导致后续无法处理请求，这个主要还是跟 Nginx 中的双向链表问题有关。双向链表的遍历，我在查看了 keepalive 的源代码之后，觉得是不太会存在性能问题的，之前我们线上的代码 keepalive 的双向链表设置为 50000 的大小也没出现性能瓶颈。
 
-```
+``` c
 for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
     q = ngx_queue_next(q)) {
     item = ngx_queue_data(q, ngx_http_upstream_ntlm_cache_t, queue);
@@ -188,5 +186,3 @@ for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
 
 
 不过很开心的是，终于解决了这个问题，还有 Nginx 模块的相关开发的一些细节没说到。以后有机会再谈谈。
-
-

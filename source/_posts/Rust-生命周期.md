@@ -12,7 +12,7 @@ date: 2022-03-24 09:00:00
 
 在许多编程语言中（比如C），显示地从内存中删除一个对象或者返回时通过销毁栈帧，并不会改变相关的指针的值。该指针仍旧指向内存中相同的位置，即使引用已经被删除，现在可能已经挪作他用。
 
-```
+``` c
 {
    char *dp = NULL;
    /* ... */
@@ -28,7 +28,7 @@ date: 2022-03-24 09:00:00
 
 另一个常见原因是混用 malloc() 和 free()：当一个指针指向的内存被释放后就会变成悬垂指针。正如上个例子，可以避免这个问题的一种方法是在释放它的引用后把指针重置为NULL。
 
-```
+``` c
 #include <stdlib.h>
 void func()
 {
@@ -42,7 +42,7 @@ void func()
 
 一个很常见的失误是返回一个栈分配的局部变量：一旦调用的函数返回了，分配给这些变量的空间被回收，此时它们拥有的是“垃圾值”。
 
-```
+``` c
 int *func(void)
 {
     int num = 1234;
@@ -56,7 +56,7 @@ int *func(void)
 
 ### 什么是生命周期
 
-```
+``` rust
 fn main() {
   let a;                // -------------+-- a start
   {                     //              |
@@ -71,7 +71,7 @@ fn main() {
 
 对于一个参数和返回值都包含引用的函数而言，该函数的参数是出借方，函数返回值所绑定到的那个变量就是借用方。所以这种函数也需要满足借用规则（借用方的生命周期不能比出借方的生命周期还要长）。那么就需要对函数返回值的生命周期进行标注，告知编译器函数返回值的生命周期信息。
 
-```
+``` rust
 fn max_num(x: &i32, y: &i32) -> &i32 {
   if x > y {
     &x
@@ -95,7 +95,7 @@ fn main() {
 
 函数的生命周期参数声明在函数名后的尖括号 <> 里，然后每个参数名跟在一个单引号' 后面，多个参数用逗号隔开。如果在参数和返回值的地方需要使用生命周期进行标注时，只需要在 & 符号后面加上一个单引号' 和之前声明的参数名即可。生命周期参数名可以是任意合法的名称。例如：
 
-```
+``` rust
 fn max_num<'a>(x: &'a i32, y: &'a i32) -> &'a i32 {
   if x > y {
     &x
@@ -118,7 +118,7 @@ fn main() {
 
 运行上面代码，会有报错信息：
 
-```
+``` bash
 error[E0597]: `y` does not live long enough
   --> src/main.rs:13:27
    |
@@ -137,7 +137,7 @@ error[E0597]: `y` does not live long enough
 将代码做如下调整，使其变量 max 的生命周期小于变量 y 的生命周期，编译器就可以正常通过：
 
 
-```
+``` rust
 fn max_num<'a>(x: &'a i32, y: &'a i32) -> &'a i32 {
   if x > y {
     &x
@@ -155,7 +155,7 @@ fn main() {
 
 函数存在多个生命周期参数时，需要标注各个参数之间的关系。例如：
 
-```
+``` rust
 fn max_num<'a, 'b: 'a>(x: &'a i32, y: &'b i32) -> &'a i32 {
   if x > y {
     &x
@@ -179,7 +179,7 @@ fn main() {
 
 结构体生命周期参数声明在结构体名称后的尖括号 <> 里，每个参数名跟在一个单引号' 后面，多个参数用逗号隔开。在进行标注时，只需要在引用成员的 & 符号后面加上一个单引号' 和之前声明的参数名即可。生命周期参数名可以是任意合法的名称。例如：
 
-```
+``` rust
 struct Foo<'a> {
     v: &'a i32
 }'>
@@ -191,13 +191,13 @@ struct Foo<'a> {
 
 所有的字符串字面值都是 'static 生命周期，例如：'
 
-```
+``` rust
 let s: &'static str = "s is a static lifetime.";'
 ```
 
 上面代码中的生命周期参数可以省略，就变成如下形式：
 
-```
+``` rust
 let s: &str = "s is a static lifetime.";
 ```
 
@@ -207,7 +207,7 @@ let s: &str = "s is a static lifetime.";
 假设我们有一个整数数组，我们想遍历偶数。我们可以使用Iterator::filter()方法，让我们尝试手动实现它，因为这样做将使我们对Rust的生命周期规则有更深入的了解。
 
 代码如下：
-```
+``` rust
 struct Numbers<'a> {
     data: &'a Vec<i32>,
     even_idx: usize,
@@ -227,7 +227,7 @@ impl<'a> Numbers<'a> {
     }
 
     fn get(&self, idx: usize) -> Option<&i32> {
-        if idx < self.data.len() { 
+        if idx < self.data.len() {
             Some(&self.data[idx])
         } else {
             None
@@ -249,7 +249,7 @@ fn main() {
 
 让我们看看编译器对上面的代码是怎么说的：
 
-```
+``` bash
 error[E0506]: cannot assign to `self.even_idx` because it is borrowed
   --> src/main.rs:13:13
    |
@@ -264,7 +264,7 @@ error[E0506]: cannot assign to `self.even_idx` because it is borrowed
 ```
 让我们尝试从编译器错误消息中理解每个语句。首先，编译器告诉我们应该假设&mut self的生命周期为'1 ，这是Number对象实例本身。如前所述，Number实例生命周期不是'a，这就是编译器给它'1的原因。实际上，用生命周期的名称会让代码更清晰一些，我们将使用与main()函数中的变量名相同的生命周期名称。
 
-```
+``` rust
 let xs = vec![1,2,3,4,5,6,7,8,9];
 let mut numbers = Numbers::new(&xs);
 ```
@@ -272,7 +272,7 @@ let mut numbers = Numbers::new(&xs);
 也就是说，对于xs对象，生命周期名称为'xs '，对于numbers对象，生命周期名称为'numbers，这将真正帮助我们理解编译器消息。
 
 代码修改如下：
-```
+``` rust
 struct Numbers<'xs> {
     data: &'xs Vec<i32>,
     even_idx: usize,
@@ -292,7 +292,7 @@ impl<'xs> Numbers<'xs> {
     }
 
     fn get<'numbers>(&'numbers self, idx: usize) -> Option<&i32> {
-        if idx < self.data.len() { 
+        if idx < self.data.len() {
             Some(&self.data[idx])
         } else {
             None
@@ -311,7 +311,7 @@ fn main() {
 
 现在，让我们再次查看编译器消息。
 
-```
+``` bash
 error[E0506]: cannot assign to `self.even_idx` because it is borrowed
   --> src/main.rs:40:13
    |
@@ -331,7 +331,7 @@ error[E0506]: cannot assign to `self.even_idx` because it is borrowed
 
 不知何故，Some(x)具有'numbers而不是'xs的生命周期。为什么会这样？跟踪x的来源，我们看到它来自我们的方法Numbers::get()。这是否意味着该方法返回Option<&'numbers i32>而不是Option<&'xs i32>？让我们显式地指定方法next_even()和get()返回的生命周期：
 
-```
+``` rust
 pub fn next_even<'numbers>(&'numbers mut self) -> Option<&'xs i32> {
     while let Some(x) = self.get(self.even_idx) {
         self.even_idx += 1;
@@ -341,7 +341,7 @@ pub fn next_even<'numbers>(&'numbers mut self) -> Option<&'xs i32> {
 }
 
 fn get<'numbers>(&'numbers self, idx: usize) -> Option<&'xs i32> {
-    if idx < self.data.len() { 
+    if idx < self.data.len() {
         Some(&self.data[idx])
     } else {
         None
@@ -357,4 +357,3 @@ fn get<'numbers>(&'numbers self, idx: usize) -> Option<&'xs i32> {
 总结:
 1，结构体的生命周期参数与它的实例存在多长时间无关。
 2，省略生命周期有时会引入歧义或意外错误。
-
