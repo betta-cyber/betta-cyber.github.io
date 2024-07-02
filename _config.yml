@@ -49,12 +49,18 @@ post_asset_folder: false
 relative_link: false
 future: true
 highlight:
-  enable: false
-  line_number: false
-  auto_detect: false
+  enable: true
+  line_number: true
+  auto_detect: true
   tab_replace: ""
   wrap: false
   hljs: false
+prismjs:
+  enable: true
+  preprocess: true
+  line_number: true
+  line_threshold: 0
+  tab_replace: ""
 
 # Home page setting
 # path: Root path for your blogs index page. (default = '')
@@ -113,8 +119,8 @@ highlight_theme: night bright
 # code_copy:
 #   enable: true
 
-prism_plugin:
-  mode: "preprocess" # realtime/preprocess
-  theme: "tomorrow"
-  line_number: true # default false
-  custom_css:
+# prism_plugin:
+#   mode: "preprocess" # realtime/preprocess
+#   theme: "tomorrow"
+#   line_number: true # default false
+#   custom_css:

@@ -57,6 +57,9 @@ elif op_found_struct['op'] == 'def' and op_found_struct['input_index'] == 0:
         return None, None
     mint_info['$request_protocol'] = protocol
     # TODO: Perform sanity checks on the payload here...
+```
+
+```python
 elif op_found_struct['op'] == 'new' and op_found_struct['input_index'] == 0:
     mint_info['type'] = 'CONTRACT'
     # With AVMFactory the control fields are in the top level payload not the mint_info
