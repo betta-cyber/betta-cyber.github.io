@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -87,107 +89,104 @@
 <p>注意，select 是在单线程中执行</p>
 <p>目前来说，select! 最多可以支持 64 个分支，每个分支形式如下：</p>
 <p>&lt;模式&gt; &#x3D; &lt;async 表达式&gt; &#x3D;&gt; &lt;结果处理&gt;,</p>
-<pre><code class="highlight plaintext">use tokio::sync::oneshot;
+<pre class="line-numbers language-rust"><code class="language-rust"><span class="token keyword">use</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span>sync<span class="token punctuation">:</span><span class="token punctuation">:</span>oneshot<span class="token punctuation">;</span>
 
-#[tokio::main]
-async fn main() &#123;
-    let (tx1, rx1) = oneshot::channel();
-    let (tx2, rx2) = oneshot::channel();
+<span class="token attribute attr-name">#[tokio::main]</span>
+async <span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> <span class="token punctuation">(</span>tx1<span class="token punctuation">,</span> rx1<span class="token punctuation">)</span> <span class="token operator">=</span> oneshot<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">channel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> <span class="token punctuation">(</span>tx2<span class="token punctuation">,</span> rx2<span class="token punctuation">)</span> <span class="token operator">=</span> oneshot<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">channel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    tokio::spawn(async &#123;
-        let _ = tx1.send(&quot;one&quot;);
-    &#125;);
+    tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">let</span> _ <span class="token operator">=</span> tx1<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"one"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    tokio::spawn(async &#123;
-        let _ = tx2.send(&quot;two&quot;);
-    &#125;);
+    tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">let</span> _ <span class="token operator">=</span> tx2<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">"two"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    tokio::select! &#123;
-        val = rx1 =&gt; &#123;
-            println!(&quot;rx1 completed first with &#123;:?&#125;&quot;, val);
-        &#125;
-        val = rx2 =&gt; &#123;
-            println!(&quot;rx2 completed first with &#123;:?&#125;&quot;, val);
-        &#125;
-    &#125;
-&#125;</code></pre>
-
-
-
+    tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token macro-rules function">select!</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        val <span class="token operator">=</span> rx1 <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"rx1 completed first with &amp;#123;:?&amp;#125;"</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        val <span class="token operator">=</span> rx2 <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"rx2 completed first with &amp;#123;:?&amp;#125;"</span><span class="token punctuation">,</span> val<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="tokio-spawn"><a href="#tokio-spawn" class="headerlink" title="tokio::spawn"></a>tokio::spawn</h2><p>创建一个异步任务,不仅可以单独的走异步任务，异步任务还可以返回结果，使用 await 接收</p>
-<pre><code class="highlight plaintext">use tokio;
+<pre class="line-numbers language-rust"><code class="language-rust"><span class="token keyword">use</span> tokio<span class="token punctuation">;</span>
 
-#[tokio::main]
-async fn main() &#123;
-    tokio::spawn(async &#123;
-        println(&quot;OX&quot;)
-    &#125;);
+<span class="token attribute attr-name">#[tokio::main]</span>
+async <span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"OX"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    let handle = tokio::spawn(async &#123;
-        10086
-    &#125;);
-    let out = handle.await.unwrap();
-    println!(&quot;GOT &#123;&#125;&quot;, out);
+    <span class="token keyword">let</span> handle <span class="token operator">=</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token number">10086</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> out <span class="token operator">=</span> handle<span class="token punctuation">.</span>await<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"GOT &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> out<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    async fn more_async_work() -&gt; &amp;&#x27;static str &#123;
-        tokio::spawn(async &#123;
-            &quot;two&quot;
-        &#125;).await.unwrap_or(&quot;error&quot;)
-    &#125;
+    async <span class="token keyword">fn</span> <span class="token function">more_async_work</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span>'<span class="token keyword">static</span> str <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token string">"two"</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">.</span><span class="token function">unwrap_or</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    async fn do_stuff_async() -&gt; &amp;&#x27;static str &#123;
-        tokio::spawn(async &#123;
-            &quot;two&quot;
-        &#125;).await.unwrap_or(&quot;error&quot;)
-    &#125;
+    async <span class="token keyword">fn</span> <span class="token function">do_stuff_async</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span>'<span class="token keyword">static</span> str <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token string">"two"</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">.</span><span class="token function">unwrap_or</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    println(&quot;&#123;&#125;&quot;, do_stuff_async().await)
-&#125;</code></pre>
-
+    <span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> <span class="token function">do_stuff_async</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="tokio-join"><a href="#tokio-join" class="headerlink" title="tokio::join!"></a>tokio::join!</h2><p>使用 tokio::join! 宏同时执行多个异步任务</p>
-<pre><code class="highlight plaintext">async fn do_stuff_async() -&gt; &amp;&#x27;static str &#123;
-    let s = tokio::spawn(async &#123;
-        &quot;one&quot;
-    &#125;).await.unwrap();
+<pre class="line-numbers language-rust"><code class="language-rust">async <span class="token keyword">fn</span> <span class="token function">do_stuff_async</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span>'<span class="token keyword">static</span> str <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> s <span class="token operator">=</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token string">"one"</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     s
-&#125;
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-async fn more_async_work() -&gt; &amp;&#x27;static str &#123;
-    tokio::spawn(async &#123;
-        &quot;two&quot;
-    &#125;).await.unwrap_or(&quot;error&quot;)
-&#125;
+async <span class="token keyword">fn</span> <span class="token function">more_async_work</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">-></span> <span class="token operator">&amp;</span>'<span class="token keyword">static</span> str <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">spawn</span><span class="token punctuation">(</span>async <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token string">"two"</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">.</span><span class="token function">unwrap_or</span><span class="token punctuation">(</span><span class="token string">"error"</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-#[tokio::main]
-async fn main() &#123;
-    let (first, second) = tokio::join!(
-        do_stuff_async(),
-        more_async_work()
-    );
+<span class="token attribute attr-name">#[tokio::main]</span>
+async <span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> <span class="token punctuation">(</span>first<span class="token punctuation">,</span> second<span class="token punctuation">)</span> <span class="token operator">=</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">join!</span><span class="token punctuation">(</span>
+        <span class="token function">do_stuff_async</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token function">more_async_work</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    println!(&quot;&#123;&#125;, &#123;&#125;, &#123;&#125;&quot;, first, second, more_async_work().await)
-    // one, two, two
+    <span class="token function">println!</span><span class="token punctuation">(</span><span class="token string">"&amp;#123;&amp;#125;, &amp;#123;&amp;#125;, &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> first<span class="token punctuation">,</span> second<span class="token punctuation">,</span> <span class="token function">more_async_work</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>await<span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// one, two, two</span>
 
-&#125;</code></pre>
-
-
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>tokio提供了两种工作模式的runtime：</p>
 <p>1.单一线程的runtime(single thread runtime，也称为current thread runtime)<br>2.多线程(线程池)的runtime(multi thread runtime)</p>
 <p>创建单一线程的runtime</p>
-<pre><code class="highlight plaintext">#![allow(unused)]
-fn main() &#123;
-    // 创建单一线程的runtime
-    let rt = tokio::runtime::Builder::new_current_thread().build().unwrap();
-&#125;</code></pre>
-
+<pre class="line-numbers language-rust"><code class="language-rust"><span class="token attribute attr-name">#![allow(unused)]</span>
+<span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 创建单一线程的runtime</span>
+    <span class="token keyword">let</span> rt <span class="token operator">=</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span>runtime<span class="token punctuation">:</span><span class="token punctuation">:</span>Builder<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new_current_thread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>创建多线程的runtime，查看其线程数:</p>
-<pre><code class="highlight plaintext">use tokio;
+<pre class="line-numbers language-rust"><code class="language-rust"><span class="token keyword">use</span> tokio<span class="token punctuation">;</span>
 
-fn main()&#123;
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    std::thread::sleep(std::time::Duration::from_secs(10));
-&#125;</code></pre>
-
+<span class="token keyword">fn</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> rt <span class="token operator">=</span> tokio<span class="token punctuation">:</span><span class="token punctuation">:</span>runtime<span class="token punctuation">:</span><span class="token punctuation">:</span>Runtime<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">unwrap</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token punctuation">:</span><span class="token punctuation">:</span>thread<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">sleep</span><span class="token punctuation">(</span>std<span class="token punctuation">:</span><span class="token punctuation">:</span>time<span class="token punctuation">:</span><span class="token punctuation">:</span>Duration<span class="token punctuation">:</span><span class="token punctuation">:</span><span class="token function">from_secs</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>[tokio::main]创建的是多线程runtime，还有以下几种方式创建多线程runtime：<br>[tokio::main(flavor &#x3D; “multi_thread”] &#x2F;&#x2F; 等价于#[tokio::main]<br>[tokio::main(flavor &#x3D; “multi_thread”, worker_threads &#x3D; 10))]<br>[tokio::main(worker_threads &#x3D; 10))]</p>
 <p><a target="_blank" rel="noopener" href="https://liangyuetian.cn/posts/61015457/">https://liangyuetian.cn/posts/61015457/</a><br><a target="_blank" rel="noopener" href="https://rust-book.junmajinlong.com/ch100/01_understand_tokio_runtime.html">https://rust-book.junmajinlong.com/ch100/01_understand_tokio_runtime.html</a><br><a target="_blank" rel="noopener" href="https://skyao.io/learning-tokio/docs/tutorial/select.html#tokioselect">https://skyao.io/learning-tokio/docs/tutorial/select.html#tokioselect</a></p>
 
@@ -204,6 +203,32 @@ fn main()&#123;
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

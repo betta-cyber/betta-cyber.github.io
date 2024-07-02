@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -98,31 +100,32 @@
 <li>高效性：inotify使用内核回调机制，避免了不必要的轮询操作。<br>这些特点使得inotify成为在Linux系统上实现文件系统监控的重要工具，广泛应用于文件同步、日志监控、自动化部署等领域。</li>
 </ul>
 <h2 id="2-3-工作方式"><a href="#2-3-工作方式" class="headerlink" title="2.3 工作方式"></a>2.3 工作方式</h2><p>接口说明</p>
-<pre><code class="highlight plaintext">#include &lt;sys/inotify.h&gt;
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/inotify.h></span></span>
 
-int inotify_init(void);
-int inotify_init1(int flags);
-/* 
+<span class="token keyword">int</span> <span class="token function">inotify_init</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">inotify_init1</span><span class="token punctuation">(</span><span class="token keyword">int</span> flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">/*
  * flags：初始化标志，用于指定inotify实例的行为选项。
  * 可以使用以下标志进行设置：
  * IN_CLOEXEC：设置此标志后，在执行exec时会关闭inotify文件描述符。
  * IN_NONBLOCK：设置此标志后，inotify文件描述符将以非阻塞模式打开。
-*/
+*/</span>
 
-int inotify_add_watch(int fd, const char *pathname, uint32_t mask);
-/* fd： inotify实例的文件描述符。
+<span class="token keyword">int</span> <span class="token function">inotify_add_watch</span><span class="token punctuation">(</span><span class="token keyword">int</span> fd<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>pathname<span class="token punctuation">,</span> uint32_t mask<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">/* fd： inotify实例的文件描述符。
  * pathname：监视的文件或目录的路径。
  * mask：监视的事件类型，可以是单个事件类型或多个事件类型的组合。
- */
+ */</span>
 
-struct inotify_event
-&#123;
-  int wd;  //监控事件的文件描述符（watch descriptor）。
-  uint32_t mask;  //表示事件的掩码，指定了哪些事件发生时会触发 inotify 通知。
-  uint32_t cookie;  //用于关联相关的事件。
-  uint32_t len;   //文件或目录名的长度。
-  char name __flexarr;  //文件或目录的名称。__flexarr定义为[0]
-&#125;;</code></pre>
+<span class="token keyword">struct</span> inotify_event
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token keyword">int</span> wd<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//监控事件的文件描述符（watch descriptor）。</span>
+  uint32_t mask<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//表示事件的掩码，指定了哪些事件发生时会触发 inotify 通知。</span>
+  uint32_t cookie<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//用于关联相关的事件。</span>
+  uint32_t len<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//文件或目录名的长度。</span>
+  <span class="token keyword">char</span> name __flexarr<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//文件或目录的名称。__flexarr定义为[0]</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>调用流程：</p>
 <ol>
 <li>创建inotify实例：应用程序通过调用inotify_init()或inotify_init1()函数创建一个inotify实例，返回一个文件描述符。</li>
@@ -153,66 +156,67 @@ struct inotify_event
 </li>
 </ul>
 <p>实例演示：<br>统计写falsh次数，防止高频度写falsh引发坏块。</p>
-<pre><code class="highlight plaintext">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/inotify.h&gt;
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/inotify.h></span></span>
 
-#define MAX_EVENTS 1024
-#define EVENT_SIZE  (sizeof(struct inotify_event))
-#define BUFFER_SIZE (MAX_EVENTS * (sizeof(struct inotify_event) + 16))
+<span class="token macro property">#<span class="token directive keyword">define</span> MAX_EVENTS 1024</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> EVENT_SIZE  (sizeof(struct inotify_event))</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> BUFFER_SIZE (MAX_EVENTS * (sizeof(struct inotify_event) + 16))</span>
 
-int main(int argc ,char* argv[]) &#123;
-    int fd, wd;
-    struct inotify_event *event;
-    char buffer[BUFFER_SIZE];
-    ssize_t len;
-    char * path = argv[1];
-    long long num = 0;
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc <span class="token punctuation">,</span><span class="token keyword">char</span><span class="token operator">*</span> argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> fd<span class="token punctuation">,</span> wd<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> inotify_event <span class="token operator">*</span>event<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> buffer<span class="token punctuation">[</span>BUFFER_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    ssize_t len<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span> path <span class="token operator">=</span> argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> num <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
 
-    // 创建inotify实例
-    fd = inotify_init();
-    if (fd == -1) &#123;
-        perror(&quot;inotify_init&quot;);
-        exit(EXIT_FAILURE);
-    &#125;
+    <span class="token comment" spellcheck="true">// 创建inotify实例</span>
+    fd <span class="token operator">=</span> <span class="token function">inotify_init</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fd <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"inotify_init"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    // 添加监控的文件路径，并指定要监控的事件
-    wd = inotify_add_watch(fd, path, IN_MODIFY | IN_OPEN);
-    if (wd == -1) &#123;
-        perror(&quot;inotify_add_watch&quot;);
-        exit(EXIT_FAILURE);
-    &#125;
+    <span class="token comment" spellcheck="true">// 添加监控的文件路径，并指定要监控的事件</span>
+    wd <span class="token operator">=</span> <span class="token function">inotify_add_watch</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> path<span class="token punctuation">,</span> IN_MODIFY <span class="token operator">|</span> IN_OPEN<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>wd <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"inotify_add_watch"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    // 读取inotify事件
-    while (1) &#123;
-        len = read(fd, buffer, BUFFER_SIZE);
-        if (len == -1) &#123;
-            perror(&quot;read&quot;);
-            exit(EXIT_FAILURE);
-        &#125;
+    <span class="token comment" spellcheck="true">// 读取inotify事件</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        len <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>fd<span class="token punctuation">,</span> buffer<span class="token punctuation">,</span> BUFFER_SIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"read"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        // 解析inotify事件
-        event = (struct inotify_event *) buffer;
-        while (len &gt; 0) &#123;
-            if (event-&gt;mask &amp; IN_MODIFY) &#123;
-                printf(&quot;File modified: %s num:%lld\n&quot;, event-&gt;name, num);
-                num++;
-            &#125;
-            if (event-&gt;mask &amp; IN_OPEN) &#123;
-                printf(&quot;File opened: %s\n&quot;, event-&gt;name);
-            &#125;
-            
-            // 指向下一个事件
-            event = (struct inotify_event *) ((char *) event + EVENT_SIZE + event-&gt;len);
-            len -= EVENT_SIZE + event-&gt;len;
-        &#125;
-    &#125;
+        <span class="token comment" spellcheck="true">// 解析inotify事件</span>
+        event <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> inotify_event <span class="token operator">*</span><span class="token punctuation">)</span> buffer<span class="token punctuation">;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>len <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> IN_MODIFY<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"File modified: %s num:%lld\n"</span><span class="token punctuation">,</span> event<span class="token operator">-></span>name<span class="token punctuation">,</span> num<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                num<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> IN_OPEN<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"File opened: %s\n"</span><span class="token punctuation">,</span> event<span class="token operator">-></span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    // 关闭inotify实例
-    close(fd);
-    return 0;
-&#125;</code></pre>
+            <span class="token comment" spellcheck="true">// 指向下一个事件</span>
+            event <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> inotify_event <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> event <span class="token operator">+</span> EVENT_SIZE <span class="token operator">+</span> event<span class="token operator">-></span>len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            len <span class="token operator">-</span><span class="token operator">=</span> EVENT_SIZE <span class="token operator">+</span> event<span class="token operator">-></span>len<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 关闭inotify实例</span>
+    <span class="token function">close</span><span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>以上实现了监控打开、修改两种种事件监控，当触发对应事件，会打印输出被操作的目录或文件名称，同时会输出修改文件次数。</p>
 <h2 id="2-4-开源项目中的应用"><a href="#2-4-开源项目中的应用" class="headerlink" title="2.4 开源项目中的应用"></a>2.4 开源项目中的应用</h2><ul>
 <li>文件自动同步的功能：使用inotify来监控文件的变化，通过rsync同步。<ul>
@@ -258,423 +262,423 @@ int main(int argc ,char* argv[]) &#123;
 <li>文件同步和备份</li>
 </ul>
 <p>接口介绍</p>
-<pre><code class="highlight plaintext">#include &lt;fcntl.h&gt;
-#include &lt;sys/fanotify.h&gt;
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;fcntl.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/fanotify.h></span></span>
 
-int fanotify_init(unsigned int flags, unsigned int event_f_flags);
-/*
+<span class="token keyword">int</span> <span class="token function">fanotify_init</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> flags<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> event_f_flags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">/*
 flags: 通知类别
   FAN_CLASS_NOTIF 默认值。不需要指定。该值仅允许接收通知的事件。
   FAN_CLASS_CONTENT 监控文件或者目录状态变化，给出阻止/放行的决定
   FAN_NONBLOCK 以非阻塞模式打开
   FAN_CLOEXEC 在执行exec时会关闭fanotify文件描述符
 event_f_flags：文件状态标志，比如O_RDONLY O_RDONLY  O_LARGEFILE
-*/
-int fanotify_mark(int fanotify_fd, unsigned int flags, uint64_t mask, 
-                int dirfd, const char*pathname);
-/*
+*/</span>
+<span class="token keyword">int</span> <span class="token function">fanotify_mark</span><span class="token punctuation">(</span><span class="token keyword">int</span> fanotify_fd<span class="token punctuation">,</span> <span class="token keyword">unsigned</span> <span class="token keyword">int</span> flags<span class="token punctuation">,</span> uint64_t mask<span class="token punctuation">,</span>
+                <span class="token keyword">int</span> dirfd<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span><span class="token operator">*</span>pathname<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">/*
 fanotify_fd：fanotify 文件描述符，通过 fanotify_init 函数获得。
 flags：标记选项，可以使用 FAN_MARK_ADD 或 FAN_MARK_REMOVE 进行添加或移除标记。
 mask：要监控的事件掩码，指定的事件类型。例如，FAN_OPEN | FAN_CLOSE_WRITE 表示你希望监控打开和写入关闭的事件。
 dirfd：目标文件或目录所在的文件描述符。
 pathname：目标文件或目录的路径。
-*/
+*/</span>
 
-struct fanotify_event_metadata &#123;
-    __u32 event_len; //事件的长度，包括元数据结构体在内的整个事件的字节数。
-    __u8 vers; // fanotify 版本号。
-    __u8 reserved;
-    __u16 metadata_len; //元数据结构体的长度。
-    __aligned_u64 mask; //表示事件的掩码，指定了哪些事件发生时会触发 fanotify 通知。
-    __s32 fd; //与事件相关的文件描述符。
-    __s32 pid;//产生事件的进程的 PID。
-&#125;;
+<span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    __u32 event_len<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//事件的长度，包括元数据结构体在内的整个事件的字节数。</span>
+    __u8 vers<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// fanotify 版本号。</span>
+    __u8 reserved<span class="token punctuation">;</span>
+    __u16 metadata_len<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//元数据结构体的长度。</span>
+    __aligned_u64 mask<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//表示事件的掩码，指定了哪些事件发生时会触发 fanotify 通知。</span>
+    __s32 fd<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//与事件相关的文件描述符。</span>
+    __s32 pid<span class="token punctuation">;</span><span class="token comment" spellcheck="true">//产生事件的进程的 PID。</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
 
-struct fanotify_response &#123;
-    __s32 fd;
-    __u32 response;
-&#125;;
+<span class="token keyword">struct</span> fanotify_response <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    __s32 fd<span class="token punctuation">;</span>
+    __u32 response<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
 
-/* Legit userspace responses to a _PERM event */
-#define FAN_ALLOW   0x01
-#define FAN_DENY    0x02
-#define FAN_AUDIT   0x10    /* Bit mask to create audit record for result */
+<span class="token comment" spellcheck="true">/* Legit userspace responses to a _PERM event */</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> FAN_ALLOW   0x01</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> FAN_DENY    0x02</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> FAN_AUDIT   0x10    </span><span class="token comment" spellcheck="true">/* Bit mask to create audit record for result */</span>
 
-FAN_EVENT_OK(meta, len)
-FAN_EVENT_NEXT(meta, len)
+<span class="token function">FAN_EVENT_OK</span><span class="token punctuation">(</span>meta<span class="token punctuation">,</span> len<span class="token punctuation">)</span>
+<span class="token function">FAN_EVENT_NEXT</span><span class="token punctuation">(</span>meta<span class="token punctuation">,</span> len<span class="token punctuation">)</span>
 常见事件
-- FAN_ACCESS：文件被访问时触发事件。
-- FAN_MODIFY：文件被修改时触发事件。
-- FAN_CLOSE_WRITE：文件被写入并关闭时触发事件。
-- FAN_CLOSE_NOWRITE：文件被关闭而没有写入时触发事件。
-- FAN_OPEN：文件被打开时触发事件。
-- FAN_OPEN_PERM：文件被打开且检查了权限时触发事件。
-- FAN_ATTRIB：文件属性发生变化时触发事件。
-- FAN_CREATE：文件或目录被创建时触发事件。
-- FAN_DELETE：文件或目录被删除时触发事件。
-- FAN_DELETE_SELF：监控的文件或目录本身被删除时触发事件。
-- FAN_MOVE：文件或目录被移动时触发事件。
-- FAN_MOVE_SELF：监控的文件或目录本身被移动时触发事件。
-- FAN_CLOSE：文件被关闭时触发事件（包括写入和未写入的情况）。
-- FAN_ALL_EVENTS：所有事件的组合，用于方便地监控所有事件。</code></pre>
-
+<span class="token operator">-</span> FAN_ACCESS：文件被访问时触发事件。
+<span class="token operator">-</span> FAN_MODIFY：文件被修改时触发事件。
+<span class="token operator">-</span> FAN_CLOSE_WRITE：文件被写入并关闭时触发事件。
+<span class="token operator">-</span> FAN_CLOSE_NOWRITE：文件被关闭而没有写入时触发事件。
+<span class="token operator">-</span> FAN_OPEN：文件被打开时触发事件。
+<span class="token operator">-</span> FAN_OPEN_PERM：文件被打开且检查了权限时触发事件。
+<span class="token operator">-</span> FAN_ATTRIB：文件属性发生变化时触发事件。
+<span class="token operator">-</span> FAN_CREATE：文件或目录被创建时触发事件。
+<span class="token operator">-</span> FAN_DELETE：文件或目录被删除时触发事件。
+<span class="token operator">-</span> FAN_DELETE_SELF：监控的文件或目录本身被删除时触发事件。
+<span class="token operator">-</span> FAN_MOVE：文件或目录被移动时触发事件。
+<span class="token operator">-</span> FAN_MOVE_SELF：监控的文件或目录本身被移动时触发事件。
+<span class="token operator">-</span> FAN_CLOSE：文件被关闭时触发事件（包括写入和未写入的情况）。
+<span class="token operator">-</span> FAN_ALL_EVENTS：所有事件的组合，用于方便地监控所有事件。
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>fanotify实例演示<br>示例1<br>根据监控事件，获取对应修改文件的程序名称及被修改文件名称</p>
-<pre><code class="highlight plaintext">#define _GNU_SOURCE
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">define</span> _GNU_SOURCE</span>
 
-#include &lt;stdio.h&gt;
-#include &lt;signal.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;poll.h&gt;
-#include &lt;errno.h&gt;
-#include &lt;limits.h&gt;
-#include &lt;sys/stat.h&gt;
-#include &lt;sys/signalfd.h&gt;
-#include &lt;fcntl.h&gt;
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;signal.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;poll.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;errno.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;limits.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/stat.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/signalfd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;fcntl.h></span></span>
 
-#include &lt;linux/fanotify.h&gt;
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;linux/fanotify.h></span></span>
 
-/* Structure to keep track of monitored directories */
-typedef struct &#123;
-  /* Path of the directory */
-  char *path;
-&#125; monitored_t;
+<span class="token comment" spellcheck="true">/* Structure to keep track of monitored directories */</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">/* Path of the directory */</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>path<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> monitored_t<span class="token punctuation">;</span>
 
-/* Size of buffer to use when reading fanotify events */
-#define FANOTIFY_BUFFER_SIZE 8192
+<span class="token comment" spellcheck="true">/* Size of buffer to use when reading fanotify events */</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> FANOTIFY_BUFFER_SIZE 8192</span>
 
-/* Enumerate list of FDs to poll */
-enum &#123;
-  FD_POLL_SIGNAL = 0,
-  FD_POLL_FANOTIFY,
+<span class="token comment" spellcheck="true">/* Enumerate list of FDs to poll */</span>
+<span class="token keyword">enum</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  FD_POLL_SIGNAL <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  FD_POLL_FANOTIFY<span class="token punctuation">,</span>
   FD_POLL_MAX
-&#125;;
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">;</span>
 
-/* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
-static uint64_t event_mask =
-  (FAN_ACCESS |         
-   FAN_MODIFY |         
-   FAN_CLOSE_WRITE |   
-   FAN_CLOSE_NOWRITE | 
-   FAN_OPEN );
-/* Array of directories being monitored */
-static monitored_t *monitors;
-static int n_monitors;
+<span class="token comment" spellcheck="true">/* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */</span>
+<span class="token keyword">static</span> uint64_t event_mask <span class="token operator">=</span>
+  <span class="token punctuation">(</span>FAN_ACCESS <span class="token operator">|</span>
+   FAN_MODIFY <span class="token operator">|</span>
+   FAN_CLOSE_WRITE <span class="token operator">|</span>
+   FAN_CLOSE_NOWRITE <span class="token operator">|</span>
+   FAN_OPEN <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">/* Array of directories being monitored */</span>
+<span class="token keyword">static</span> monitored_t <span class="token operator">*</span>monitors<span class="token punctuation">;</span>
+<span class="token keyword">static</span> <span class="token keyword">int</span> n_monitors<span class="token punctuation">;</span>
 
-static char * get_program_name_from_pid (int     pid,char   *buffer,size_t  buffer_size)
-&#123;
-    int fd;
-    ssize_t len;
-    char *aux;
+<span class="token keyword">static</span> <span class="token keyword">char</span> <span class="token operator">*</span> <span class="token function">get_program_name_from_pid</span> <span class="token punctuation">(</span><span class="token keyword">int</span>     pid<span class="token punctuation">,</span><span class="token keyword">char</span>   <span class="token operator">*</span>buffer<span class="token punctuation">,</span>size_t  buffer_size<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> fd<span class="token punctuation">;</span>
+    ssize_t len<span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>aux<span class="token punctuation">;</span>
 
-    /* Try to get program name by PID */
-    sprintf (buffer, &quot;/proc/%d/cmdline&quot;, pid);
-    if ((fd = open (buffer, O_RDONLY)) &lt; 0)
-        return NULL;
+    <span class="token comment" spellcheck="true">/* Try to get program name by PID */</span>
+    <span class="token function">sprintf</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token string">"/proc/%d/cmdline"</span><span class="token punctuation">,</span> pid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fd <span class="token operator">=</span> <span class="token function">open</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> O_RDONLY<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
 
-    /* Read file contents into buffer */
-    if ((len = read (fd, buffer, buffer_size - 1)) &lt;= 0)
-    &#123;
-        close (fd);
-        return NULL;
-    &#125;
-    close (fd);
+    <span class="token comment" spellcheck="true">/* Read file contents into buffer */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>len <span class="token operator">=</span> <span class="token function">read</span> <span class="token punctuation">(</span>fd<span class="token punctuation">,</span> buffer<span class="token punctuation">,</span> buffer_size <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">close</span> <span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token function">close</span> <span class="token punctuation">(</span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    buffer[len] = &#x27;\0&#x27;;
-    aux = strstr (buffer, &quot;^@&quot;);
-    if (aux)
-        *aux = &#x27;\0&#x27;;
+    buffer<span class="token punctuation">[</span>len<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
+    aux <span class="token operator">=</span> <span class="token function">strstr</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token string">"^@"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>aux<span class="token punctuation">)</span>
+        <span class="token operator">*</span>aux <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
 
-    return buffer;
-&#125;
+    <span class="token keyword">return</span> buffer<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static char * get_file_path_from_fd (int     fd, char   *buffer, size_t  buffer_size)
-&#123;
-    ssize_t len;
+<span class="token keyword">static</span> <span class="token keyword">char</span> <span class="token operator">*</span> <span class="token function">get_file_path_from_fd</span> <span class="token punctuation">(</span><span class="token keyword">int</span>     fd<span class="token punctuation">,</span> <span class="token keyword">char</span>   <span class="token operator">*</span>buffer<span class="token punctuation">,</span> size_t  buffer_size<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    ssize_t len<span class="token punctuation">;</span>
 
-    if (fd &lt;= 0)
-        return NULL;
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fd <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
 
-    sprintf (buffer, &quot;/proc/self/fd/%d&quot;, fd);
-    if ((len = readlink (buffer, buffer, buffer_size - 1)) &lt; 0)
-        return NULL;
+    <span class="token function">sprintf</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> <span class="token string">"/proc/self/fd/%d"</span><span class="token punctuation">,</span> fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>len <span class="token operator">=</span> <span class="token function">readlink</span> <span class="token punctuation">(</span>buffer<span class="token punctuation">,</span> buffer<span class="token punctuation">,</span> buffer_size <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
 
-    buffer[len] = &#x27;\0&#x27;;
-    return buffer;
-&#125;
+    buffer<span class="token punctuation">[</span>len<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'\0'</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> buffer<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static void event_process (struct fanotify_event_metadata *event)
-&#123;
-    char path[PATH_MAX];
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">event_process</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">*</span>event<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">char</span> path<span class="token punctuation">[</span>PATH_MAX<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-    printf (&quot;Received event in path &#x27;%s&#x27;&quot;,
-            get_file_path_from_fd (event-&gt;fd,path,PATH_MAX) ? path : &quot;unknown&quot;);
-    printf (&quot; pid=%d (%s): \n&quot;,event-&gt;pid,(get_program_name_from_pid (event-&gt;pid,path,
-            PATH_MAX) ? path : &quot;unknown&quot;));
+    <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Received event in path '%s'"</span><span class="token punctuation">,</span>
+            <span class="token function">get_file_path_from_fd</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>fd<span class="token punctuation">,</span>path<span class="token punctuation">,</span>PATH_MAX<span class="token punctuation">)</span> <span class="token operator">?</span> path <span class="token punctuation">:</span> <span class="token string">"unknown"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">" pid=%d (%s): \n"</span><span class="token punctuation">,</span>event<span class="token operator">-></span>pid<span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token function">get_program_name_from_pid</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>pid<span class="token punctuation">,</span>path<span class="token punctuation">,</span>
+            PATH_MAX<span class="token punctuation">)</span> <span class="token operator">?</span> path <span class="token punctuation">:</span> <span class="token string">"unknown"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    if (event-&gt;mask &amp; FAN_OPEN)
-        printf (&quot;\tFAN_OPEN\n&quot;);
-    if (event-&gt;mask &amp; FAN_ACCESS)
-        printf (&quot;\tFAN_ACCESS\n&quot;);
-    if (event-&gt;mask &amp; FAN_MODIFY)
-        printf (&quot;\tFAN_MODIFY\n&quot;);
-    if (event-&gt;mask &amp; FAN_CLOSE_WRITE)
-        printf (&quot;\tFAN_CLOSE_WRITE\n&quot;);
-    if (event-&gt;mask &amp; FAN_CLOSE_NOWRITE)
-        printf (&quot;\tFAN_CLOSE_NOWRITE\n&quot;);
-    fflush (stdout);
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_OPEN<span class="token punctuation">)</span>
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"\tFAN_OPEN\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_ACCESS<span class="token punctuation">)</span>
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"\tFAN_ACCESS\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_MODIFY<span class="token punctuation">)</span>
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"\tFAN_MODIFY\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_CLOSE_WRITE<span class="token punctuation">)</span>
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"\tFAN_CLOSE_WRITE\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_CLOSE_NOWRITE<span class="token punctuation">)</span>
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"\tFAN_CLOSE_NOWRITE\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fflush</span> <span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    close (event-&gt;fd);
-&#125;
+    <span class="token function">close</span> <span class="token punctuation">(</span>event<span class="token operator">-></span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static void shutdown_fanotify (int fanotify_fd)
-&#123;
-    int i;
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">shutdown_fanotify</span> <span class="token punctuation">(</span><span class="token keyword">int</span> fanotify_fd<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
 
-    for (i = 0; i &lt; n_monitors; ++i)
-    &#123;
-        /* Remove the mark, using same event mask as when creating it */
-        fanotify_mark (fanotify_fd,FAN_MARK_REMOVE,event_mask,AT_FDCWD,
-                        monitors[i].path);
-        free (monitors[i].path);
-    &#125;
-    free (monitors);
-    close (fanotify_fd);
-&#125;
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n_monitors<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/* Remove the mark, using same event mask as when creating it */</span>
+        <span class="token function">fanotify_mark</span> <span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">,</span>FAN_MARK_REMOVE<span class="token punctuation">,</span>event_mask<span class="token punctuation">,</span>AT_FDCWD<span class="token punctuation">,</span>
+                        monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">free</span> <span class="token punctuation">(</span>monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token function">free</span> <span class="token punctuation">(</span>monitors<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">close</span> <span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static int initialize_fanotify (int argc, const char **argv)
-&#123;
-    int i;
-    int fanotify_fd;
+<span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">initialize_fanotify</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> fanotify_fd<span class="token punctuation">;</span>
 
-    /*
+    <span class="token comment" spellcheck="true">/*
     FAN_CLASS_NOTIF: 默认值，可以不配置
     FAN_CLOEXEC: 表示在执行 exec 类系统调用时关闭 fanotify 文件描述符。使用这个标志位可以确保在子进程中不会继承 fanotify 的文件描述符。
     O_RDONLY : 表示以只读模式打开文件
     O_CLOEXEC : 表示在执行 exec 类系统调用时关闭文件描述符。
-    */
-    if ((fanotify_fd = fanotify_init (FAN_CLASS_NOTIF|FAN_CLOEXEC,O_RDONLY | O_CLOEXEC
-                                     | O_LARGEFILE)) &lt; 0)
-    &#123;
-      fprintf (stderr,
-               &quot;Couldn&#x27;t setup new fanotify device: %s\n&quot;,
-               strerror (errno));
-      return -1;
-    &#125;
+    */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fanotify_fd <span class="token operator">=</span> <span class="token function">fanotify_init</span> <span class="token punctuation">(</span>FAN_CLASS_NOTIF<span class="token operator">|</span>FAN_CLOEXEC<span class="token punctuation">,</span>O_RDONLY <span class="token operator">|</span> O_CLOEXEC
+                                     <span class="token operator">|</span> O_LARGEFILE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span>
+               <span class="token string">"Couldn't setup new fanotify device: %s\n"</span><span class="token punctuation">,</span>
+               <span class="token function">strerror</span> <span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /* Allocate array of monitor setups */
-    n_monitors = argc - 1;
-    monitors = malloc (n_monitors * sizeof (monitored_t));
+    <span class="token comment" spellcheck="true">/* Allocate array of monitor setups */</span>
+    n_monitors <span class="token operator">=</span> argc <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    monitors <span class="token operator">=</span> <span class="token function">malloc</span> <span class="token punctuation">(</span>n_monitors <span class="token operator">*</span> <span class="token keyword">sizeof</span> <span class="token punctuation">(</span>monitored_t<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /* Loop all input directories, setting up marks */
-    for (i = 0; i &lt; n_monitors; ++i)
-    &#123;
-        monitors[i].path = strdup (argv[i + 1]);
-        /* Add new fanotify mark */
-        if (fanotify_mark (fanotify_fd,FAN_MARK_ADD,event_mask,AT_FDCWD,
-                    monitors[i].path) &lt; 0)
-        &#123;
-          fprintf (stderr,&quot;Couldn&#x27;t add monitor in directory &#x27;%s&#x27;: &#x27;%s&#x27;\n&quot;,
-                   monitors[i].path,strerror (errno));
-            return -1;
-        &#125;
+    <span class="token comment" spellcheck="true">/* Loop all input directories, setting up marks */</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n_monitors<span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path <span class="token operator">=</span> <span class="token function">strdup</span> <span class="token punctuation">(</span>argv<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/* Add new fanotify mark */</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">fanotify_mark</span> <span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">,</span>FAN_MARK_ADD<span class="token punctuation">,</span>event_mask<span class="token punctuation">,</span>AT_FDCWD<span class="token punctuation">,</span>
+                    monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+          <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Couldn't add monitor in directory '%s': '%s'\n"</span><span class="token punctuation">,</span>
+                   monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path<span class="token punctuation">,</span><span class="token function">strerror</span> <span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        printf (&quot;Started monitoring directory &#x27;%s&#x27;...\n&quot;, monitors[i].path);
-    &#125;
+        <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Started monitoring directory '%s'...\n"</span><span class="token punctuation">,</span> monitors<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>path<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    return fanotify_fd;
-&#125;
+    <span class="token keyword">return</span> fanotify_fd<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static void shutdown_signals (int signal_fd)
-&#123;
-    close (signal_fd);
-&#125;
+<span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">shutdown_signals</span> <span class="token punctuation">(</span><span class="token keyword">int</span> signal_fd<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token function">close</span> <span class="token punctuation">(</span>signal_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-static int initialize_signals (void)
-&#123;
-    int signal_fd;
-    sigset_t sigmask;
+<span class="token keyword">static</span> <span class="token keyword">int</span> <span class="token function">initialize_signals</span> <span class="token punctuation">(</span><span class="token keyword">void</span><span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> signal_fd<span class="token punctuation">;</span>
+    sigset_t sigmask<span class="token punctuation">;</span>
 
-    /* We want to handle SIGINT and SIGTERM in the signal_fd, so we block them. */
-    sigemptyset (&amp;sigmask);
-    sigaddset (&amp;sigmask, SIGINT);
-    sigaddset (&amp;sigmask, SIGTERM);
+    <span class="token comment" spellcheck="true">/* We want to handle SIGINT and SIGTERM in the signal_fd, so we block them. */</span>
+    <span class="token function">sigemptyset</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>sigmask<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">sigaddset</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>sigmask<span class="token punctuation">,</span> SIGINT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">sigaddset</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>sigmask<span class="token punctuation">,</span> SIGTERM<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    if (sigprocmask (SIG_BLOCK, &amp;sigmask, NULL) &lt; 0)
-    &#123;
-        fprintf (stderr,&quot;Couldn&#x27;t block signals: &#x27;%s&#x27;\n&quot;,strerror (errno));
-        return -1;
-    &#125;
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">sigprocmask</span> <span class="token punctuation">(</span>SIG_BLOCK<span class="token punctuation">,</span> <span class="token operator">&amp;</span>sigmask<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Couldn't block signals: '%s'\n"</span><span class="token punctuation">,</span><span class="token function">strerror</span> <span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-  /* Get new FD to read signals from it */
-  if ((signal_fd = signalfd (-1, &amp;sigmask, 0)) &lt; 0)
-    &#123;
-      fprintf (stderr,&quot;Couldn&#x27;t setup signal FD: &#x27;%s&#x27;\n&quot;,strerror (errno));
-      return -1;
-    &#125;
+  <span class="token comment" spellcheck="true">/* Get new FD to read signals from it */</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>signal_fd <span class="token operator">=</span> <span class="token function">signalfd</span> <span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>sigmask<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+      <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Couldn't setup signal FD: '%s'\n"</span><span class="token punctuation">,</span><span class="token function">strerror</span> <span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    return signal_fd;
-&#125;
+    <span class="token keyword">return</span> signal_fd<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-int main (int argc, const char **argv)
-&#123;
-    int signal_fd;
-    int fanotify_fd;
-    struct pollfd fds[FD_POLL_MAX];
+<span class="token keyword">int</span> <span class="token function">main</span> <span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span>
+<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> signal_fd<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> fanotify_fd<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> pollfd fds<span class="token punctuation">[</span>FD_POLL_MAX<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-    /* Input arguments... */
-    if (argc &lt; 2)
-    &#123;
-        fprintf (stderr, &quot;Usage: %s directory1 [directory2 ...]\n&quot;, argv[0]);
-        exit (EXIT_FAILURE);
-    &#125;
+    <span class="token comment" spellcheck="true">/* Input arguments... */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>argc <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Usage: %s directory1 [directory2 ...]\n"</span><span class="token punctuation">,</span> argv<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span> <span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /* Initialize signals FD */
-    if ((signal_fd = initialize_signals ()) &lt; 0)
-    &#123;
-        fprintf (stderr, &quot;Couldn&#x27;t initialize signals\n&quot;);
-        exit (EXIT_FAILURE);
-    &#125;
+    <span class="token comment" spellcheck="true">/* Initialize signals FD */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>signal_fd <span class="token operator">=</span> <span class="token function">initialize_signals</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Couldn't initialize signals\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span> <span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /* Initialize fanotify FD and the marks */
-    if ((fanotify_fd = initialize_fanotify (argc, argv)) &lt; 0)
-    &#123;
-        fprintf (stderr, &quot;Couldn&#x27;t initialize fanotify\n&quot;);
-        exit (EXIT_FAILURE);
-    &#125;
+    <span class="token comment" spellcheck="true">/* Initialize fanotify FD and the marks */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fanotify_fd <span class="token operator">=</span> <span class="token function">initialize_fanotify</span> <span class="token punctuation">(</span>argc<span class="token punctuation">,</span> argv<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Couldn't initialize fanotify\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span> <span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /* Setup polling */
-    fds[FD_POLL_SIGNAL].fd = signal_fd;
-    fds[FD_POLL_SIGNAL].events = POLLIN;
-    fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
-    fds[FD_POLL_FANOTIFY].events = POLLIN;
+    <span class="token comment" spellcheck="true">/* Setup polling */</span>
+    fds<span class="token punctuation">[</span>FD_POLL_SIGNAL<span class="token punctuation">]</span><span class="token punctuation">.</span>fd <span class="token operator">=</span> signal_fd<span class="token punctuation">;</span>
+    fds<span class="token punctuation">[</span>FD_POLL_SIGNAL<span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">=</span> POLLIN<span class="token punctuation">;</span>
+    fds<span class="token punctuation">[</span>FD_POLL_FANOTIFY<span class="token punctuation">]</span><span class="token punctuation">.</span>fd <span class="token operator">=</span> fanotify_fd<span class="token punctuation">;</span>
+    fds<span class="token punctuation">[</span>FD_POLL_FANOTIFY<span class="token punctuation">]</span><span class="token punctuation">.</span>events <span class="token operator">=</span> POLLIN<span class="token punctuation">;</span>
 
-    for (;;)
-    &#123;
-        /* Block until there is something to be read */
-        if (poll (fds, FD_POLL_MAX, -1) &lt; 0)
-        &#123;
-            fprintf (stderr,&quot;Couldn&#x27;t poll(): &#x27;%s&#x27;\n&quot;,strerror (errno));
-            exit (EXIT_FAILURE);
-        &#125;
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/* Block until there is something to be read */</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">poll</span> <span class="token punctuation">(</span>fds<span class="token punctuation">,</span> FD_POLL_MAX<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Couldn't poll(): '%s'\n"</span><span class="token punctuation">,</span><span class="token function">strerror</span> <span class="token punctuation">(</span>errno<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">exit</span> <span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        /* Signal received? */
-        if (fds[FD_POLL_SIGNAL].revents &amp; POLLIN)
-        &#123;
-            struct signalfd_siginfo fdsi;
-            if (read (fds[FD_POLL_SIGNAL].fd,&amp;fdsi, sizeof (fdsi)) != sizeof (fdsi))
-            &#123;
-                fprintf (stderr,&quot;Couldn&#x27;t read signal, wrong size read\n&quot;);
-                exit (EXIT_FAILURE);
-            &#125;
+        <span class="token comment" spellcheck="true">/* Signal received? */</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>fds<span class="token punctuation">[</span>FD_POLL_SIGNAL<span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLIN<span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">struct</span> signalfd_siginfo fdsi<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">read</span> <span class="token punctuation">(</span>fds<span class="token punctuation">[</span>FD_POLL_SIGNAL<span class="token punctuation">]</span><span class="token punctuation">.</span>fd<span class="token punctuation">,</span><span class="token operator">&amp;</span>fdsi<span class="token punctuation">,</span> <span class="token keyword">sizeof</span> <span class="token punctuation">(</span>fdsi<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">sizeof</span> <span class="token punctuation">(</span>fdsi<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Couldn't read signal, wrong size read\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">exit</span> <span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-            /* Break loop if we got the expected signal */
-            if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
-                break;
+            <span class="token comment" spellcheck="true">/* Break loop if we got the expected signal */</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>fdsi<span class="token punctuation">.</span>ssi_signo <span class="token operator">==</span> SIGINT <span class="token operator">||</span> fdsi<span class="token punctuation">.</span>ssi_signo <span class="token operator">==</span> SIGTERM<span class="token punctuation">)</span>
+                <span class="token keyword">break</span><span class="token punctuation">;</span>
 
-            fprintf (stderr,&quot;Received unexpected signal\n&quot;);
-        &#125;
+            <span class="token function">fprintf</span> <span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span><span class="token string">"Received unexpected signal\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        if (fds[FD_POLL_FANOTIFY].revents &amp; POLLIN)
-        &#123;
-            char buffer[FANOTIFY_BUFFER_SIZE];
-            ssize_t length;
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>fds<span class="token punctuation">[</span>FD_POLL_FANOTIFY<span class="token punctuation">]</span><span class="token punctuation">.</span>revents <span class="token operator">&amp;</span> POLLIN<span class="token punctuation">)</span>
+        <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">char</span> buffer<span class="token punctuation">[</span>FANOTIFY_BUFFER_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            ssize_t length<span class="token punctuation">;</span>
 
-            /* Read from the FD. It will read all events available up to
-            * the given buffer size. */
-            if ((length = read (fds[FD_POLL_FANOTIFY].fd,buffer,FANOTIFY_BUFFER_SIZE)) &gt; 0)
-            &#123;
-                struct fanotify_event_metadata *metadata;
+            <span class="token comment" spellcheck="true">/* Read from the FD. It will read all events available up to
+            * the given buffer size. */</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>length <span class="token operator">=</span> <span class="token function">read</span> <span class="token punctuation">(</span>fds<span class="token punctuation">[</span>FD_POLL_FANOTIFY<span class="token punctuation">]</span><span class="token punctuation">.</span>fd<span class="token punctuation">,</span>buffer<span class="token punctuation">,</span>FANOTIFY_BUFFER_SIZE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">*</span>metadata<span class="token punctuation">;</span>
 
-                metadata = (struct fanotify_event_metadata *)buffer;
-                while (FAN_EVENT_OK (metadata, length))
-                &#123;
-                    event_process (metadata);
-                    if (metadata-&gt;fd &gt; 0)
-                    close (metadata-&gt;fd);
-                    metadata = FAN_EVENT_NEXT (metadata, length);
-                &#125;
-            &#125;
-        &#125;
-    &#125;
+                metadata <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">*</span><span class="token punctuation">)</span>buffer<span class="token punctuation">;</span>
+                <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">FAN_EVENT_OK</span> <span class="token punctuation">(</span>metadata<span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                    <span class="token function">event_process</span> <span class="token punctuation">(</span>metadata<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>metadata<span class="token operator">-></span>fd <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+                    <span class="token function">close</span> <span class="token punctuation">(</span>metadata<span class="token operator">-></span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    metadata <span class="token operator">=</span> <span class="token function">FAN_EVENT_NEXT</span> <span class="token punctuation">(</span>metadata<span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-  /* Clean exit */
-  shutdown_fanotify (fanotify_fd);
-  shutdown_signals (signal_fd);
+  <span class="token comment" spellcheck="true">/* Clean exit */</span>
+  <span class="token function">shutdown_fanotify</span> <span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">shutdown_signals</span> <span class="token punctuation">(</span>signal_fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  printf (&quot;Exiting fanotify example...\n&quot;);
+  <span class="token function">printf</span> <span class="token punctuation">(</span><span class="token string">"Exiting fanotify example...\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  return EXIT_SUCCESS;
-&#125;</code></pre>
-
+  <span class="token keyword">return</span> EXIT_SUCCESS<span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>示例2<br>拦截访问</p>
-<pre><code class="highlight plaintext">#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;fcntl.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;sys/fanotify.h&gt;
+<pre class="line-numbers language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;fcntl.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;sys/fanotify.h></span></span>
 
-#define MAX_EVENTS 10
-#define EVENT_SIZE (sizeof(struct fanotify_event_metadata) + 100)
-#define BUFFER_SIZE (MAX_EVENTS * EVENT_SIZE)
+<span class="token macro property">#<span class="token directive keyword">define</span> MAX_EVENTS 10</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> EVENT_SIZE (sizeof(struct fanotify_event_metadata) + 100)</span>
+<span class="token macro property">#<span class="token directive keyword">define</span> BUFFER_SIZE (MAX_EVENTS * EVENT_SIZE)</span>
 
-int main(int argc, const char **argv) &#123;
-    char *path = (char *)argv[1];
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>path <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>argv<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-    int fanotify_fd = fanotify_init(FAN_CLASS_CONTENT | FAN_CLOEXEC , O_RDONLY );
+    <span class="token keyword">int</span> fanotify_fd <span class="token operator">=</span> <span class="token function">fanotify_init</span><span class="token punctuation">(</span>FAN_CLASS_CONTENT <span class="token operator">|</span> FAN_CLOEXEC <span class="token punctuation">,</span> O_RDONLY <span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    if (fanotify_fd == -1) &#123;
-        perror(&quot;fanotify_init&quot;);
-        exit(EXIT_FAILURE); 
-    &#125;
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fanotify_fd <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"fanotify_init"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    int wd = fanotify_mark(fanotify_fd, FAN_MARK_ADD, FAN_OPEN_PERM, AT_FDCWD, path);
+    <span class="token keyword">int</span> wd <span class="token operator">=</span> <span class="token function">fanotify_mark</span><span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">,</span> FAN_MARK_ADD<span class="token punctuation">,</span> FAN_OPEN_PERM<span class="token punctuation">,</span> AT_FDCWD<span class="token punctuation">,</span> path<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    if (wd == -1) &#123;
-        perror(&quot;fanotify_mark&quot;);
-        exit(EXIT_FAILURE);
-    &#125;
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>wd <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"fanotify_mark"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    char buffer[BUFFER_SIZE];
-    ssize_t len;
-    struct fanotify_event_metadata *metadata;
+    <span class="token keyword">char</span> buffer<span class="token punctuation">[</span>BUFFER_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    ssize_t len<span class="token punctuation">;</span>
+    <span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">*</span>metadata<span class="token punctuation">;</span>
 
-    while (1) &#123;
-        len = read(fanotify_fd, buffer, sizeof(buffer));
-        if (len == -1) &#123;
-            perror(&quot;read&quot;);
-            exit(EXIT_FAILURE);
-        &#125;
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        len <span class="token operator">=</span> <span class="token function">read</span><span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">,</span> buffer<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>buffer<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"read"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        metadata = (struct fanotify_event_metadata *)buffer;
+        metadata <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> fanotify_event_metadata <span class="token operator">*</span><span class="token punctuation">)</span>buffer<span class="token punctuation">;</span>
 
-        while (FAN_EVENT_OK(metadata, len)) &#123;
-            if (metadata-&gt;mask &amp; FAN_OPEN_PERM) &#123;
-                printf(&quot;FAN_OPEN_PERM\n&quot;);
-                struct fanotify_response response;
-                response.fd = metadata-&gt;fd;
-                response.response = FAN_DENY; //FAN_ALLOW
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token function">FAN_EVENT_OK</span><span class="token punctuation">(</span>metadata<span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>metadata<span class="token operator">-></span>mask <span class="token operator">&amp;</span> FAN_OPEN_PERM<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"FAN_OPEN_PERM\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">struct</span> fanotify_response response<span class="token punctuation">;</span>
+                response<span class="token punctuation">.</span>fd <span class="token operator">=</span> metadata<span class="token operator">-></span>fd<span class="token punctuation">;</span>
+                response<span class="token punctuation">.</span>response <span class="token operator">=</span> FAN_DENY<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//FAN_ALLOW</span>
 
-                // 发送阻拦响应
-                if (write(fanotify_fd, &amp;response, sizeof(response)) != sizeof(response)) &#123;
-                    perror(&quot;write&quot;);
-                    exit(EXIT_FAILURE);
-                &#125;
-            &#125;
-            fflush (stdout);
+                <span class="token comment" spellcheck="true">// 发送阻拦响应</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">write</span><span class="token punctuation">(</span>fanotify_fd<span class="token punctuation">,</span> <span class="token operator">&amp;</span>response<span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                    <span class="token function">perror</span><span class="token punctuation">(</span><span class="token string">"write"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token function">exit</span><span class="token punctuation">(</span>EXIT_FAILURE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token function">fflush</span> <span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            close (metadata-&gt;fd);
+            <span class="token function">close</span> <span class="token punctuation">(</span>metadata<span class="token operator">-></span>fd<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-            // 进一步处理其他事件...
+            <span class="token comment" spellcheck="true">// 进一步处理其他事件...</span>
 
-            metadata = FAN_EVENT_NEXT(metadata, len);
-        &#125;
-    &#125;
+            metadata <span class="token operator">=</span> <span class="token function">FAN_EVENT_NEXT</span><span class="token punctuation">(</span>metadata<span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    return 0;
-&#125;</code></pre>
-
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>拦截流程：<br><img src="/../images/%E6%B5%81%E7%A8%8B.png" alt="图片"></p>
 <p>注意事项</p>
 <ul>
@@ -696,6 +700,32 @@ int main(int argc, const char **argv) &#123;
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

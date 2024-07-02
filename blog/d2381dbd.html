@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -84,10 +86,11 @@
   </div>
   <div class="post-content">
     <h2 id="问题由来"><a href="#问题由来" class="headerlink" title="问题由来"></a>问题由来</h2><p>由于涉及到 Rust 交叉编译的问题，本人不太想折腾。主要是在不想在 Windows 上安装 Rust 相关。手头现在有一台 MacOS 设备和一台 Linux 服务器，想交叉编译到 Win 上，于是做了一点尝试。MinGW 应该是比较靠谱的方案。本人在 Mac 上通过</p>
-<pre><code class="highlight plaintext">brew install FiloSottile/musl-cross/musl-cross
-brew install mingw-w64</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">brew <span class="token function">install</span> FiloSottile/musl-cross/musl-cross
+brew <span class="token function">install</span> mingw-w64
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>进行安装，但是网速慢，编译慢，等待时间较长，于是在安装的过程中开始探寻其他途径。CI&#x2F;CD 是一个方案。Docker 看起来也不错。在一番尝试之后，看起来 GitHub action 对于 Rust Windows 的文档不是很全。于是选择 Travis 进行测试。Docker 鉴于国内网络环境相关除非万不得已不然不太想尝试。</p>
-<h2 id="travis-相关"><a href="#travis-相关" class="headerlink" title="travis 相关"></a>travis 相关</h2><pre><code class="highlight plaintext">os: windows
+<h2 id="travis-相关"><a href="#travis-相关" class="headerlink" title="travis 相关"></a>travis 相关</h2><pre class="line-numbers language-yml"><code class="language-yml">os: windows
 language: rust
 rust:
 - stable
@@ -99,13 +102,13 @@ deploy:
     secure: xxxx
   file_glob: true
   file:
-    - &quot;target/release/gs.exe&quot;
-    - &quot;README.md&quot;
+    - "target/release/gs.exe"
+    - "README.md"
   skip_cleanup: true
   provider: releases
   on:
-    tags: true</code></pre>
-
+    tags: true
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>上面是一份配置，简单说明一下，os 表示操作系统，然后是 rust 和版本。再就是一些脚本，deploy 会进行部署，这里 provider 选择 releases，然后这里需要一个 token。</p>
 <p>首先通过 Ruby 的 gem 安装 travis</p>
 <p><code>gem install travis</code></p>
@@ -113,15 +116,15 @@ deploy:
 <p><code>travis login --pro</code></p>
 <p>然后需要加密</p>
 <p><code>travis encrypt SOMEVAR=&quot;secretvalue&quot;</code>生成出来的加密串放到<code>.travis.yml</code> 中，就可以完成认证。</p>
-<h2 id="GitHub-actions"><a href="#GitHub-actions" class="headerlink" title="GitHub actions"></a>GitHub actions</h2><pre><code class="highlight plaintext">name: Continuous Integration
+<h2 id="GitHub-actions"><a href="#GitHub-actions" class="headerlink" title="GitHub actions"></a>GitHub actions</h2><pre class="line-numbers language-yml"><code class="language-yml">name: Continuous Integration
 on:
   push:
     branches:
       - master
   pull_request:
     paths:
-      - &#x27;**.rs&#x27;
-      - &#x27;Cargo.toml&#x27;
+      - '**.rs'
+      - 'Cargo.toml'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -132,13 +135,13 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install libasound2-dev libdbus-1-dev dbus
         cargo test --verbose
-        cargo build --verbose</code></pre>
-
+        cargo build --verbose
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这个例子就是一个 action 的 ci 例子。</p>
 <h2 id="Rust-Windows-GNU-与-MinGW"><a href="#Rust-Windows-GNU-与-MinGW" class="headerlink" title="Rust Windows-GNU 与 MinGW"></a>Rust Windows-GNU 与 MinGW</h2><p>2 月 5 号更新，鉴于 travis 生成的 exe 文件在 win10 上面不能成功运行，且 trace 看不出什么究竟，故而选择在 macOS 上面交叉编译，macOS 上面由于 rust 官方 toolchains 的 lib 中 crt2.o 较老，会出现一些 <code>undefined reference to &#39;__imp___acrt_iob_func&#39;</code> 类似的报错，需要手动进行替换。<br>在 <code>~/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/x86_64-pc-windows-gnu/lib</code> 目录下，也就是你的 rust 版本的 lib 下，进行备份，然后将通过 brew 安装的 mingw-w64 下的 lib crt2 进行替换。</p>
-<pre><code class="highlight plaintext">mv crt2.o crt2.o.bak
-cp /System/Volumes/Data/usr/local/Cellar/mingw-w64/7.0.0/toolchain-x86_64/x86_64-w64-mingw32/lib/crt2.o ./</code></pre>
-
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token function">mv</span> crt2.o crt2.o.bak
+<span class="token function">cp</span> /System/Volumes/Data/usr/local/Cellar/mingw-w64/7.0.0/toolchain-x86_64/x86_64-w64-mingw32/lib/crt2.o ./
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>替换之后可以进行正常编译，通过指定 target<code>cargo build --release --target x86_64-pc-windows-gnu</code> 将编译出相应的 exe，但是对于 webview 的 example 例子，编译之后的文件还是无法在 win10 上面运行。最基本的 rust helloworld 程序却是可以的，这说明其实我 mac 上面交叉编译其实这条路是走通了，但是对于 rust 的 webview 这个库其实还是有点问题。但是查了相关 issuse，并没有发现这样的问题，于是决定在 win10 上面进行问题排查。</p>
 <p>于是只好选择在 windows 上面安装 rust，通过 rustup 安装，设置相关中国源，安装成功后，由于 Rust 使用的链接器是系统提供的，而且 Rust 的标准库也对 libc 有依赖。在 Linux&#x2F;Mac 等环境下，Rust 会使用 gcc 执行链接。在 Windows 下，系统没有原生自带链接器。主流的免费 C&#x2F;C++ 工具链主要有五套，分别是 Visual C++、Clang、Mingw-w64 GCC、MSYS2 GCC、CYGWIN GCC。</p>
 <p>通过 <code>rustup target list</code> 可以看到 Rust 在 Windows 下的编译支持主要是两种，分别对应列表里的 Visual C++ 和 Mingw-w64 GCC 两种，分别称作 msvc 和 gnu 的 target，同时有对应的 toolchain。msvc 的情况在这里不细说了。下面主要说下 gnu。</p>
@@ -151,9 +154,11 @@ cp /System/Volumes/Data/usr/local/Cellar/mingw-w64/7.0.0/toolchain-x86_64/x86_64
 </ul>
 <ol>
 <li>执行 <code>rustup component remove rust-mingw</code></li>
-<li>添加配置到 cargo 的 config 当中<pre><code class="highlight plaintext">[target.x86_64-pc-windows-gnu]
-linker = &quot;C:\\mingw64\\bin\\gcc.exe&quot;
-ar = &quot;C:\\mingw64\\bin\\ar.exe&quot;</code></pre></li>
+<li>添加配置到 cargo 的 config 当中<pre class="line-numbers language-toml"><code class="language-toml">[target.x86_64-pc-windows-gnu]
+linker = "C:\\mingw64\\bin\\gcc.exe"
+ar = "C:\\mingw64\\bin\\ar.exe"
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+</li>
 <li>和 macOS 上面替换是一样的原理。</li>
 </ol>
 <p>现在就可以编译成功了。</p>
@@ -172,6 +177,32 @@ ar = &quot;C:\\mingw64\\bin\\ar.exe&quot;</code></pre></li>
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

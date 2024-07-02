@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -85,7 +87,7 @@
   <div class="post-content">
     <p>lua-resty-mlcache 用 shared dict 和 lua-resty-lrucache ，实现了多层缓存机制。</p>
 <p>mlcache 的架构如下：</p>
-<pre><code class="highlight plaintext">┌─────────────────────────────────────────────────┐
+<pre><code>┌─────────────────────────────────────────────────┐
 │ Nginx                                           │
 │       ┌───────────┐ ┌───────────┐ ┌───────────┐ │
 │       │worker     │ │worker     │ │worker     │ │
@@ -109,8 +111,8 @@
   L3                        │   I/O fetch
                             ▼
 
-                   Database, API, DNS, Disk, any I/O...</code></pre>
-
+                   Database, API, DNS, Disk, any I/O...
+</code></pre>
 <p>分为三层：</p>
 <p>L1 层是使用 lua-resty-lrucache 的虚拟缓存。提供最快的查找。</p>
 <p>L2 层是用的 Nginx 的 lua_shared_dict 内存共享。当 L1 层的 key miss 掉时，从这里获取。</p>
@@ -119,151 +121,151 @@
 <h2 id="缓存有两个原则"><a href="#缓存有两个原则" class="headerlink" title="缓存有两个原则"></a>缓存有两个原则</h2><p>一是越靠近用户的请求越好，比如能用本地缓存的就不要发送HTTP请求，能用CDN缓存的就不要打到web服务器，能用nginx缓存的就不要用数据库的缓存。</p>
 <p>二是尽量使用本进程和本机的缓存解决，因为跨了进程和机器甚至机房，缓存的网络开销就会非常大，在高并发的时候会非常明显。</p>
 <p>我们直接贴一下官方的示例</p>
-<pre><code class="highlight plaintext"># nginx.conf
+<pre class="line-numbers language-nginx"><code class="language-nginx"><span class="token comment" spellcheck="true"># nginx.conf</span>
 
-http &#123;
-    lua_package_path &quot;/path/to/lua-resty-mlcache/lib/?.lua;;&quot;;
-    lua_shared_dict cache_dict 1m;
+<span class="token keyword">http</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+    lua_package_path <span class="token string">"/path/to/lua-resty-mlcache/lib/?.lua;;"</span><span class="token punctuation">;</span>
+    lua_shared_dict cache_dict 1m<span class="token punctuation">;</span>
 
-    init_by_lua_block &#123;
-        local mlcache = require &quot;resty.mlcache&quot;
+    init_by_lua_block <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        local mlcache <span class="token operator">=</span> require <span class="token string">"resty.mlcache"</span>
 
-        local cache, err = mlcache.new(&quot;my_cache&quot;, &quot;cache_dict&quot;, &#123;
-            lru_size = 500,    -- size of the L1 (Lua VM) cache
-            ttl      = 3600,   -- 1h ttl for hits
-            neg_ttl  = 30,     -- 30s ttl for misses
-        &#125;)
-        if err then
+        local cache<span class="token punctuation">,</span> err <span class="token operator">=</span> mlcache<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"my_cache"</span><span class="token punctuation">,</span> <span class="token string">"cache_dict"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            lru_size <span class="token operator">=</span> <span class="token number">500</span><span class="token punctuation">,</span>    <span class="token operator">--</span> size of the <span class="token function">L1</span> <span class="token punctuation">(</span>Lua VM<span class="token punctuation">)</span> cache
+            ttl      <span class="token operator">=</span> <span class="token number">3600</span><span class="token punctuation">,</span>   <span class="token operator">--</span> 1h ttl for hits
+            neg_ttl  <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">,</span>     <span class="token operator">--</span> 30s ttl for misses
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;)</span>
+        <span class="token keyword">if</span> err then
 
         end
 
-        _G.cache = cache
-    &#125;
+        _G<span class="token punctuation">.</span>cache <span class="token operator">=</span> cache
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
 
-    server &#123;
-        listen 8080;
-        location / &#123;
-            content_by_lua_block &#123;
-                local function callback(username)
-                    return db:get_user(username) -- &#123; name = &quot;John Doe&quot;, email = &quot;john@example.com&quot; &#125;
+    <span class="token keyword">server</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+        <span class="token keyword">listen</span> <span class="token number">8080</span><span class="token punctuation">;</span>
+        <span class="token keyword">location</span> <span class="token operator">/</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+            content_by_lua_block <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123;</span>
+                local function <span class="token function">callback</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span>
+                    <span class="token keyword">return</span> db<span class="token punctuation">:</span><span class="token function">get_user</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span> <span class="token operator">--</span> <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#123; name = "John Doe", email = "john@example.com" &amp;#125;</span>
                 end
 
-                local user, err = cache:get(&quot;my_key&quot;, nil, callback, &quot;John Doe&quot;)
-                ngx.say(user.username) -- &quot;John Doe&quot;
-            &#125;
-        &#125;
-    &#125;
-&#125;</code></pre>
-
+                local <span class="token keyword">user</span><span class="token punctuation">,</span> err <span class="token operator">=</span> cache<span class="token punctuation">:</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">"my_key"</span><span class="token punctuation">,</span> nil<span class="token punctuation">,</span> callback<span class="token punctuation">,</span> <span class="token string">"John Doe"</span><span class="token punctuation">)</span>
+                ngx<span class="token punctuation">.</span><span class="token function">say</span><span class="token punctuation">(</span><span class="token keyword">user</span><span class="token punctuation">.</span>username<span class="token punctuation">)</span> <span class="token operator">--</span> <span class="token string">"John Doe"</span>
+            <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+        <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+    <span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span class="token operator">&amp;</span><span class="token comment" spellcheck="true">#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>以上的示例很好了描述了整个程序运行的逻辑，在init阶段初始化缓存，然后用_G变量赋予全局变量，在使用阶段cache:get获取指定Key的缓存，缓存未命中就会调用L3，也就是callback方法。</p>
 <h2 id="缓存风暴问题"><a href="#缓存风暴问题" class="headerlink" title="缓存风暴问题"></a>缓存风暴问题</h2><p>但这个示例中缺失了lua-resty-lock这个组件的调用，为了防止在L3阶段发现缓存风暴，所以把锁非常有必要。</p>
 <p>将局部配置修改如下：</p>
-<pre><code class="highlight plaintext">lua_shared_dict cache_dict 1m;
-lua_shared_dict cache_lock 1m;
+<pre class="line-numbers language-c"><code class="language-c">lua_shared_dict cache_dict 1m<span class="token punctuation">;</span>
+lua_shared_dict cache_lock 1m<span class="token punctuation">;</span>
 
-init_by_lua_block &#123;
-    local mlcache = require &quot;resty.mlcache&quot;
+init_by_lua_block <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    local mlcache <span class="token operator">=</span> require <span class="token string">"resty.mlcache"</span>
 
-    local cache, err = mlcache.new(&quot;my_cache&quot;, &quot;cache_dict&quot;, &#123;
-        lru_size = 500,    -- size of the L1 (Lua VM) cache
-        ttl      = 3600,   -- 1h ttl for hits
-        neg_ttl  = 30,     -- 30s ttl for misses
-        shm_locks = &quot;cache_lock&quot;,
-        resty_lock_opts = &#123;
-            exptime = 10,
-            timeout = 5
-        &#125;
-    &#125;)
-    if err then
+    local cache<span class="token punctuation">,</span> err <span class="token operator">=</span> mlcache<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"my_cache"</span><span class="token punctuation">,</span> <span class="token string">"cache_dict"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        lru_size <span class="token operator">=</span> <span class="token number">500</span><span class="token punctuation">,</span>    <span class="token operator">--</span> size of the <span class="token function">L1</span> <span class="token punctuation">(</span>Lua VM<span class="token punctuation">)</span> cache
+        ttl      <span class="token operator">=</span> <span class="token number">3600</span><span class="token punctuation">,</span>   <span class="token operator">--</span> 1h ttl <span class="token keyword">for</span> hits
+        neg_ttl  <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">,</span>     <span class="token operator">--</span> 30s ttl <span class="token keyword">for</span> misses
+        shm_locks <span class="token operator">=</span> <span class="token string">"cache_lock"</span><span class="token punctuation">,</span>
+        resty_lock_opts <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            exptime <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">,</span>
+            timeout <span class="token operator">=</span> <span class="token number">5</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err then
 
     end
-&#125;</code></pre>
-
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="进程之间通讯问题"><a href="#进程之间通讯问题" class="headerlink" title="进程之间通讯问题"></a>进程之间通讯问题</h2><p>这个问题我们使用lua-resty-worker-events模块解决。</p>
 <p>此模块提供了一种向Nginx服务器中的其他工作进程发送事件的方法。通信是通过一个共享的存储区进行的，事件数据将存储在该存储区中。</p>
 <p>结合我们之前的缓存使用场景，在一个Worker中的缓存更新之后，要通知其他Worker也同步更新，它就发挥作用了。</p>
 <p>我们看以下官方提供的示例</p>
-<pre><code class="highlight plaintext">lua_shared_dict process_events 1m;
+<pre class="line-numbers language-c"><code class="language-c">lua_shared_dict process_events 1m<span class="token punctuation">;</span>
 
-init_worker_by_lua_block &#123;
-    local ev = require &quot;resty.worker.events&quot;
+init_worker_by_lua_block <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    local ev <span class="token operator">=</span> require <span class="token string">"resty.worker.events"</span>
 
-    local handler = function(data, event, source, pid)
-        print(&quot;received event; source=&quot;,source,
-                &quot;, event=&quot;,event,
-                &quot;, data=&quot;, tostring(data),
-                &quot;, from process &quot;,pid)
+    local handler <span class="token operator">=</span> <span class="token function">function</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> event<span class="token punctuation">,</span> source<span class="token punctuation">,</span> pid<span class="token punctuation">)</span>
+        <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"received event; source="</span><span class="token punctuation">,</span>source<span class="token punctuation">,</span>
+                <span class="token string">", event="</span><span class="token punctuation">,</span>event<span class="token punctuation">,</span>
+                <span class="token string">", data="</span><span class="token punctuation">,</span> <span class="token function">tostring</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span>
+                <span class="token string">", from process "</span><span class="token punctuation">,</span>pid<span class="token punctuation">)</span>
     end
 
-    ev.register(handler)
+    ev<span class="token punctuation">.</span><span class="token keyword">register</span><span class="token punctuation">(</span>handler<span class="token punctuation">)</span>
 
-    local ok, err = ev.configure &#123;
-        shm = &quot;process_events&quot;, -- defined by &quot;lua_shared_dict&quot;
-        timeout = 2,            -- life time of unique event data in shm
-        interval = 1,           -- poll interval (seconds)
+    local ok<span class="token punctuation">,</span> err <span class="token operator">=</span> ev<span class="token punctuation">.</span>configure <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        shm <span class="token operator">=</span> <span class="token string">"process_events"</span><span class="token punctuation">,</span> <span class="token operator">--</span> defined by <span class="token string">"lua_shared_dict"</span>
+        timeout <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span>            <span class="token operator">--</span> life time of unique event data in shm
+        interval <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span>           <span class="token operator">--</span> poll <span class="token function">interval</span> <span class="token punctuation">(</span>seconds<span class="token punctuation">)</span>
 
-        wait_interval = 0.010,  -- wait before retry fetching event data
-        wait_max = 0.5,         -- max wait time before discarding event
-        shm_retries = 999,      -- retries for shm fragmentation (no memory)
-    &#125;
-    if not ok then
-        ngx.log(ngx.ERR, &quot;failed to start event system: &quot;, err)
-        return
+        wait_interval <span class="token operator">=</span> <span class="token number">0.010</span><span class="token punctuation">,</span>  <span class="token operator">--</span> wait before retry fetching event data
+        wait_max <span class="token operator">=</span> <span class="token number">0.5</span><span class="token punctuation">,</span>         <span class="token operator">--</span> max wait time before discarding event
+        shm_retries <span class="token operator">=</span> <span class="token number">999</span><span class="token punctuation">,</span>      <span class="token operator">--</span> retries <span class="token keyword">for</span> shm <span class="token function">fragmentation</span> <span class="token punctuation">(</span>no memory<span class="token punctuation">)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> not ok then
+        ngx<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>ngx<span class="token punctuation">.</span>ERR<span class="token punctuation">,</span> <span class="token string">"failed to start event system: "</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
     end
-&#125;</code></pre>
-
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>在init_worker_by_lua_block阶段初始化，是因为它需要在每个Worker中都运行，便于同步到其他进程，其他的就是一些配置参数问题。</p>
 <p>下面我们把它结合上面的缓存模块一起使用。</p>
 <p>lua-resty-mlcache提供了ipc接口来支持lua-resty-worker-events模块，我们直接配置参数即可。</p>
-<pre><code class="highlight plaintext">lua_shared_dict cache_dict    1m;
-lua_shared_dict cache_lock    1m;
-lua_shared_dict worker_events 1m;
+<pre class="line-numbers language-c"><code class="language-c">lua_shared_dict cache_dict    1m<span class="token punctuation">;</span>
+lua_shared_dict cache_lock    1m<span class="token punctuation">;</span>
+lua_shared_dict worker_events 1m<span class="token punctuation">;</span>
 
-init_worker_by_lua_block &#123;
-    local mlcache = require &quot;resty.mlcache&quot;
-    local worker_events = require &quot;resty.worker.events&quot;
+init_worker_by_lua_block <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    local mlcache <span class="token operator">=</span> require <span class="token string">"resty.mlcache"</span>
+    local worker_events <span class="token operator">=</span> require <span class="token string">"resty.worker.events"</span>
 
-    local ok, err = worker_events.configure &#123;
-        shm = &quot;worker_events&quot;, 
-        timeout = 2,           
-        interval = 1,    
+    local ok<span class="token punctuation">,</span> err <span class="token operator">=</span> worker_events<span class="token punctuation">.</span>configure <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        shm <span class="token operator">=</span> <span class="token string">"worker_events"</span><span class="token punctuation">,</span>
+        timeout <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span>
+        interval <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span>
 
-        wait_interval = 0.010, 
-        wait_max = 0.5,  
-        shm_retries = 999,  
-    &#125;
+        wait_interval <span class="token operator">=</span> <span class="token number">0.010</span><span class="token punctuation">,</span>
+        wait_max <span class="token operator">=</span> <span class="token number">0.5</span><span class="token punctuation">,</span>
+        shm_retries <span class="token operator">=</span> <span class="token number">999</span><span class="token punctuation">,</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    local cache, err = mlcache.new(&quot;my_cache&quot;, &quot;cache_dict&quot;, &#123;
-        lru_size = 500,    -- size of the L1 (Lua VM) cache
-        ttl      = 3600,   -- 1h ttl for hits
-        neg_ttl  = 30,     -- 30s ttl for misses
-        shm_locks = &quot;cache_lock&quot;,
-        resty_lock_opts = &#123;
-            exptime = 10,
-            timeout = 5
-        &#125;,
-        ipc = &#123;
-            register_listeners = function(events)
-                for _, event_t in pairs(events) do
-                    worker_events.register(
-                        function(data)
-                            event_t.handler(data)
-                        end,
-                        channel_name,
-                        event_t.channel
-                    )
+    local cache<span class="token punctuation">,</span> err <span class="token operator">=</span> mlcache<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token string">"my_cache"</span><span class="token punctuation">,</span> <span class="token string">"cache_dict"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        lru_size <span class="token operator">=</span> <span class="token number">500</span><span class="token punctuation">,</span>    <span class="token operator">--</span> size of the <span class="token function">L1</span> <span class="token punctuation">(</span>Lua VM<span class="token punctuation">)</span> cache
+        ttl      <span class="token operator">=</span> <span class="token number">3600</span><span class="token punctuation">,</span>   <span class="token operator">--</span> 1h ttl <span class="token keyword">for</span> hits
+        neg_ttl  <span class="token operator">=</span> <span class="token number">30</span><span class="token punctuation">,</span>     <span class="token operator">--</span> 30s ttl <span class="token keyword">for</span> misses
+        shm_locks <span class="token operator">=</span> <span class="token string">"cache_lock"</span><span class="token punctuation">,</span>
+        resty_lock_opts <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            exptime <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">,</span>
+            timeout <span class="token operator">=</span> <span class="token number">5</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+        ipc <span class="token operator">=</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            register_listeners <span class="token operator">=</span> <span class="token function">function</span><span class="token punctuation">(</span>events<span class="token punctuation">)</span>
+                <span class="token keyword">for</span> _<span class="token punctuation">,</span> event_t in <span class="token function">pairs</span><span class="token punctuation">(</span>events<span class="token punctuation">)</span> <span class="token keyword">do</span>
+                    worker_events<span class="token punctuation">.</span><span class="token keyword">register</span><span class="token punctuation">(</span>
+                        <span class="token function">function</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+                            event_t<span class="token punctuation">.</span><span class="token function">handler</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+                        end<span class="token punctuation">,</span>
+                        channel_name<span class="token punctuation">,</span>
+                        event_t<span class="token punctuation">.</span>channel
+                    <span class="token punctuation">)</span>
                 end
-            end,
-            broadcast = function(channel, data)
-                worker_events.post(channel_name, channel, data)
+            end<span class="token punctuation">,</span>
+            broadcast <span class="token operator">=</span> <span class="token function">function</span><span class="token punctuation">(</span>channel<span class="token punctuation">,</span> data<span class="token punctuation">)</span>
+                worker_events<span class="token punctuation">.</span><span class="token function">post</span><span class="token punctuation">(</span>channel_name<span class="token punctuation">,</span> channel<span class="token punctuation">,</span> data<span class="token punctuation">)</span>
             end
-        &#125;
-    &#125;)
-    if err then
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err then
 
     end
-&#125;</code></pre>
-
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
   </div>
   <div class="post-footer">
@@ -278,6 +280,32 @@ init_worker_by_lua_block &#123;
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -88,31 +90,35 @@
 <p>本人决定用微信接入一个 ChatGPT 的账号，然后把接入的账号，作为机器人拉入到群里面供大家玩耍。后面选择了 Github 上面的一个开源项目 <a target="_blank" rel="noopener" href="https://github.com/fuergaosi233/wechat-chatgpt">wechat-chatgpt</a> 进行接入。这个项目用 Nodejs 编写的，而且有比较详细的文档。文档里面提到用 railway 可以自行部署。</p>
 <p>于是测试了一下 railway 平台，简单来说就是一个 Docker 的部署平台，把 Dockerfile 写好，关联一个 Github 就可以之间触发部署了。</p>
 <p>但是在这个项目中，有很多的坑，有对中国的地区 IP 的限制问题，有微信的接入问题，有 ChatGPT 自身的拥堵问题。后面都踩了一遍，就简单记录一下。</p>
-<h1 id="1-Wechaty-的问题。"><a href="#1-Wechaty-的问题。" class="headerlink" title="1. Wechaty 的问题。"></a>1. Wechaty 的问题。</h1><pre><code class="highlight plaintext">const bot =  WechatyBuilder.build(&#123;
-  name: &quot;wechat-assistant&quot;, // generate xxxx.memory-card.json and save login data for the next login
-  puppetOptions: &#123;
-    uos: true, // 开启uos协议
-  &#125;,
-  puppet: &quot;wechaty-puppet-wechat&quot;,
-&#125;);</code></pre>
+<h1 id="1-Wechaty-的问题。"><a href="#1-Wechaty-的问题。" class="headerlink" title="1. Wechaty 的问题。"></a>1. Wechaty 的问题。</h1><pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">const</span> bot <span class="token operator">=</span>  WechatyBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  name<span class="token punctuation">:</span> <span class="token string">"wechat-assistant"</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// generate xxxx.memory-card.json and save login data for the next login</span>
+  puppetOptions<span class="token punctuation">:</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    uos<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 开启uos协议</span>
+  <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+  puppet<span class="token punctuation">:</span> <span class="token string">"wechaty-puppet-wechat"</span><span class="token punctuation">,</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这段代码在 railway 上面部署的时候，出现 timeout</p>
-<pre><code class="highlight plaintext">🤖️ Start GPT Bot Success, ready to handle message!
-00:37:17 WARN WechatyPuppetMixin start() starting puppet ... timeout
-00:37:17 WARN WechatyPuppetMixin start() puppet info: Puppet(wechat-assistant)
-00:38:02 ERR PuppetWeChatBridge start() exception: TimeoutError: Navigation timeout of 60000 ms exceeded
-00:38:02 ERR PuppetWeChat initBridge() exception: Navigation timeout of 60000 ms exceeded
-00:38:02 WARN PuppetWeChatBridge stop() page.close() exception: Error: Protocol error: Connection closed. Most likely the page has been closed.</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">🤖️ Start GPT Bot Success, ready to handle message<span class="token operator">!</span>
+00:37:17 WARN WechatyPuppetMixin start<span class="token punctuation">(</span><span class="token punctuation">)</span> starting puppet <span class="token punctuation">..</span>. <span class="token function">timeout</span>
+00:37:17 WARN WechatyPuppetMixin start<span class="token punctuation">(</span><span class="token punctuation">)</span> puppet info: Puppet<span class="token punctuation">(</span>wechat-assistant<span class="token punctuation">)</span>
+00:38:02 ERR PuppetWeChatBridge start<span class="token punctuation">(</span><span class="token punctuation">)</span> exception: TimeoutError: Navigation <span class="token function">timeout</span> of 60000 ms exceeded
+00:38:02 ERR PuppetWeChat initBridge<span class="token punctuation">(</span><span class="token punctuation">)</span> exception: Navigation <span class="token function">timeout</span> of 60000 ms exceeded
+00:38:02 WARN PuppetWeChatBridge stop<span class="token punctuation">(</span><span class="token punctuation">)</span> page.close<span class="token punctuation">(</span><span class="token punctuation">)</span> exception: Error: Protocol error: Connection closed. Most likely the page has been closed.
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>后面我把 uos 协议给关了，本地可以，但是 railway 上还是不行。改成了下面的代码：</p>
-<pre><code class="highlight plaintext">const bot =  WechatyBuilder.singleton();</code></pre>
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">const</span> bot <span class="token operator">=</span>  WechatyBuilder<span class="token punctuation">.</span><span class="token function">singleton</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>这个模式可以出现微信登录二维码，但是这个用的是 web 版本的协议。我在使用了大半天之后，导致一个微信小号被封，虽然可以解封，但是还是很麻烦。后面我研究了一下微信的机器人教程，机器人场景的使用最好使用 ipad 协议。</p>
-<pre><code class="highlight plaintext">const puppet = new PuppetPadlocal(&#123;
-    token: &quot;puppet_padlocal_xxxxx&quot;
-&#125;)
+<pre class="line-numbers language-javascript"><code class="language-javascript"><span class="token keyword">const</span> puppet <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PuppetPadlocal</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    token<span class="token punctuation">:</span> <span class="token string">"puppet_padlocal_xxxxx"</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
 
-const bot =  WechatyBuilder.build(&#123;
-  name: &quot;wechat-assistant&quot;,
+<span class="token keyword">const</span> bot <span class="token operator">=</span>  WechatyBuilder<span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+  name<span class="token punctuation">:</span> <span class="token string">"wechat-assistant"</span><span class="token punctuation">,</span>
   puppet
-&#125;);</code></pre>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这样就可以比较完美的解决微信方面的问题。唯独就是需要付费购买 token。</p>
 <p><a target="_blank" rel="noopener" href="https://github.com/wechaty/puppet-padlocal">https://github.com/wechaty/puppet-padlocal</a></p>
 <p>PadLocal 最大的特点是：</p>
@@ -158,6 +164,32 @@ const bot =  WechatyBuilder.build(&#123;
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

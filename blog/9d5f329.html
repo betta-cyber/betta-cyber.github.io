@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -83,15 +85,190 @@
     <h1 class="article-title">Python Trick</h1>
   </div>
   <div class="post-content">
-    <h2 id="deepcopy-性能提升"><a href="#deepcopy-性能提升" class="headerlink" title="deepcopy 性能提升"></a>deepcopy 性能提升</h2><h3 id="1-循环赋值构造新的对象代替-deepcopy"><a href="#1-循环赋值构造新的对象代替-deepcopy" class="headerlink" title="1. 循环赋值构造新的对象代替 deepcopy"></a>1. 循环赋值构造新的对象代替 deepcopy</h3><p>速度也可以。</p>
-<h3 id="2-使用-pickle"><a href="#2-使用-pickle" class="headerlink" title="2. 使用 pickle"></a>2. 使用 pickle</h3><pre><code class="highlight plaintext">data = pickle.loads(pickle.dumps(data))</code></pre>
+    <h2 id="一、deepcopy-性能提升"><a href="#一、deepcopy-性能提升" class="headerlink" title="一、deepcopy 性能提升"></a>一、deepcopy 性能提升</h2><h3 id="1-循环赋值构造新的对象代替-deepcopy"><a href="#1-循环赋值构造新的对象代替-deepcopy" class="headerlink" title="1. 循环赋值构造新的对象代替 deepcopy"></a>1. 循环赋值构造新的对象代替 deepcopy</h3><p>速度也可以。</p>
+<h3 id="2-使用-pickle"><a href="#2-使用-pickle" class="headerlink" title="2. 使用 pickle"></a>2. 使用 pickle</h3><pre class="line-numbers language-python"><code class="language-python">data <span class="token operator">=</span> pickle<span class="token punctuation">.</span>loads<span class="token punctuation">(</span>pickle<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="3-使用-json-或者-ujson"><a href="#3-使用-json-或者-ujson" class="headerlink" title="3. 使用 json 或者 ujson"></a>3. 使用 json 或者 ujson</h3><pre class="line-numbers language-python"><code class="language-python">data <span class="token operator">=</span> json<span class="token punctuation">.</span>loads<span class="token punctuation">(</span>json<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>my_dict<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="4-使用-cpickle"><a href="#4-使用-cpickle" class="headerlink" title="4. 使用 cpickle"></a>4. 使用 cpickle</h3><pre class="line-numbers language-python"><code class="language-python"><span class="token keyword">import</span> _pickle <span class="token keyword">as</span> cPickle
+utxos <span class="token operator">=</span> cPickle<span class="token punctuation">.</span>loads<span class="token punctuation">(</span>cPickle<span class="token punctuation">.</span>dumps<span class="token punctuation">(</span>cache_utxos<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="pytest-相关"><a href="#pytest-相关" class="headerlink" title="pytest 相关"></a>pytest 相关</h2><pre class="line-numbers language-python"><code class="language-python">pytest <span class="token punctuation">.</span><span class="token operator">/</span>tests<span class="token operator">/</span>lib <span class="token operator">-</span>s
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h2 id="二、开源项目规范问题"><a href="#二、开源项目规范问题" class="headerlink" title="二、开源项目规范问题"></a>二、开源项目规范问题</h2><h3 id="1-pre-commit"><a href="#1-pre-commit" class="headerlink" title="1. pre-commit"></a>1. pre-commit</h3><p>Git hook对于在提交代码审查之前识别简单问题很有用。我们在每次提交时都运行钩子，以自动指出代码中的问题，例如缺少分号，尾随空白和调试语句。通过在代码审阅之前指出这些问题，代码审阅者可以专注于更改的体系结构，而不会浪费琐碎的样式问题。</p>
+<pre class="line-numbers language-yaml"><code class="language-yaml"><span class="token key atrule">repos</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">repo</span><span class="token punctuation">:</span> <span class="token string">"https://github.com/pre-commit/pre-commit-hooks"</span>
+    <span class="token key atrule">rev</span><span class="token punctuation">:</span> v2.3.0
+    <span class="token key atrule">hooks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> check<span class="token punctuation">-</span>docstring<span class="token punctuation">-</span>first
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> check<span class="token punctuation">-</span>merge<span class="token punctuation">-</span>conflict
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> trailing<span class="token punctuation">-</span>whitespace
+      <span class="token comment" spellcheck="true"># - id: end-of-file-fixer</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> check<span class="token punctuation">-</span>yaml
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> check<span class="token punctuation">-</span>ast
+  <span class="token punctuation">-</span> <span class="token key atrule">repo</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//github.com/pycqa/isort
+    <span class="token key atrule">rev</span><span class="token punctuation">:</span> 5.12.0
+    <span class="token key atrule">hooks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> isort
+        <span class="token key atrule">args</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"--profile=black"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">repo</span><span class="token punctuation">:</span> https<span class="token punctuation">:</span>//github.com/astral<span class="token punctuation">-</span>sh/ruff<span class="token punctuation">-</span>pre<span class="token punctuation">-</span>commit
+    <span class="token key atrule">rev</span><span class="token punctuation">:</span> v0.1.4
+    <span class="token key atrule">hooks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> ruff
+      <span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> ruff<span class="token punctuation">-</span>format
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-使用-pyproject"><a href="#2-使用-pyproject" class="headerlink" title="2. 使用 pyproject"></a>2. 使用 pyproject</h3><p>下面是我的一个例子: 在配置文件里面还用 <code>ruff</code> 进行代码的检测。也可以用来做python的依赖管理。</p>
+<pre class="line-numbers language-toml"><code class="language-toml">[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
-<h3 id="3-使用-json-或者-ujson"><a href="#3-使用-json-或者-ujson" class="headerlink" title="3. 使用 json 或者 ujson"></a>3. 使用 json 或者 ujson</h3><pre><code class="highlight plaintext">data = json.loads(json.dumps(my_dict))</code></pre>
+[project]
+name = "atomicals-electrumx"
+dynamic = ["version"]
+dependencies = [
+  "aiorpcX[ws]>=0.23.0",
+  "attrs",
+  "plyvel",
+  "pylru @ git+https://github.com/atomicals-community/pylru@c9b47f0",
+  "aiohttp>=3.3,<4",
+  "cbor2",
+  "websockets",
+  "regex",
+  "krock32",
+  "merkletools",
+  "requests==2.31.0",
+  "python-dotenv",
+]
+requires-python = ">=3.10"
+authors = [
+  &#123;name = "Electrum developers", email = "atomicals@atomicals.com"&#125;,
+]
+description = "Atomicals ElectrumX Server"
+readme = "README.rst"
+license = &#123;text = "MIT Licence"&#125;
+keywords = ["atomicals", "ElectrumX"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: AsyncIO",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Unix",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Database",
+  "Topic :: Internet"
+]
 
-<h3 id="4-使用-cpickle"><a href="#4-使用-cpickle" class="headerlink" title="4. 使用 cpickle"></a>4. 使用 cpickle</h3><pre><code class="highlight plaintext">import _pickle as cPickle
-utxos = cPickle.loads(cPickle.dumps(cache_utxos))</code></pre>
+[project.optional-dependencies]
+cli = []
 
-<h2 id="pytest-相关"><a href="#pytest-相关" class="headerlink" title="pytest 相关"></a>pytest 相关</h2><pre><code class="highlight plaintext">pytest ./tests/lib -s</code></pre>
+[project.urls]
+Homepage = "https://atomicals.xyz/"
+Documentation = "https://docs.atomicals.xyz/"
+Repository = "https://github.com/atomicals/atomicals-electrumx.git"
+"Bug Tracker" = "https://github.com/atomicals/atomicals-electrumx/issues"
+Changelog = "https://github.com/atomicals/atomicals-electrumx/releases"
+
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+target-version = "py310"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = [
+    "E4",  # pycodestyle errors
+    "E7",
+    "E9",
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+]
+ignore = [
+  "E712",
+  "F401",
+  "F405",
+  "F841",
+  "B008",
+  "B904"
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/server/test_daemon.py" = ["B015"]
+"tests/lib/test_script2addr.py" = ["E711"]
+"tests/lib/test_atomicals_utils.py" = ["B017"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="3-ruff"><a href="#3-ruff" class="headerlink" title="3. ruff"></a>3. ruff</h3><p>ruff是一个用rust构建的全新的python代码分析工具。HTTPX 和 Starlette 在同一天将在用的代码分析工具（flake8、autoflake 和 isort）统一替换成了 Ruff。我在之前也用过isort，flake8等。但是都觉得一般般，不太好用。</p>
+<p>集成到 github action 中:</p>
+<pre class="line-numbers language-yml"><code class="language-yml">name: Ruff
+on: [push, pull_request]
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: chartboost/ruff-action@v1
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="三、代码编写问题"><a href="#三、代码编写问题" class="headerlink" title="三、代码编写问题"></a>三、代码编写问题</h2><h3 id="1-使用-if-is"><a href="#1-使用-if-is" class="headerlink" title="1. 使用 if is"></a>1. 使用 <code>if is</code></h3><pre class="line-numbers language-python"><code class="language-python">a <span class="token operator">=</span> range<span class="token punctuation">(</span><span class="token number">10000</span><span class="token punctuation">)</span>
+<span class="token operator">%</span>timeit <span class="token operator">-</span>n <span class="token number">100</span> <span class="token punctuation">[</span>i <span class="token keyword">for</span> i <span class="token keyword">in</span> a <span class="token keyword">if</span> i <span class="token operator">==</span> <span class="token boolean">True</span><span class="token punctuation">]</span>
+<span class="token operator">%</span>timeit <span class="token operator">-</span>n <span class="token number">100</span> <span class="token punctuation">[</span>i <span class="token keyword">for</span> i <span class="token keyword">in</span> a <span class="token keyword">if</span> i <span class="token keyword">is</span> <span class="token boolean">True</span><span class="token punctuation">]</span>
+<span class="token number">100</span> loops<span class="token punctuation">,</span> best of <span class="token number">3</span><span class="token punctuation">:</span> <span class="token number">531</span> µs per loop
+<span class="token number">100</span> loops<span class="token punctuation">,</span> best of <span class="token number">3</span><span class="token punctuation">:</span> <span class="token number">362</span> µs per loop
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>参考:<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/changkuk/p/9978511.html">https://www.cnblogs.com/changkuk/p/9978511.html</a></p>
 
   </div>
   <div class="post-footer">
@@ -106,6 +283,32 @@ utxos = cPickle.loads(cPickle.dumps(cache_utxos))</code></pre>
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

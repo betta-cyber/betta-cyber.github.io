@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -90,54 +92,56 @@
 <p>于是我就开始了我艰难的 Nginx 模块 debug 之路。</p>
 <p>首先这个作者的模块自测的用例是没有什么问题的。他自己做了一个 Node 实现的后端，然后对代码进行测试，问题不存在，但是代码我一部署到线上，就产生大量的 coredump。这一下就把我给搞懵了。</p>
 <h2 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h2><p>要解决 coredump ，那就先要生成 coredump 文件。首先要在服务器上把 ulimit 开启。可以用<code>ulimit -c unlimited</code>来临时设置一下coredump时的文件大小，设置为 unlimited 。还需要设定 coredump 文件的保存位置与格式。<code>sysctl -w kernel.core_pattern=/var/crash/core.%u.%e.%p</code> 可以用 sysctl 命令设置一下。到时候发生 coredump 的时候就会在该目录生成 coredump 文件。 %u，%e，%p 这种都具有特殊的含义，可以查一下文档。</p>
-<pre><code class="highlight plaintext">Program terminated with signal 11, Segmentation fault.
-#0  0x0000000000545f28 in ngx_http_upstream_ntlm_close_handler (ev=&lt;optimized out&gt;)
-    at /root/openresty-1.19.3.2/../nginx-ntlm-module/ngx_http_upstream_ntlm_module.c:435
-435            ngx_queue_insert_head(&amp;conf-&gt;free, &amp;item-&gt;queue);</code></pre>
+<pre class="line-numbers language-c"><code class="language-c">Program terminated with signal <span class="token number">11</span><span class="token punctuation">,</span> Segmentation fault<span class="token punctuation">.</span>
+#<span class="token number">0</span>  <span class="token number">0x0000000000545f28</span> in <span class="token function">ngx_http_upstream_ntlm_close_handler</span> <span class="token punctuation">(</span>ev<span class="token operator">=</span><span class="token operator">&lt;</span>optimized out<span class="token operator">></span><span class="token punctuation">)</span>
+    at <span class="token operator">/</span>root<span class="token operator">/</span>openresty<span class="token number">-1.19</span><span class="token punctuation">.</span><span class="token number">3.2</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span>nginx<span class="token operator">-</span>ntlm<span class="token operator">-</span>module<span class="token operator">/</span>ngx_http_upstream_ntlm_module<span class="token punctuation">.</span>c<span class="token punctuation">:</span><span class="token number">435</span>
+<span class="token number">435</span>            <span class="token function">ngx_queue_insert_head</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>conf<span class="token operator">-></span>free<span class="token punctuation">,</span> <span class="token operator">&amp;</span>item<span class="token operator">-></span>queue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看到 Nginx 发生了 signal 11, Segmentation fault。</p>
 <p>gdb 加载一下 coredump 文件。使用 <code>bt</code> 查看调用栈</p>
-<pre><code class="highlight plaintext">#0  0x00000000004700fa in ngx_http_upstream_handler (ev=0x7fd98103dab0)
+<pre class="line-numbers language-gdb"><code class="language-gdb">#0  0x00000000004700fa in ngx_http_upstream_handler (ev=0x7fd98103dab0)
     at src/http/ngx_http_upstream.c:1276
-#1  0x0000000000442630 in ngx_event_process_posted (cycle=cycle@entry=0x1413ff0, 
-    posted=0x7d5dc0 &lt;ngx_posted_events&gt;) at src/event/ngx_event_posted.c:35
+#1  0x0000000000442630 in ngx_event_process_posted (cycle=cycle@entry=0x1413ff0,
+    posted=0x7d5dc0 <ngx_posted_events>) at src/event/ngx_event_posted.c:35
 #2  0x00000000004421ce in ngx_process_events_and_timers (cycle=cycle@entry=0x1413ff0)
     at src/event/ngx_event.c:274
-#3  0x0000000000449142 in ngx_worker_process_cycle (cycle=cycle@entry=0x1413ff0, 
+#3  0x0000000000449142 in ngx_worker_process_cycle (cycle=cycle@entry=0x1413ff0,
     data=data@entry=0x13) at src/os/unix/ngx_process_cycle.c:811
-#4  0x0000000000447ad0 in ngx_spawn_process (cycle=cycle@entry=0x1413ff0, 
-    proc=proc@entry=0x4490d0 &lt;ngx_worker_process_cycle&gt;, data=data@entry=0x13, 
-    name=name@entry=0x54b0c5 &quot;worker process&quot;, respawn=respawn@entry=-3)
+#4  0x0000000000447ad0 in ngx_spawn_process (cycle=cycle@entry=0x1413ff0,
+    proc=proc@entry=0x4490d0 <ngx_worker_process_cycle>, data=data@entry=0x13,
+    name=name@entry=0x54b0c5 "worker process", respawn=respawn@entry=-3)
     at src/os/unix/ngx_process.c:199
-#5  0x0000000000449594 in ngx_start_worker_processes (cycle=cycle@entry=0x1413ff0, n=32, 
+#5  0x0000000000449594 in ngx_start_worker_processes (cycle=cycle@entry=0x1413ff0, n=32,
     type=type@entry=-3) at src/os/unix/ngx_process_cycle.c:387
 #6  0x0000000000449e98 in ngx_master_process_cycle (cycle=cycle@entry=0x1413ff0)
     at src/os/unix/ngx_process_cycle.c:135
-#7  0x0000000000422469 in main (argc=&lt;optimized out&gt;, argv=&lt;optimized out&gt;)
-    at src/core/nginx.c:385</code></pre>
-
+#7  0x0000000000422469 in main (argc=<optimized out>, argv=<optimized out>)
+    at src/core/nginx.c:385
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>stackoverflow一下，看到有一个相关问题。</p>
-<pre><code class="highlight plaintext">Three basic rules:
-1. Set pointer to NULL after free
-2. Check for NULL before freeing.
-3. Initialise pointer to NULL in the start.
-Combination of these three works quite well.</code></pre>
-
+<p>Three basic rules:</p>
+<ol>
+<li>Set pointer to NULL after free</li>
+<li>Check for NULL before freeing.</li>
+<li>Initialise pointer to NULL in the start.<br>Combination of these three works quite well.</li>
+</ol>
 <p>分析一下，大概是引用了空指针问题，为了查看更多的调试信息。把 OpenResty 中的 Nginx 进行 debug 模式编译。</p>
-<pre><code class="highlight plaintext">./configure --prefix=/home/work/openresty_debug --with-debug --with-http_stub_status_module  --with-http_v2_module --with-stream  --with-stream_realip_module  --with-pcre-jit --with-http_realip_module --add-module=../nginx-ntlm-module
-gmake &amp;&amp; gmake install</code></pre>
-
+<pre class="line-numbers language-bash"><code class="language-bash">./configure --prefix<span class="token operator">=</span>/home/work/openresty_debug --with-debug --with-http_stub_status_module  --with-http_v2_module --with-stream  --with-stream_realip_module  --with-pcre-jit --with-http_realip_module --add-module<span class="token operator">=</span><span class="token punctuation">..</span>/nginx-ntlm-module
+gmake <span class="token operator">&amp;&amp;</span> gmake <span class="token function">install</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>可以看到在日志中出现了很多的调试信息了。这里对日志进行排查。发现日志太多，而且复现条件不稳定。不太确定是哪一个触发了 coredump ，而且 coredump 文件每次触发 Segmentation fault 的位置都不太一样。让我感觉有点绝望。</p>
 <p>这里还没有仔细琢磨 Nginx 模块的调用流程，就凭感觉再猜测调试，导致浪费了很多时间。</p>
 <p>尝试使用 Valgrind memcheck 工具运行你的 Nginx 应用，检查是否有内存问题。在此运行模式下，建议使用下面的命令构造 OpenResty:</p>
-<pre><code class="highlight plaintext">./configure --with-debug --with-no-pool-patch \
-           --with-luajit-xcflags=&#x27;-DLUAJIT_USE_SYSMALLOC -DLUAJIT_USE_VALGRIND&#x27;</code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">./configure --with-debug --with-no-pool-patch \
+           --with-luajit-xcflags<span class="token operator">=</span><span class="token string">'-DLUAJIT_USE_SYSMALLOC -DLUAJIT_USE_VALGRIND'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>然后在 valgrind 运行模式下，在 nginx.conf 中作如下配置：</p>
-<pre><code class="highlight plaintext">worker_processes  1;
+<pre class="line-numbers language-conf"><code class="language-conf">worker_processes  1;
 daemon off;
-master_process off;</code></pre>
-
-<pre><code class="highlight plaintext">valgrind --tool=memcheck /home/work/openresty_debug/nginx/sbin/nginx -p /home/work/bin/exchange_debug/ -c conf/nginx.conf</code></pre>
-
+master_process off;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash"><code class="language-bash">valgrind --tool<span class="token operator">=</span>memcheck /home/work/openresty_debug/nginx/sbin/nginx -p /home/work/bin/exchange_debug/ -c conf/nginx.conf
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>这种情况启动 Nginx ，再次查看 Nginx ，就舒服多了。然后在模块代码中加入一些调试日志。</p>
 <p>Nginx 的调试日志简单分为以下三种：</p>
 <ul>
@@ -146,7 +150,7 @@ master_process off;</code></pre>
 <li>ngx_log_debugX(level, log, err, fmt, …)</li>
 </ul>
 <p>第1个参数level可选宏如下：</p>
-<pre><code class="highlight plaintext">#define NGX_LOG_STDERR            0
+<pre><code>#define NGX_LOG_STDERR            0
 #define NGX_LOG_EMERG             1
 #define NGX_LOG_ALERT             2
 #define NGX_LOG_CRIT              3
@@ -154,14 +158,15 @@ master_process off;</code></pre>
 #define NGX_LOG_WARN              5
 #define NGX_LOG_NOTICE            6
 #define NGX_LOG_INFO              7
-#define NGX_LOG_DEBUG             8</code></pre>
+#define NGX_LOG_DEBUG             8
+</code></pre>
 <p>打印等级通过 nginx.conf 中的 error_log 指令可以配置，其中 WARN 以上级别打印会直接打印到 stderr 上，对于某些临时调试场景有意义。</p>
 <p>第2个参数 log，用于部分回调功能。</p>
 <p>常见获取方式包括</p>
-<pre><code class="highlight plaintext">[ngx_conf_t].log
-[ngx_http_request_t].connection.log
-[ngx_connection_t].log</code></pre>
-
+<pre class="line-numbers language-bash"><code class="language-bash"><span class="token punctuation">[</span>ngx_conf_t<span class="token punctuation">]</span>.log
+<span class="token punctuation">[</span>ngx_http_request_t<span class="token punctuation">]</span>.connection.log
+<span class="token punctuation">[</span>ngx_connection_t<span class="token punctuation">]</span>.log
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>第3个参数 err，用于记录 errno ，非系统调用错误，一般使用0即可。</p>
 <p>后续参数为可变长的字符串参数，其中针对 ngx 常用的几个类型有特殊定义</p>
 <table>
@@ -206,39 +211,39 @@ master_process off;</code></pre>
 </tbody></table>
 <p>后面我还发现，在 valgrind 生成的 vgcore 文件当中，用 gdb 可以直接 print 相关的变量。之前用的少，还不知道，简直想哭。print display 都可以使用。这也极大的帮助我调试。</p>
 <p>调试的一切都准备好了，就可以正式开始调试了。nginx-ntlm-module 是基于 keepalive 的源代码开发的。我仔细分析了 keepalive 和 ntlm-module 的源代码，发现在代码中确实存在空指针问题。</p>
-<h2 id="问题结论"><a href="#问题结论" class="headerlink" title="问题结论"></a>问题结论</h2><pre><code class="highlight plaintext">for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
-         q = ngx_queue_next(q)) &#123;
-        item = ngx_queue_data(q, ngx_http_upstream_ntlm_cache_t, queue);
+<h2 id="问题结论"><a href="#问题结论" class="headerlink" title="问题结论"></a>问题结论</h2><pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>q <span class="token operator">=</span> <span class="token function">ngx_queue_head</span><span class="token punctuation">(</span>cache<span class="token punctuation">)</span><span class="token punctuation">;</span> q <span class="token operator">!=</span> <span class="token function">ngx_queue_sentinel</span><span class="token punctuation">(</span>cache<span class="token punctuation">)</span><span class="token punctuation">;</span>
+         q <span class="token operator">=</span> <span class="token function">ngx_queue_next</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        item <span class="token operator">=</span> <span class="token function">ngx_queue_data</span><span class="token punctuation">(</span>q<span class="token punctuation">,</span> ngx_http_upstream_ntlm_cache_t<span class="token punctuation">,</span> queue<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        if (item-&gt;client_connection == hndp-&gt;client_connection) &#123;
-            c = item-&gt;peer_connection;
-            ngx_queue_remove(q);
-            ngx_queue_insert_head(&amp;hndp-&gt;conf-&gt;free, q);
-            hndp-&gt;cached = 1;
-            goto found;
-        &#125;
-    &#125;</code></pre>
-
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>item<span class="token operator">-></span>client_connection <span class="token operator">==</span> hndp<span class="token operator">-></span>client_connection<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            c <span class="token operator">=</span> item<span class="token operator">-></span>peer_connection<span class="token punctuation">;</span>
+            <span class="token function">ngx_queue_remove</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">ngx_queue_insert_head</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>hndp<span class="token operator">-></span>conf<span class="token operator">-></span>free<span class="token punctuation">,</span> q<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            hndp<span class="token operator">-></span>cached <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token keyword">goto</span> found<span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>在这段代码中，c 变量是可能存在空指针的问题的。导致 coredump。</p>
 <p>另外一点，在 ngx_http_upstream_client_conn_cleanup 方法中。有一个 <code>ngx_post_event(item-&gt;peer_connection-&gt;read,&amp;ngx_posted_events);</code> 代码，我最后把他给注释掉了，因为据我调试发现，item-&gt;peer_connection-&gt;read 本身是一个 <code>ngx_event_t</code> 对象。但是在 post_event 之后，会尝试去获取它的 data 和 data-&gt;log 这个因为 data 本身为 void data，没有赋予到相应的值。会导致空指针。</p>
 <p>另外在修复代码当中，因为我的一个小错误。在 close 连接的代码中：</p>
-<pre><code class="highlight plaintext">ngx_queue_remove(&amp;item-&gt;queue);
-ngx_queue_insert_head(&amp;conf-&gt;free, &amp;item-&gt;queue);</code></pre>
-
+<pre class="line-numbers language-c"><code class="language-c"><span class="token function">ngx_queue_remove</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>item<span class="token operator">-></span>queue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">ngx_queue_insert_head</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>conf<span class="token operator">-></span>free<span class="token punctuation">,</span> <span class="token operator">&amp;</span>item<span class="token operator">-></span>queue<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>我把这段代码的顺序给弄反了。导致编译后运行的代码运行一段时间之后 CPU 直接飙升到 100% 。导致后续无法处理请求，这个主要还是跟 Nginx 中的双向链表问题有关。双向链表的遍历，我在查看了 keepalive 的源代码之后，觉得是不太会存在性能问题的，之前我们线上的代码 keepalive 的双向链表设置为 50000 的大小也没出现性能瓶颈。</p>
-<pre><code class="highlight plaintext">for (q = ngx_queue_head(cache); q != ngx_queue_sentinel(cache);
-    q = ngx_queue_next(q)) &#123;
-    item = ngx_queue_data(q, ngx_http_upstream_ntlm_cache_t, queue);
+<pre class="line-numbers language-c"><code class="language-c"><span class="token keyword">for</span> <span class="token punctuation">(</span>q <span class="token operator">=</span> <span class="token function">ngx_queue_head</span><span class="token punctuation">(</span>cache<span class="token punctuation">)</span><span class="token punctuation">;</span> q <span class="token operator">!=</span> <span class="token function">ngx_queue_sentinel</span><span class="token punctuation">(</span>cache<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    q <span class="token operator">=</span> <span class="token function">ngx_queue_next</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+    item <span class="token operator">=</span> <span class="token function">ngx_queue_data</span><span class="token punctuation">(</span>q<span class="token punctuation">,</span> ngx_http_upstream_ntlm_cache_t<span class="token punctuation">,</span> queue<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    if (item-&gt;client_connection == hndp-&gt;client_connection) &#123;
-        c = item-&gt;peer_connection;
-        ngx_queue_remove(q);
-        ngx_queue_insert_head(&amp;hndp-&gt;conf-&gt;free, q);
-        hndp-&gt;cached = 1;
-        goto found;
-    &#125;
-&#125;</code></pre>
-
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>item<span class="token operator">-></span>client_connection <span class="token operator">==</span> hndp<span class="token operator">-></span>client_connection<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        c <span class="token operator">=</span> item<span class="token operator">-></span>peer_connection<span class="token punctuation">;</span>
+        <span class="token function">ngx_queue_remove</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">ngx_queue_insert_head</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>hndp<span class="token operator">-></span>conf<span class="token operator">-></span>free<span class="token punctuation">,</span> q<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        hndp<span class="token operator">-></span>cached <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token keyword">goto</span> found<span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>后面发现，我写反了之后，导致每次请求都会遍历链表到最后一位，所以性能消耗极大。</p>
 <p>不过很开心的是，终于解决了这个问题，还有 Nginx 模块的相关开发的一些细节没说到。以后有机会再谈谈。</p>
 
@@ -255,6 +260,32 @@ ngx_queue_insert_head(&amp;conf-&gt;free, &amp;item-&gt;queue);</code></pre>
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

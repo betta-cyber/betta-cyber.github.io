@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -126,28 +128,32 @@
 <h2 id="相关安装"><a href="#相关安装" class="headerlink" title="相关安装"></a>相关安装</h2><p>手动安装依赖的内核调试信息包</p>
 <p>SystemTap需要内核信息，这样才能注入指令。此外，这些信息还能帮助SystemTap生成合适的检测代码。</p>
 <p>这些必要的内核信息分别包括在特定内核版本所对应的-devel，-debuginfo和-debuginfo-common包中。对于“标准版”内核（指按照常规配置编译的内核），所需的-devel和-debuginfo等包命名为：</p>
-<pre><code class="highlight plaintext">kernel-debuginfo
+<pre><code>kernel-debuginfo
 kernel-debuginfo-common
-kernel-devel</code></pre>
+kernel-devel
+</code></pre>
 <p>要想确定当前系统的内核版本，敲入：</p>
-<pre><code class="highlight plaintext">uname -r</code></pre>
-
+<pre><code>uname -r
+</code></pre>
 <p>举个例子，如果你想在i686环境下的2.6.18-53.el5内核上使用SystenTap，需要下载安装如下的RPM包：</p>
-<pre><code class="highlight plaintext">kernel-debuginfo-2.6.18-53.1.13.el5.i686.rpm
+<pre><code>kernel-debuginfo-2.6.18-53.1.13.el5.i686.rpm
 kernel-debuginfo-common-2.6.18-53.1.13.el5.i686.rpm
-kernel-devel-2.6.18-53.1.13.el5.i686.rpm</code></pre>
+kernel-devel-2.6.18-53.1.13.el5.i686.rpm
+</code></pre>
 <p>一旦手动下载了所依赖的包之后，以root权限运行下面的命令来安装它们：</p>
-<pre><code class="highlight plaintext">rpm --force -ivh package_names</code></pre>
-
-<h3 id="检查安装是否成功"><a href="#检查安装是否成功" class="headerlink" title="检查安装是否成功"></a>检查安装是否成功</h3><pre><code class="highlight plaintext">stap -v -e &#x27;probe vfs.read &#123;printf(&quot;read performed\n&quot;); exit()&#125;&#x27;</code></pre>
+<pre><code>rpm --force -ivh package_names
+</code></pre>
+<h3 id="检查安装是否成功"><a href="#检查安装是否成功" class="headerlink" title="检查安装是否成功"></a>检查安装是否成功</h3><pre><code>stap -v -e &#39;probe vfs.read &#123;printf(&quot;read performed\n&quot;); exit()&#125;&#39;
+</code></pre>
 <p>如果出现相关输出：</p>
-<pre><code class="highlight plaintext">Pass 1: parsed user script and 45 library script(s) in 340usr/0sys/358real ms.
+<pre><code>Pass 1: parsed user script and 45 library script(s) in 340usr/0sys/358real ms.
 Pass 2: analyzed script: 1 probe(s), 1 function(s), 0 embed(s), 0 global(s) in 290usr/260sys/568real ms.
 Pass 3: translated to C into &quot;/tmp/stapiArgLX/stap_e5886fa50499994e6a87aacdc43cd392_399.c&quot; in 490usr/430sys/938real ms.
 Pass 4: compiled C into &quot;stap_e5886fa50499994e6a87aacdc43cd392_399.ko&quot; in 3310usr/430sys/3714real ms.
 Pass 5: starting run.
 read performed
-Pass 5: run completed in 10usr/40sys/73real ms.</code></pre>
+Pass 5: run completed in 10usr/40sys/73real ms.
+</code></pre>
 <p>就表示安装完成</p>
 <h2 id="火焰图分析技巧"><a href="#火焰图分析技巧" class="headerlink" title="火焰图分析技巧"></a>火焰图分析技巧</h2><ul>
 <li>纵轴代表调用栈的深度（栈桢数），用于表示函数间调用关系：下面的函数是上面函数的父函数。</li>
@@ -171,6 +177,32 @@ Pass 5: run completed in 10usr/40sys/73real ms.</code></pre>
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>

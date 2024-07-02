@@ -28,16 +28,18 @@
   
 <link rel="stylesheet" href="/css/style.css">
 
+  <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/4.7.0/css/font-awesome.min.css">
 
   <!--  -->
     <!-- <link rel="stylesheet" href="../css/font-awesome.min.css"> -->
   <!--  -->
 
   <script src="/static/js/hexo_resize_image.js"></script>
+  <script type="text/javascript" src="/static/js/jquery.min.js"></script>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script> -->
   <script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=0&t=n&d=b9cDq33TdEsfGb_DpY--uB2pjskzQ8TK9LaE3yuIYzE&co=ffffff&cmo=ffffff&cmn=ffffff&ct=ffffff'></script>
-<meta name="generator" content="Hexo 5.4.1"></head>
+<meta name="generator" content="Hexo 5.4.1"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head>
 
   <body>
     <div class="container">
@@ -88,33 +90,34 @@
 <p>假设微信信息存放在目录 <code>wechat_root=~/Library/Containers/com.tencent.xinWeChat/Data/Library/Application Support/com.tencent.xinWeChat/xxx_version/xxx</code> 下的相关AES加密的sqlite3数据库文件中：</p>
 <p>联系人: wechat_root&#x2F;Contanct&#x2F;wccontact_new2.db<br>群聊: wechat_root&#x2F;Group&#x2F;group_new.db<br>聊天记录: wechat_root&#x2F;Message&#x2F;msg_xxx.db<br>想办法解密数据库文件就可以获取到想要的信息了。</p>
 <h2 id="AES-Key-获取"><a href="#AES-Key-获取" class="headerlink" title="AES Key 获取"></a>AES Key 获取</h2><p>macOS 上面的流程是：<br>打开微信客户端, 先不要登录，下调试断点</p>
-<pre><code class="highlight plaintext">lldb -p $(pgrep WeChat)
+<pre><code>lldb -p $(pgrep WeChat)
 br set -n sqlite3_key
-continue</code></pre>
+continue
+</code></pre>
 <p>然后登录微信</p>
 <p>登录之后，这时候电脑端微信是会卡在登陆界面的，不需要担心，回到Terminal</p>
-<pre><code class="highlight bash">Process 1390 resuming
+<pre class="line-numbers language-bash"><code class="language-bash">Process 1390 resuming
 Process 1390 stopped
-* thread <span class="comment">#1, queue = &#x27;com.apple.main-thread&#x27;, stop reason = breakpoint 1.1</span>
-    frame <span class="comment">#0: 0x0000000107503cc4 WCDB`sqlite3_key</span>
+* thread <span class="token comment" spellcheck="true">#1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1</span>
+    frame <span class="token comment" spellcheck="true">#0: 0x0000000107503cc4 WCDB`sqlite3_key</span>
 WCDB`sqlite3_key:
--&gt;  0x107503cc4 &lt;+0&gt;:  mov    x3, x2
-    0x107503cc8 &lt;+4&gt;:  mov    x2, x1
-    0x107503ccc &lt;+8&gt;:  adr    x1, <span class="comment">#0x2c4d7              ; &quot;main&quot;</span>
-    0x107503cd0 &lt;+12&gt;: nop
-Target 0: (WeChat) stopped.</code></pre>
-
-
+-<span class="token operator">></span>  0x107503cc4 <span class="token operator">&lt;</span>+0<span class="token operator">></span>:  mov    x3, x2
+    0x107503cc8 <span class="token operator">&lt;</span>+4<span class="token operator">></span>:  mov    x2, x1
+    0x107503ccc <span class="token operator">&lt;</span>+8<span class="token operator">></span>:  adr    x1, <span class="token comment" spellcheck="true">#0x2c4d7              ; "main"</span>
+    0x107503cd0 <span class="token operator">&lt;</span>+12<span class="token operator">></span>: nop
+Target 0: <span class="token punctuation">(</span>WeChat<span class="token punctuation">)</span> stopped.
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>输入<code>memory read --size 1 --format x --count 32 x1</code>，回车</p>
 <p>上边打印的即为256-bit的aes key<br>你会看到类似如下的输出</p>
-<pre><code class="highlight bash">0x60000243xxxx: 0xe8 0x8d 0x4a 0xd0 0x82 0x6a 0xe2 0x8f
+<pre class="line-numbers language-bash"><code class="language-bash">0x60000243xxxx: 0xe8 0x8d 0x4a 0xd0 0x82 0x6a 0xe2 0x8f
 0x60000243xxxx: 0x77 0x70 0x54 0xd4 0x8e 0x72 0x3a 0x1b
 0x60000243xxxx: 0x0a 0xe7 0x9c 0x89 0x5f 0x49 0xb0 0xec
-0x60000243xxxx: 0x79 0xdf 0x2a 0x68 0xd5 0x9c 0xb8 0xf5</code></pre>
+0x60000243xxxx: 0x79 0xdf 0x2a 0x68 0xd5 0x9c 0xb8 0xf5
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这个就是我们要的 aes key。</p>
-<h2 id="macOS-安全机制问题"><a href="#macOS-安全机制问题" class="headerlink" title="macOS 安全机制问题"></a>macOS 安全机制问题</h2><pre><code class="highlight plaintext">(lldb) process attach --pid 59186
-error: attach failed: attach failed (Not allowed to attach to process. Look in the console messages (Console.app), near the debugserver entries when the attached failed. The subsystem that denied the attach permission will likely have logged an informative message about why it was denied.)</code></pre>
-
+<h2 id="macOS-安全机制问题"><a href="#macOS-安全机制问题" class="headerlink" title="macOS 安全机制问题"></a>macOS 安全机制问题</h2><pre><code>(lldb) process attach --pid 59186
+error: attach failed: attach failed (Not allowed to attach to process. Look in the console messages (Console.app), near the debugserver entries when the attached failed. The subsystem that denied the attach permission will likely have logged an informative message about why it was denied.)
+</code></pre>
 <p>lldb 的时候存在错误，确认是 macOS的安全机制问题。</p>
 <p>搜索关键字 “macos m1 crsutil”， 得到答案。<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/360720953">https://zhuanlan.zhihu.com/p/360720953</a></p>
 <p>苹果 M1 Mac 电脑为了系统环境安全，再核心下引入了SIP（System Integrity Protection），又称Rootless mode机制，要进行设备的升级或者重刷就要将该机制关闭才能操作，因此我们必须要关闭SIP。</p>
@@ -127,20 +130,20 @@ error: attach failed: attach failed (Not allowed to attach to process. Look in t
 <li>reboot</li>
 </ol>
 <p>当然关闭 SIP 也存在风险，具体见 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/40239893">https://www.zhihu.com/question/40239893</a></p>
-<h2 id="处理-aes-key"><a href="#处理-aes-key" class="headerlink" title="处理 aes key"></a>处理 aes key</h2><pre><code class="highlight python"><span class="comment"># -*- coding: utf-8 -*-</span>
+<h2 id="处理-aes-key"><a href="#处理-aes-key" class="headerlink" title="处理 aes key"></a>处理 aes key</h2><pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
 
-ori_key = <span class="string">&quot;&quot;&quot;</span>
-<span class="string">0x6000037c5c40: 0xf6 0xf0 0xf7 0xee 0xce 0xef 0x43 0xd9</span>
-<span class="string">0x6000037c5c48: 0x9b 0x19 0xf5 0xe2 0xc8 0x7b 0xc5 0x54</span>
-<span class="string">0x6000037c5c50: 0x16 0x9e 0x99 0x2d 0x39 0x1d 0x40 0xc6</span>
-<span class="string">0x6000037c5c58: 0x9b 0xc7 0x21 0x0e 0xd8 0xc7 0xbe 0x7a</span>
-<span class="string">&quot;&quot;&quot;</span>
+ori_key <span class="token operator">=</span> <span class="token triple-quoted-string string">"""
+0x6000037c5c40: 0xf6 0xf0 0xf7 0xee 0xce 0xef 0x43 0xd9
+0x6000037c5c48: 0x9b 0x19 0xf5 0xe2 0xc8 0x7b 0xc5 0x54
+0x6000037c5c50: 0x16 0x9e 0x99 0x2d 0x39 0x1d 0x40 0xc6
+0x6000037c5c58: 0x9b 0xc7 0x21 0x0e 0xd8 0xc7 0xbe 0x7a
+"""</span>
 
-key = <span class="string">&#x27;0x&#x27;</span> + <span class="string">&#x27;&#x27;</span>.join(i.partition(<span class="string">&#x27;:&#x27;</span>)[<span class="number">2</span>]
-               .replace(<span class="string">&#x27;0x&#x27;</span>, <span class="string">&#x27;&#x27;</span>)
-               .replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>) <span class="keyword">for</span> i <span class="keyword">in</span> ori_key.split(<span class="string">&#x27;\n&#x27;</span>)[<span class="number">1</span>:<span class="number">5</span>])
-<span class="built_in">print</span>(key)</code></pre>
-
+key <span class="token operator">=</span> <span class="token string">'0x'</span> <span class="token operator">+</span> <span class="token string">''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span>i<span class="token punctuation">.</span>partition<span class="token punctuation">(</span><span class="token string">':'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span>
+               <span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">'0x'</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span>
+               <span class="token punctuation">.</span>replace<span class="token punctuation">(</span><span class="token string">' '</span><span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> ori_key<span class="token punctuation">.</span>split<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>得到 aes key。这串密钥对于后续所有*.db文件是通用的。</p>
 <h2 id="获取微信聊天记录"><a href="#获取微信聊天记录" class="headerlink" title="获取微信聊天记录"></a>获取微信聊天记录</h2><p>可以使用 DB Brower 这种图形化界面的软件查看，也可以写脚本查看。</p>
 <p>SQLCipher 3 default Raw key 模式输入前面得到的 aes key。</p>
@@ -155,56 +158,56 @@ key = <span class="string">&#x27;0x&#x27;</span> + <span class="string">&#x27;&#
 <li>messgaeType：消息类型（1表示普通文本，3表示图片，34表示语音，43表示视频，47表示表情包，48表示位置，49是分享消息）</li>
 <li>msgSource：消息来源（仅针对收到的消息）每一个Table代表你与一个人&#x2F;群的聊天记录。</li>
 </ul>
-<pre><code class="highlight python"><span class="comment">#! /usr/bin/env python3</span>
-<span class="comment"># -*- coding: utf-8 -*-</span>
+<pre class="line-numbers language-python"><code class="language-python"><span class="token comment" spellcheck="true">#! /usr/bin/env python3</span>
+<span class="token comment" spellcheck="true"># -*- coding: utf-8 -*-</span>
 
-<span class="keyword">import</span> hmac
-<span class="keyword">import</span> ctypes
-<span class="keyword">import</span> hashlib
-<span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES
+<span class="token keyword">import</span> hmac
+<span class="token keyword">import</span> ctypes
+<span class="token keyword">import</span> hashlib
+<span class="token keyword">from</span> Crypto<span class="token punctuation">.</span>Cipher <span class="token keyword">import</span> AES
 
-<span class="keyword">def</span> <span class="title function_">decrypt_msg</span>(<span class="params">path, password</span>):
-    KEY_SIZE = <span class="number">32</span>
-    DEFAULT_ITER = <span class="number">64000</span>
-    DEFAULT_PAGESIZE = <span class="number">4096</span>  <span class="comment"># 4048数据 + 16IV + 20 HMAC + 12</span>
-    SQLITE_FILE_HEADER = <span class="built_in">bytes</span>(<span class="string">&quot;SQLite format 3&quot;</span>, encoding=<span class="string">&quot;ASCII&quot;</span>) + <span class="built_in">bytes</span>(<span class="number">1</span>)  <span class="comment"># SQLite 文件头</span>
+<span class="token keyword">def</span> <span class="token function">decrypt_msg</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> password<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    KEY_SIZE <span class="token operator">=</span> <span class="token number">32</span>
+    DEFAULT_ITER <span class="token operator">=</span> <span class="token number">64000</span>
+    DEFAULT_PAGESIZE <span class="token operator">=</span> <span class="token number">4096</span>  <span class="token comment" spellcheck="true"># 4048数据 + 16IV + 20 HMAC + 12</span>
+    SQLITE_FILE_HEADER <span class="token operator">=</span> bytes<span class="token punctuation">(</span><span class="token string">"SQLite format 3"</span><span class="token punctuation">,</span> encoding<span class="token operator">=</span><span class="token string">"ASCII"</span><span class="token punctuation">)</span> <span class="token operator">+</span> bytes<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># SQLite 文件头</span>
 
-    <span class="keyword">with</span> <span class="built_in">open</span>(path, <span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:
-        <span class="comment"># <span class="doctag">TODO:</span> 优化，考虑超大文件</span>
-        blist = f.read()
+    <span class="token keyword">with</span> open<span class="token punctuation">(</span>path<span class="token punctuation">,</span> <span class="token string">"rb"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        <span class="token comment" spellcheck="true"># TODO: 优化，考虑超大文件</span>
+        blist <span class="token operator">=</span> f<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    salt = blist[:<span class="number">16</span>]  <span class="comment"># 前16字节为盐</span>
-    key = hashlib.pbkdf2_hmac(<span class="string">&quot;sha1&quot;</span>, password, salt, DEFAULT_ITER, KEY_SIZE)  <span class="comment"># 获得Key</span>
+    salt <span class="token operator">=</span> blist<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">16</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 前16字节为盐</span>
+    key <span class="token operator">=</span> hashlib<span class="token punctuation">.</span>pbkdf2_hmac<span class="token punctuation">(</span><span class="token string">"sha1"</span><span class="token punctuation">,</span> password<span class="token punctuation">,</span> salt<span class="token punctuation">,</span> DEFAULT_ITER<span class="token punctuation">,</span> KEY_SIZE<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 获得Key</span>
 
-    page1 = blist[<span class="number">16</span>:DEFAULT_PAGESIZE]  <span class="comment"># 丢掉salt</span>
+    page1 <span class="token operator">=</span> blist<span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">:</span>DEFAULT_PAGESIZE<span class="token punctuation">]</span>  <span class="token comment" spellcheck="true"># 丢掉salt</span>
 
-    mac_salt = <span class="built_in">bytes</span>([x ^ <span class="number">0x3a</span> <span class="keyword">for</span> x <span class="keyword">in</span> salt])
-    mac_key = hashlib.pbkdf2_hmac(<span class="string">&quot;sha1&quot;</span>, key, mac_salt, <span class="number">2</span>, KEY_SIZE)
+    mac_salt <span class="token operator">=</span> bytes<span class="token punctuation">(</span><span class="token punctuation">[</span>x <span class="token operator">^</span> <span class="token number">0x3a</span> <span class="token keyword">for</span> x <span class="token keyword">in</span> salt<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    mac_key <span class="token operator">=</span> hashlib<span class="token punctuation">.</span>pbkdf2_hmac<span class="token punctuation">(</span><span class="token string">"sha1"</span><span class="token punctuation">,</span> key<span class="token punctuation">,</span> mac_salt<span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> KEY_SIZE<span class="token punctuation">)</span>
 
-    hash_mac = hmac.new(mac_key, digestmod=<span class="string">&quot;sha1&quot;</span>)
-    hash_mac.update(page1[:-<span class="number">32</span>])
-    hash_mac.update(<span class="built_in">bytes</span>(ctypes.c_int(<span class="number">1</span>)))
+    hash_mac <span class="token operator">=</span> hmac<span class="token punctuation">.</span>new<span class="token punctuation">(</span>mac_key<span class="token punctuation">,</span> digestmod<span class="token operator">=</span><span class="token string">"sha1"</span><span class="token punctuation">)</span>
+    hash_mac<span class="token punctuation">.</span>update<span class="token punctuation">(</span>page1<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">32</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    hash_mac<span class="token punctuation">.</span>update<span class="token punctuation">(</span>bytes<span class="token punctuation">(</span>ctypes<span class="token punctuation">.</span>c_int<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-    <span class="keyword">if</span> hash_mac.digest() != page1[-<span class="number">32</span>:-<span class="number">12</span>]:
-        <span class="keyword">raise</span> RuntimeError(<span class="string">&quot;Wrong Password&quot;</span>)
+    <span class="token keyword">if</span> hash_mac<span class="token punctuation">.</span>digest<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> page1<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">32</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">:</span>
+        <span class="token keyword">raise</span> RuntimeError<span class="token punctuation">(</span><span class="token string">"Wrong Password"</span><span class="token punctuation">)</span>
 
-    pages = [blist[i:i+DEFAULT_PAGESIZE] <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(DEFAULT_PAGESIZE, <span class="built_in">len</span>(blist), DEFAULT_PAGESIZE)]
-    pages.insert(<span class="number">0</span>, page1)  <span class="comment"># 把第一页补上</span>
+    pages <span class="token operator">=</span> <span class="token punctuation">[</span>blist<span class="token punctuation">[</span>i<span class="token punctuation">:</span>i<span class="token operator">+</span>DEFAULT_PAGESIZE<span class="token punctuation">]</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span>DEFAULT_PAGESIZE<span class="token punctuation">,</span> len<span class="token punctuation">(</span>blist<span class="token punctuation">)</span><span class="token punctuation">,</span> DEFAULT_PAGESIZE<span class="token punctuation">)</span><span class="token punctuation">]</span>
+    pages<span class="token punctuation">.</span>insert<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> page1<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 把第一页补上</span>
 
-    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">f&quot;<span class="subst">&#123;path&#125;</span>.dec.db&quot;</span>, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:
-        f.write(SQLITE_FILE_HEADER)  <span class="comment"># 写入文件头</span>
+    <span class="token keyword">with</span> open<span class="token punctuation">(</span>f<span class="token string">"&amp;#123;path&amp;#125;.dec.db"</span><span class="token punctuation">,</span> <span class="token string">"wb"</span><span class="token punctuation">)</span> <span class="token keyword">as</span> f<span class="token punctuation">:</span>
+        f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>SQLITE_FILE_HEADER<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># 写入文件头</span>
 
-        <span class="keyword">for</span> i <span class="keyword">in</span> pages:
-            t = AES.new(key, AES.MODE_CBC, i[-<span class="number">48</span>:-<span class="number">32</span>])
-            f.write(t.decrypt(i[:-<span class="number">48</span>]))
-            f.write(i[-<span class="number">48</span>:])
+        <span class="token keyword">for</span> i <span class="token keyword">in</span> pages<span class="token punctuation">:</span>
+            t <span class="token operator">=</span> AES<span class="token punctuation">.</span>new<span class="token punctuation">(</span>key<span class="token punctuation">,</span> AES<span class="token punctuation">.</span>MODE_CBC<span class="token punctuation">,</span> i<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">48</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">32</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+            f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>t<span class="token punctuation">.</span>decrypt<span class="token punctuation">(</span>i<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token operator">-</span><span class="token number">48</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            f<span class="token punctuation">.</span>write<span class="token punctuation">(</span>i<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">48</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
 
-<span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:
-    path = <span class="string">&quot;E:/wechat/documents/WeChat Files/wxid_44cdgh0tng3o41/Msg/Multi/MSG0.db&quot;</span>
-    key = <span class="built_in">bytes</span>.fromhex(<span class="string">&quot;cannot tell u &quot;</span>) <span class="comment"># </span>
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    path <span class="token operator">=</span> <span class="token string">"E:/wechat/documents/WeChat Files/wxid_44cdgh0tng3o41/Msg/Multi/MSG0.db"</span>
+    key <span class="token operator">=</span> bytes<span class="token punctuation">.</span>fromhex<span class="token punctuation">(</span><span class="token string">"cannot tell u "</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># </span>
 
-    decrypt_msg(path, key)</code></pre>
-
+    decrypt_msg<span class="token punctuation">(</span>path<span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>后续内容就是要根据消息，进行相关的内容展示，方便搜索，方便查询，以及还有对应的表情包，语音，链接，图片，各种内容的展示。不单单只有文字。<br>这个后续的展示内容就留着以后再做吧。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://www.v2ex.com/t/466053">土办法导出 Mac 版微信聊天记录</a></li>
@@ -227,6 +230,32 @@ key = <span class="string">&#x27;0x&#x27;</span> + <span class="string">&#x27;&#
     betta
   </span>
 </footer>
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/static/js/codeBlockFunction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/static/js/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/static/js/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/static/js/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
 
     </div>
   </body>
